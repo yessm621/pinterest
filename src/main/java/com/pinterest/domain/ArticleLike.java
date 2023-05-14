@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @ToString
-public class Like extends BaseEntity {
+public class ArticleLike extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,24 +24,24 @@ public class Like extends BaseEntity {
     @JoinColumn(name = "article_id")
     private Article article;
 
-    protected Like() {
+    protected ArticleLike() {
     }
 
-    private Like(Member member, Article article) {
+    private ArticleLike(Member member, Article article) {
         this.member = member;
         this.article = article;
     }
 
-    public static Like of(Member member, Article article) {
-        return new Like(member, article);
+    public static ArticleLike of(Member member, Article article) {
+        return new ArticleLike(member, article);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Like)) return false;
-        Like like = (Like) o;
-        return id != null && Objects.equals(getId(), like.getId());
+        if (!(o instanceof ArticleLike)) return false;
+        ArticleLike that = (ArticleLike) o;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
