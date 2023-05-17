@@ -292,4 +292,3 @@ for (let i=0; i < masonrys.length; i++){
 }
 
 magicGrid.listen();
-
