@@ -33,7 +33,7 @@ public class Article extends BaseEntity {
     private String title;
     @Column(nullable = false, length = 2000)
     private String content;
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 2000)
     private String image;
 
     protected Article() {
