@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html th:replace="~{base/base :: base(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Articles | Pinterest</title>
+</head>
+<style>
+    .container {
+        padding: 0;
+        margin: 0 auto;
+    }
+
+    .container a {
+        width: 45%;
+        max-width: 250px;
+    }
+
+    .container div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+    }
+
+    .container img {
+        width: 100%;
+        border-radius: 1rem;
+    }
+</style>
+<body>
+
+<main>
+  {% if article_list %}
+  <div class="container">
+    {% for article in article_list %}
+    <a href="{% url 'articleapp:detail' pk=article.pk %}">
+      <div>
+        <img src="{{ article.image.url }}" alt="">
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center">
+    <h1>생성된 Article 이 없습니다.</h1>
+  </div>
+  {% endif %}
+  {% include 'snippets/pagination.html' with page_obj=page_obj %}
+
+  <div style="text-align:center;">
+    <a th:href="@{/articles/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
+      Article 만들기
+    </a>
+  </div>
+</main>
+
+</body>
+<script src="{% static 'js/magicgrid.js' %}"></script>
+</html>

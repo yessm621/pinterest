@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html th:replace="~{base/base :: base(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>| Pinterest</title>
+</head>
+<style>
+
+    .container {
+        padding: 0;
+        margin: 0 auto;
+    }
+
+    .container div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+    }
+
+    .container img {
+        width: 7rem;
+        height: 7rem;
+        object-fit : cover;
+        border-radius: 1rem;
+
+    }
+</style>
+
+<body>
+
+<main>
+  {% if project_list %}
+    <div class="container">
+      {% for project in project_list %}
+      <a th:href="@{/boards/1}">
+      <!--<a th:href="@{/boards/{boardId}(boardId=${board.id})}">-->
+        <div style="display: block; text-align: center;">
+          <img src="{{ project.image.url }}" alt="">
+          <h5 class="mt-2">
+            {{ project.title | truncatechars:8}}
+          </h5>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+  <div class="text-center">
+    <h1>생성된 Board 가 없습니다.</h1>
+  </div>
+  {% endif %}
+
+  {% include 'snippets/pagination.html' with page_obj=page_obj %}
+
+  <div style="text-align:center;">
+    <a th:href="@{/boards/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
+      Board 만들기
+    </a>
+  </div>
+</main>
+
+</body>
+<script src="{% static 'js/magicgrid.js' %}"></script>
+</html>
