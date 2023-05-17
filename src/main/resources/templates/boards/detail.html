@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html th:replace="~{base/base :: base(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>보드 상세 | Pinterest</title>
+</head>
+<style>
+    .container {
+        padding: 0;
+        margin: 0 auto;
+    }
+
+    .container a {
+        width: 45%;
+        max-width: 250px;
+    }
+
+    .container div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+    }
+
+    .container img {
+        width: 100%;
+        border-radius: 1rem;
+    }
+</style>
+<body>
+
+<main>
+  <div style="text-align: center; max-width: 500px; margin: 4rem auto 1.5rem auto;">
+
+    <img src="{{ target_project.image.url}}" alt=""
+         style="height: 12rem; width: 12rem; border-radius: 1rem; margin-bottom: 2rem; object-fit: cover;">
+    <h2>
+      {{ target_project.title }}
+    </h2>
+    <h5>
+      {{ target_project.description }}
+    </h5>
+  </div>
+
+  <div class="text-center mb-5">
+    {% if user.is_authenticated %}
+    {% if not subscription %}
+    <a href="{% url 'subscribeapp:subscribe' %}?project_pk={{ target_project.pk }}"
+       class="btn btn-primary rounded-pill px-4">
+      Subscribe
+    </a>
+    {% else %}
+    <a href="{% url 'subscribeapp:subscribe' %}?project_pk={{ target_project.pk }}"
+       class="btn btn-dark rounded-pill px-4">
+      Unsubscribe
+    </a>
+    {% endif %}
+    {% endif %}
+  </div>
+
+
+  <!--magic grid-->
+  <div>
+    {% if article_list %}
+    <div class="container">
+      {% for article in article_list %}
+      <a href="{% url 'articleapp:detail' pk=article.pk %}">
+        <div>
+          <img src="{{ article.image.url }}" alt="">
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+      <h1>No Article YET!</h1>
+    </div>
+    {% endif %}
+    {% include 'snippets/pagination.html' with page_obj=page_obj %}
+  </div>
+</main>
+<script src="{% static 'js/magicgrid.js' %}"></script>
+</body>
+</html>
