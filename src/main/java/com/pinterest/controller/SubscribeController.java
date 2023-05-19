@@ -10,6 +10,6 @@ public class SubscribeController {
 
     @GetMapping
     public String subscribe() {
-        return "subscribe/index";
+        return "subscribes/index";
     }
 }
