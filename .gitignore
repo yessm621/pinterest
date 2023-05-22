@@ -203,4 +203,7 @@ gradle-app.setting
 
 *.yml
 
+## Querydsl
+/src/main/generated
+
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,gradle,windows,macos
