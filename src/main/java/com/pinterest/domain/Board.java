@@ -34,13 +34,14 @@ public class Board extends BaseEntity {
     protected Board() {
     }
 
-    private Board(Member member, String title) {
+    private Board(Member member, String title, String image) {
         this.member = member;
         this.title = title;
+        this.image = image;
     }
 
-    public static Board of(Member member, String title) {
-        return new Board(member, title);
+    public static Board of(Member member, String title, String image) {
+        return new Board(member, title, image);
     }
 
     @Override
