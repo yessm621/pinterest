@@ -35,20 +35,23 @@ public class Article extends BaseEntity {
     private String content;
     @Column(nullable = false, length = 2000)
     private String image;
+    @Column(length = 100)
+    private String hashtag;
 
     protected Article() {
     }
 
-    private Article(Member member, Board board, String title, String content, String image) {
+    private Article(Member member, Board board, String title, String content, String image, String hashtag) {
         this.member = member;
         this.board = board;
         this.title = title;
         this.content = content;
         this.image = image;
+        this.hashtag = hashtag;
     }
 
-    public static Article of(Member member, Board board, String title, String content, String image) {
-        return new Article(member, board, title, content, image);
+    public static Article of(Member member, Board board, String title, String content, String image, String hashtag) {
+        return new Article(member, board, title, content, image, hashtag);
     }
 
     @Override
