@@ -2,8 +2,11 @@ package com.pinterest.repository;
 
 import com.pinterest.domain.Board;
 import com.pinterest.domain.QBoard;
+import com.pinterest.dto.BoardDto;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.StringExpression;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -13,6 +16,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPredicateExecutor<Board>,
         QuerydslBinderCustomizer<QBoard> {
+
+    Page<Board> findByTitleContaining(String searchKeyword, Pageable pageable);
 
     @Override
     default void customize(QuerydslBindings bindings, QBoard root) {

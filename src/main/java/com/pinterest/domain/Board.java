@@ -1,6 +1,7 @@
 package com.pinterest.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -25,22 +26,25 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Article> articles = new ArrayList<>();
 
+    @Setter
     @Column(nullable = false, length = 255)
     private String title;
 
+    @Setter
     @Column(nullable = false, length = 2000)
     private String image;
 
     protected Board() {
     }
 
-    private Board(Member member, String title) {
+    private Board(Member member, String title, String image) {
         this.member = member;
         this.title = title;
+        this.image = image;
     }
 
-    public static Board of(Member member, String title) {
-        return new Board(member, title);
+    public static Board of(Member member, String title, String image) {
+        return new Board(member, title, image);
     }
 
     @Override
