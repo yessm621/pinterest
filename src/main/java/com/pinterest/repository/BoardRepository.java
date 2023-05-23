@@ -17,7 +17,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPredicateExecutor<Board>,
         QuerydslBinderCustomizer<QBoard> {
 
-    Page<BoardDto> findByTitleContaining(String searchKeyword, Pageable pageable);
+    Page<Board> findByTitleContaining(String searchKeyword, Pageable pageable);
 
     @Override
     default void customize(QuerydslBindings bindings, QBoard root) {
