@@ -1,6 +1,7 @@
 package com.pinterest.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -29,12 +30,19 @@ public class Article extends BaseEntity {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @Setter
     @Column(nullable = false, length = 255)
     private String title;
+
+    @Setter
     @Column(nullable = false, length = 2000)
     private String content;
+
+    @Setter
     @Column(nullable = false, length = 2000)
     private String image;
+
+    @Setter
     @Column(length = 100)
     private String hashtag;
 
