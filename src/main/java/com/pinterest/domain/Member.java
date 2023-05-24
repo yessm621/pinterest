@@ -1,6 +1,7 @@
 package com.pinterest.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -20,10 +21,16 @@ public class Member extends BaseEntity {
     private String email;
     @Column(nullable = false, length = 255)
     private String password;
+
+    @Setter
     @Column(nullable = false, length = 100)
     private String nickname;
+
+    @Setter
     @Column(nullable = false, length = 2000)
     private String description;
+
+    @Setter
     @Column(nullable = false, length = 2000)
     private String image;
 
