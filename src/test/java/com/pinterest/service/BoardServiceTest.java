@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("비즈니면스 로직 - 보드")
+@DisplayName("비즈니스 로직 - 보드")
 class BoardServiceTest {
 
     @InjectMocks
