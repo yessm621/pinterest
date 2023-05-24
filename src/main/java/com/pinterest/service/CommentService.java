@@ -31,6 +31,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void saveComment(CommentDto dto) {
         try {
             Article article = articleRepository.getReferenceById(dto.getArticleId());
@@ -40,6 +41,7 @@ public class CommentService {
         }
     }
 
+    @Transactional
     public void updateComment(CommentDto dto) {
         try {
             Comment comment = commentRepository.getReferenceById(dto.getId());
@@ -51,6 +53,7 @@ public class CommentService {
         }
     }
 
+    @Transactional
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
