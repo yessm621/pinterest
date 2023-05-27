@@ -29,40 +29,58 @@
 <body>
 
 <main>
-  <div style="text-align: center; max-width: 500px; margin: 4rem auto;">
+  <div style="text-align: center; justify-content: center; max-width: 500px; margin: 4rem auto;">
     <p>
       마지막 로그인 시간
+      <br>
+      <th:block th:datetime="${profile.modifiedAt}"
+                th:text="${#temporals.format(profile.modifiedAt, 'yyyy-MM-dd HH:mm:ss')}">
+        마지막 로그인 시간
+      </th:block>
     </p>
-    <!--TODO:: if 프로필이 있을 경우-->
-    <img src="{{ target_user.profile.image.url }}" alt=""
-         style="height: 12rem; width: 12rem; border-radius:20rem; margin-bottom:2rem; object-fit: cover;">
+    <!--if 프로필이 있을 경우-->
+    <th:block th:if="${profile.image != null and profile.image != ''}">
+      <img th:src="${profile.image}" alt=""
+           style="height: 12rem; width: 12rem; border-radius:20rem; margin-bottom:2rem; object-fit: cover;">
+    </th:block>
+    <th:block th:if="${profile.image == null or profile.image == ''}">
+      <div
+          style="margin: 0 auto; height: 12rem; width: 12rem; border-radius:20rem; margin-bottom:2rem; font-size: 4rem; color:#ffffff; background-color: #4a5568; padding: 3rem 0;"
+          th:text="${#strings.substring(profile.email, 0, 1)}">
+        프로필 이니셜
+      </div>
+    </th:block>
     <h2>
-      프로필 이름
+      <th:block th:text="${profile.nickname}">프로필 이름</th:block>
       <!--TODO:: if 로그인한 회원과 프로필 조회한 회원이 같을 경우에 `수정`, `삭제` 할 수 있도록 함-->
-      <a class="material-icons"
-         style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
-         th:href="@{/profile/update/1}"> <!--TODO:: 프로필 uri update 로 변경해야 함.-->
-        <!--th:href="@{/profile/update/{profileId}(profileId=${profile.id})}">-->
-        <!--href="{% url 'profileapp:update' pk=target_user.profile.pk %}">-->
-        edit</a>
+      <th:block th:if="${profile.image != null and profile.image != ''}">
+        <a class="material-icons"
+           style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
+           th:href="@{/members/update/{memberId}(memberId=${profile.id})}">
+          edit</a>
+      </th:block>
       <a class="material-icons"
          style="box-shadow: 0 0 4px red; border-radius:10rem; padding: .4rem;"
-         th:href="@{/members/delete/1}"> <!--TODO:: 프로필 uri delete 로 변경해야 함.-->
-        <!--href="{% url 'accountapp:delete' pk=user.pk %}">-->
+         th:href="@{/members/delete/{memberId}(memberId=${profile.id})}">
         cancel
       </a>
     </h2>
-    <h5 style="margin-bottom:4rem;">
-      프로필 소개입니다.
-    </h5>
-    <!--TODO:: else 프로필이 없을 경우-->
-    <!--TODO:: if 로그인한 회원과 프로필 조회한 회원이 같을 경우에 `프로필을 생성` 할 수 있도록 함-->
-    <a th:href="@{/profile/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
-      <!--<a href="{% url 'profileapp:create'%}">-->
-      프로필 만들기
-    </a>
-    <!--TODO:: else 로그인한 회원과 프로필 조회한 회원이 같지 않으면 `닉네임 미설정`으로 표시-->
-    <h2>닉네임 미설정</h2>
+    <th:block th:if="${profile.image != null and profile.image != ''}">
+      <h5 style="margin-bottom:4rem;">
+        <th:block th:text="${profile.description}">프로필 설명</th:block>
+      </h5>
+    </th:block>
+
+
+    <!--else 프로필이 없을 경우-->
+    <th:block th:if="${profile.image == null or profile.image == ''}">
+      <!--TODO:: if 로그인한 회원과 프로필 조회한 회원이 같을 경우에 `프로필을 생성` 할 수 있도록 함-->
+      <a th:href="@{/members/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
+        프로필 만들기
+      </a>
+      <!--TODO:: else 로그인한 회원과 프로필 조회한 회원이 같지 않으면 `닉네임 미설정`으로 표시-->
+      <h2>닉네임 미설정</h2>
+    </th:block>
   </div>
 
 
