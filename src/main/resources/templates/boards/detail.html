@@ -3,42 +3,15 @@
 <head>
   <title>보드 상세 | Pinterest</title>
 </head>
-<style>
-    .container {
-        padding: 0;
-        margin: 0 auto;
-    }
-
-    .container a {
-        width: 45%;
-        max-width: 250px;
-    }
-
-    .container div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 1rem;
-    }
-
-    .container img {
-        width: 100%;
-        border-radius: 1rem;
-    }
-</style>
 <body>
 
 <main>
   <div style="text-align: center; max-width: 500px; margin: 4rem auto 1.5rem auto;">
-
-    <img src="{{ target_project.image.url}}" alt=""
+    <img th:src="${board.image}" alt=""
          style="height: 12rem; width: 12rem; border-radius: 1rem; margin-bottom: 2rem; object-fit: cover;">
-    <h2>
-      {{ target_project.title }}
+    <h2 th:text="${board.title}">
+      보드 이름
     </h2>
-    <h5>
-      {{ target_project.description }}
-    </h5>
   </div>
 
   <div class="text-center mb-5">
@@ -59,25 +32,30 @@
 
 
   <!--magic grid-->
-  <div>
-    {% if article_list %}
-    <div class="container">
-      {% for article in article_list %}
-      <a href="{% url 'articleapp:detail' pk=article.pk %}">
-        <div>
-          <img src="{{ article.image.url }}" alt="">
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-    {% else %}
-    <div class="text-center">
-      <h1>No Article YET!</h1>
-    </div>
-    {% endif %}
+  <div class="article">
+    <th:block th:if="${!articles.isEmpty()}">
+      <div class="container">
+        <th:block th:each="article: ${articles}">
+          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+            <div style="display: block; text-align: center;">
+              <img th:src="${article.image}" alt="">
+              <h6 class="mt-2" th:text="${#strings.substring(article.title, 0, 8)}">
+                article 이름
+              </h6>
+            </div>
+          </a>
+        </th:block>
+      </div>
+    </th:block>
+    <th:block th:if="${articles.isEmpty()}">
+      <div class="text-center">
+        <h1>No Article YET!</h1>
+      </div>
+    </th:block>
     {% include 'snippets/pagination.html' with page_obj=page_obj %}
   </div>
+  <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>
-<script src="{% static 'js/magicgrid.js' %}"></script>
+
 </body>
 </html>

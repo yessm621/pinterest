@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.BoardDto;
+import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.BoardRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -74,7 +75,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.of(board));
 
         // When
-        BoardDto dto = sut.getBoard(boardId);
+        BoardWithArticleDto dto = sut.getBoard(boardId);
 
         // Then
         assertThat(dto).hasFieldOrPropertyWithValue("title", board.getTitle());

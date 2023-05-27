@@ -2,6 +2,7 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Board;
 import com.pinterest.dto.BoardDto;
+import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,9 @@ public class BoardService {
                 .map(BoardDto::from);
     }
 
-    public BoardDto getBoard(Long boardId) {
+    public BoardWithArticleDto getBoard(Long boardId) {
         return boardRepository.findById(boardId)
-                .map(BoardDto::from)
+                .map(BoardWithArticleDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
     }
 
