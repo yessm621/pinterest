@@ -41,3 +41,46 @@ a:hover {
 .pragmatic_header_navbar {
     margin: 1rem 0;
 }
+
+/* board */
+.board .container {
+    padding: 0;
+    margin: 0 auto;
+}
+
+.board .container div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+}
+
+.board .container img {
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+/* article */
+.article .container {
+    padding: 0;
+    margin: 0 auto;
+}
+
+.article .container a {
+    width: 45%;
+    max-width: 250px;
+}
+
+.article .container div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+}
+
+.article .container img {
+    width: 100%;
+    border-radius: 1rem;
+}
