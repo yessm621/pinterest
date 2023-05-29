@@ -1,4 +1,4 @@
-package com.pinterest.dto;
+package com.pinterest.domain;
 
 public enum SearchType {
     TITLE, HASHTAG

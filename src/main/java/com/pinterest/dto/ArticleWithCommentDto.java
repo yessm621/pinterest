@@ -19,12 +19,13 @@ public class ArticleWithCommentDto {
     private ArrayList<CommentDto> commentDtoList;
     private String title;
     private String content;
+    private String image;
     private String hashtag;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static ArticleWithCommentDto of(Long id, MemberDto memberDto, ArrayList<CommentDto> commentDtoList, String title, String content, String hashtag, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new ArticleWithCommentDto(id, memberDto, commentDtoList, title, content, hashtag, createdAt, modifiedAt);
+    public static ArticleWithCommentDto of(Long id, MemberDto memberDto, ArrayList<CommentDto> commentDtoList, String title, String content, String image, String hashtag, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new ArticleWithCommentDto(id, memberDto, commentDtoList, title, content, image, hashtag, createdAt, modifiedAt);
     }
 
     // entity -> dto
@@ -37,6 +38,7 @@ public class ArticleWithCommentDto {
                         .collect(Collectors.toCollection(ArrayList::new)),
                 entity.getTitle(),
                 entity.getContent(),
+                entity.getImage(),
                 entity.getHashtag(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
