@@ -3,47 +3,28 @@
 <head>
   <title>Articles | Pinterest</title>
 </head>
-<style>
-    .container {
-        padding: 0;
-        margin: 0 auto;
-    }
-
-    .container a {
-        width: 45%;
-        max-width: 250px;
-    }
-
-    .container div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 1rem;
-    }
-
-    .container img {
-        width: 100%;
-        border-radius: 1rem;
-    }
-</style>
 <body>
 
-<main>
-  {% if article_list %}
-  <div class="container">
-    {% for article in article_list %}
-    <a href="{% url 'articleapp:detail' pk=article.pk %}">
-      <div>
-        <img src="{{ article.image.url }}" alt="">
-      </div>
-    </a>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="text-center">
-    <h1>생성된 Article 이 없습니다.</h1>
-  </div>
-  {% endif %}
+<main class="article">
+  <th:block th:if="${!articles.isEmpty()}">
+    <div class="container">
+      <th:block th:each="article: ${articles}">
+        <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+          <div>
+            <img th:src="${article.image}" alt="">
+          </div>
+          <h6 class="mt-2" th:text="${#strings.substring(article.title, 0, 8)}">
+            article 이름
+          </h6>
+        </a>
+      </th:block>
+    </div>
+  </th:block>
+  <th:block th:if="${articles.isEmpty()}">
+    <div class="text-center">
+      <h1>생성된 Article 이 없습니다.</h1>
+    </div>
+  </th:block>
   {% include 'snippets/pagination.html' with page_obj=page_obj %}
 
   <div style="text-align:center;">

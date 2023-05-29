@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
+import com.pinterest.domain.SearchType;
 import com.pinterest.dto.*;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;

@@ -7,8 +7,8 @@
 
 <main>
   <div style="text-align: center; max-width: 700px; margin: 4rem auto;">
-    <h1>
-      {{ target_article.title }}
+    <h1 th:text="${article.title}">
+      article 제목
     </h1>
     <div style="height:2rem;">
       <a href="{% url 'likeapp:article_like' pk=target_article.pk %}">
@@ -17,67 +17,65 @@
         </i>
       </a>
       <span style="verticla-align: middle; font-size:1.2rem;">
-                {{target_article.like}}
+                좋아요 갯수
       </span>
     </div>
-    <h6>
-      {{ target_article.writer.profile.nickname }}
+    <h6 th:text="${article.getMemberDto().nickname}">
+      작성자
     </h6>
     <hr>
 
-    <img style="width: 100%; border-radius: 1rem; margin: 2rem 0;"
-         src="{{ target_article.image.url }}" alt="">
-
-    <div style="text-align:left; ">
-      {{ target_article.content | safe }}
+    <img style="width: 100%; border-radius: 1rem; margin: 2rem 0;" th:src="${article.image}" alt="">
+    <div style="text-align:left;" th:text="${article.content}">
+      article 본문
     </div>
 
     {% if target_article.writer == user %}
-    <a th:href="@{articles/update/1}" class="btn btn-primary rounded-pill col-3">
-    <!--<a th:href="@{articles/update/{articleId}(articleId=${article.id})}" class="btn btn-primary rounded-pill col-3">-->
-    <!--<a href="{% url 'articleapp:update' pk=target_article.pk %}" class="btn btn-primary rounded-pill col-3">-->
-      Update
-    </a>
+    <div class="py-4">
+      <a th:href="@{articles/update/1}" class="btn btn-primary rounded-pill col-3">
+        <!--<a th:href="@{articles/update/{articleId}(articleId=${article.id})}" class="btn btn-primary rounded-pill col-3">-->
+        <!--<a href="{% url 'articleapp:update' pk=target_article.pk %}" class="btn btn-primary rounded-pill col-3">-->
+        수정
+      </a>
 
-    <a th:href="@{articles/delete/1}" class="btn btn-danger rounded-pill col-3">
-    <!--<a href="{% url 'articleapp:delete' pk=target_article.pk %}" class="btn btn-danger rounded-pill col-3">-->
-      Delete
-    </a>
+      <a th:href="@{articles/delete/1}" class="btn btn-danger rounded-pill col-3">
+        <!--<a href="{% url 'articleapp:delete' pk=target_article.pk %}" class="btn btn-danger rounded-pill col-3">-->
+        삭제
+      </a>
+    </div>
+
     {% endif %}
     <hr>
 
-    <!--댓글이 있으면 start-->
-    {% for comment in target_article.comment.all %}
-    <div style="text-align:left; padding:4%; margin:1rem 0; border-radius:1rem; border: 1px solid #bbb;">
-      <div>
-        <strong>
-          {{ comment.writer.profile.nickname }}
-        </strong>
-        &nbsp&nbsp&nbsp
-        {{ comment.created_at }}
-      </div>
-      {{ comment.content }}
-      <div style="margin:1rem 0;">
 
+    <th:block th:if="${!comments.isEmpty()}">
+      <div th:each="comment: ${comments}" style="text-align:left; padding:4%; margin:1rem 0; border-radius:1rem; border: 1px solid #bbb;">
+        <div>
+          <strong th:text="${comment.getMemberDto().nickname}">
+            댓글 작성자
+          </strong>
+          &nbsp&nbsp&nbsp
+          <span th:datetime="${comment.createdAt}"
+                th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">댓글 작성시간</span>
+        </div>
+        <span th:text="${comment.content}">댓글 내용</span>
+        <div style="margin:1rem 0;"></div>
+        {% if comment.writer == user %}
+        <div style="text-align:right">
+          <a th:href="@{/comment/delete/1}" class="btn btn-danger rounded-pill px-4">
+            삭제
+          </a>
+        </div>
+        {% endif %}
       </div>
-      {% if comment.writer == user %}
-      <div style="text-align:right">
-        <a th:href="@{/comment/delete/1}"\\class="btn btn-danger rounded-pill">
-        <!--<a href="{% url 'commentapp:delete' pk=comment.pk %}"\\class="btn btn-danger rounded-pill">-->
-          Delete
-        </a>
-      </div>
-      {% endif %}
-    </div>
-    {% endfor %}
-    <!--댓글이 있으면 end-->
+    </th:block>
 
 
     <!--댓글 생성-->
     <div style="text-align:center; max-width: 400px; margin:4rem auto">
       <div class="form-signin w-100 m-auto">
-        <form method="post" enctype="multipart/form-data">
-          <h1 class="h3 mb-3 fw-normal">Comment Create</h1>
+        <form th:action="@{/comments/create}" method="post">
+          <h1 class="h3 mb-3 fw-normal">댓글 작성</h1>
           <div class="form-floating">
             <textarea class="form-control" placeholder="내용" id="content" style="height: 100px"></textarea>
             <label for="content">내용</label>

@@ -52,7 +52,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @DisplayName("[View] GET 보드 리스트 페이지 - 정상 호출")
+    @DisplayName("[View] GET 보드 리스트 페이지 - 키워드를 통해 정상 호출")
     void givenSearchKeyword_whenRequestingBoardsView_thenReturnsBoardsView() throws Exception {
         // Given
         String searchKeyword = "title";
