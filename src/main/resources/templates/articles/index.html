@@ -6,6 +6,28 @@
 <body>
 
 <main class="article">
+  <div th:object="${articles}" class="row aos-init aos-animate py-2" data-aos="fade-up">
+    <div class="col-lg-12 d-flex justify-content-center">
+      <ul id="sort-tab">
+        <a th:href="@{/articles(
+            page=${articles.number},
+            sort='title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} != 'DESC' ? ',desc': '') : ''))}">
+          <li id="active-title" th:text="'제목'">제목</li>
+        </a>
+        <a th:href="@{/articles(
+            page=${articles.number},
+            sort='hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} != 'DESC' ? ',desc': '') : ''))}">
+          <li id="active-hashtag" th:text="'해시태그'">해시태그</li>
+        </a>
+        <a th:href="@{/articles(
+            page=${articles.number},
+            sort='createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} != 'DESC' ? ',desc': '') : ''))}">
+          <li id="active-created" th:text="'작성일'">작성일</li>
+        </a>
+      </ul>
+    </div>
+  </div>
+
   <th:block th:if="${!articles.isEmpty()}">
     <div class="container">
       <th:block th:each="article: ${articles}">
@@ -19,13 +41,43 @@
         </a>
       </th:block>
     </div>
+    <div th:object="${articles}" style="margin: 1rem 0;" class="row aos-init aos-animate py-2" data-aos="fade-up">
+      <div class="col-lg-12 d-flex justify-content-center">
+        <ul id="pagination">
+          <a th:href="@{/articles(page=${articles.number - 1},
+               sort=(*{sort.getOrderFor('title')} != null ?
+               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
+               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
+               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
+            <li>&laquo;</li>
+          </a>
+          <a th:each="page: ${pagination}"
+             th:href="@{/articles(
+               page=${page},
+               sort=(*{sort.getOrderFor('title')} != null ?
+               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
+               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
+               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
+            <li th:text="${page + 1}" th:class="(${page} == ${articles.number} ? 'filter-active' : '')">
+              페이지
+            </li>
+          </a>
+          <a th:href="@{/articles(page=(${articles.number == articles.totalPages - 1} ? ${articles.number} : ${articles.number + 1}),
+               sort=(*{sort.getOrderFor('title')} != null ?
+               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
+               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
+               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
+            <li>&raquo;</li>
+          </a>
+        </ul>
+      </div>
+    </div>
   </th:block>
   <th:block th:if="${articles.isEmpty()}">
     <div class="text-center">
       <h1>생성된 Article 이 없습니다.</h1>
     </div>
   </th:block>
-  {% include 'snippets/pagination.html' with page_obj=page_obj %}
 
   <div style="text-align:center;">
     <a th:href="@{/articles/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
