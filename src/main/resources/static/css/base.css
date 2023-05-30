@@ -8,16 +8,17 @@
 }
 
 
-.pragmatic_footer{
-    text-align:center; margin-top:2rem;
+.pragmatic_footer {
+    text-align: center;
+    margin-top: 2rem;
 }
 
 .pragmatic_header {
-    text-align:center;
-    margin:2rem 0;
+    text-align: center;
+    margin: 2rem 0;
 }
 
-@media screen and (max-width:500px) {
+@media screen and (max-width: 500px) {
     html {
         font-size: 13px;
 
@@ -56,8 +57,8 @@ a:hover {
 }
 
 .board .container img {
-    width: 7rem;
-    height: 7rem;
+    width: 14rem;
+    height: 14rem;
     object-fit: cover;
     border-radius: 1rem;
 }
@@ -83,4 +84,68 @@ a:hover {
 .article .container img {
     width: 100%;
     border-radius: 1rem;
+}
+
+/* sort tab */
+#sort-tab {
+    padding: 0;
+    margin: 0 auto 35px auto;
+    list-style: none;
+    text-align: center;
+    border-radius: 50px;
+    padding: 2px 15px;
+    background-color: #212529;
+}
+
+#sort-tab li {
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+}
+
+#sort-tab a {
+    color: #fff;
+    padding: 10px 0;
+}
+
+#sort-tab li:hover,
+#sort-tab li.filter-active {
+    color: #149ddd;
+}
+
+/* pagination */
+#pagination {
+    padding: 0;
+    margin: 0 auto 35px auto;
+    list-style: none;
+    text-align: center;
+    border-radius: 50px;
+    padding: 2px 15px;Ø
+    background-color: #212529;
+}
+
+#pagination li {
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+}
+
+#pagination a {
+    color: #fff;
+    padding: 10px 0;
+}
+
+#pagination li:hover,
+#pagination li.filter-active {
+    color: #149ddd;
 }
