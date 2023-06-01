@@ -6,6 +6,27 @@
 <body>
 
 <main class="article">
+  <div class="flex align-content-center justify-content-center h-100">
+    <form th:action="@{/articles}" method="get" style="width: 60%; margin: auto;">
+      <div class="input-group mb-3">
+        <div>
+          <select class="form-select" id="search-type" name="searchType">
+            <th:block th:each="searchType: ${searchTypes}">
+              <option th:value="${searchType.name()}" th:text="${searchType.getDescription()}"
+                      th:selected="${param.searchType != null && (param.searchType.toString == searchType.name())}">
+                옵션
+              </option>
+            </th:block>
+          </select>
+        </div>
+        <input type="text" class="form-control" name="searchKeyword" th:value="${param.searchKeyword}">
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-secondary">검색</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
   <div th:object="${articles}" class="row aos-init aos-animate py-2" data-aos="fade-up">
     <div class="col-lg-12 d-flex justify-content-center">
       <ul id="sort-tab">
@@ -35,7 +56,7 @@
           <div>
             <img th:src="${article.image}" alt="">
           </div>
-          <h6 class="mt-2" th:text="${#strings.substring(article.title, 0, 8)}">
+          <h6 class="mt-2" th:text="${article.title}">
             article 이름
           </h6>
         </a>
