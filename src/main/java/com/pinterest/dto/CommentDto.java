@@ -2,6 +2,7 @@ package com.pinterest.dto;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Comment;
+import com.pinterest.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,10 @@ public class CommentDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    public static CommentDto of(Long articleId, MemberDto memberDto, String content) {
+        return new CommentDto(null, articleId, memberDto, content, null, null);
+    }
+
     public static CommentDto of(Long id, Long articleId, MemberDto memberDto, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         return new CommentDto(id, articleId, memberDto, content, createdAt, modifiedAt);
     }
@@ -37,10 +42,10 @@ public class CommentDto {
     }
 
     // dto -> entity
-    public Comment toEntity(Article entity) {
+    public Comment toEntity(Article article, Member member) {
         return Comment.of(
-                memberDto.toEntity(),
-                entity,
+                member,
+                article,
                 content
         );
     }
