@@ -2,9 +2,11 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Comment;
+import com.pinterest.domain.Member;
 import com.pinterest.dto.CommentDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.CommentRepository;
+import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
+    private final MemberRepository memberRepository;
+
     public List<CommentDto> searchComment(Long articleId) {
         return commentRepository.findByArticle_Id(articleId)
                 .stream()
@@ -35,7 +39,8 @@ public class CommentService {
     public void saveComment(CommentDto dto) {
         try {
             Article article = articleRepository.getReferenceById(dto.getArticleId());
-            commentRepository.save(dto.toEntity(article));
+            Member member = memberRepository.getReferenceById(dto.getMemberDto().getId());
+            commentRepository.save(dto.toEntity(article, member));
         } catch (EntityNotFoundException e) {
             log.warn("댓글 저장 실패. 댓글의 게시글을 찾을 수 없습니다.");
         }

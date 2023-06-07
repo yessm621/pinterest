@@ -8,6 +8,7 @@ import com.pinterest.dto.CommentDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.CommentRepository;
+import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ class CommentServiceTest {
 
     @Mock
     ArticleRepository articleRepository;
+
+    @Mock
+    MemberRepository memberRepository;
 
     @Mock
     CommentRepository commentRepository;
@@ -60,6 +64,7 @@ class CommentServiceTest {
         // Given
         CommentDto dto = createCommentDto("comment");
         given(articleRepository.getReferenceById(dto.getArticleId())).willReturn(createArticle());
+        given(memberRepository.getReferenceById(dto.getMemberDto().getId())).willReturn(createMember());
         given(commentRepository.save(any(Comment.class))).willReturn(null);
 
         // When
@@ -67,6 +72,7 @@ class CommentServiceTest {
 
         // Then
         then(articleRepository).should().getReferenceById(dto.getArticleId());
+        then(memberRepository).should().getReferenceById(dto.getMemberDto().getId());
         then(commentRepository).should().save(any(Comment.class));
     }
 
