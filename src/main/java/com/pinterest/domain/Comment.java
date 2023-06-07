@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@ToString
+@ToString(exclude = {"member", "article"})
 public class Comment extends BaseEntity {
 
     @Id
@@ -17,11 +17,11 @@ public class Comment extends BaseEntity {
     @Column(name = "comment_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;
 

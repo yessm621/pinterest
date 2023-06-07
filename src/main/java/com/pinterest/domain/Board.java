@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@ToString
+@ToString(exclude = "member")
 public class Board extends BaseEntity {
 
     @Id
@@ -19,7 +19,7 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
