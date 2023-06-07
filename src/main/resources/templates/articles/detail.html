@@ -49,37 +49,14 @@
     {% endif %}
     <hr>
 
-
-    <th:block th:if="${!comments.isEmpty()}">
-      <div th:each="comment: ${comments}" style="text-align:left; padding:4%; margin:1rem 0; border-radius:1rem; border: 1px solid #bbb;">
-        <div>
-          <strong th:text="${comment.getMemberDto().nickname}">
-            댓글 작성자
-          </strong>
-          &nbsp&nbsp&nbsp
-          <span th:datetime="${comment.createdAt}"
-                th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">댓글 작성시간</span>
-        </div>
-        <span th:text="${comment.content}">댓글 내용</span>
-        <div style="margin:1rem 0;"></div>
-        {% if comment.writer == user %}
-        <div style="text-align:right">
-          <a th:href="@{/comment/delete/1}" class="btn btn-danger rounded-pill px-4">
-            삭제
-          </a>
-        </div>
-        {% endif %}
-      </div>
-    </th:block>
-
-
     <!--댓글 생성-->
     <div style="text-align:center; max-width: 400px; margin:4rem auto">
       <div class="form-signin w-100 m-auto">
-        <form th:action="@{/comments/create}" method="post">
+        <form th:action="@{/comments/new}" method="post">
+          <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
           <h1 class="h3 mb-3 fw-normal">댓글 작성</h1>
           <div class="form-floating">
-            <textarea class="form-control" placeholder="내용" id="content" style="height: 100px"></textarea>
+            <textarea class="form-control" placeholder="내용" id="content" name="content" style="height: 100px"></textarea>
             <label for="content">내용</label>
           </div>
           <div class="mb-3"></div>
@@ -87,6 +64,33 @@
         </form>
       </div>
     </div>
+
+    <th:block th:if="${!comments.isEmpty()}">
+      <div th:each="comment: ${comments}"
+           style="text-align:left; padding:4%; margin:1rem 0; border-radius:1rem; border: 1px solid #bbb;">
+        <form th:action="@{/comments/{commentId}/delete(commentId=${comment.id})}" method="post">
+          <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
+          <div>
+            <strong th:text="${comment.getMemberDto().nickname}">
+              댓글 작성자
+            </strong>
+            &nbsp&nbsp&nbsp
+            <span th:datetime="${comment.createdAt}"
+                  th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">댓글 작성시간</span>
+          </div>
+          <span th:text="${comment.content}">댓글 내용</span>
+          <div style="margin:1rem 0;"></div>
+          {% if comment.writer == user %}
+          <div style="text-align:right">
+            <button type="submit" class="btn btn-danger rounded-pill px-4">
+              삭제
+            </button>
+          </div>
+          {% endif %}
+        </form>
+      </div>
+    </th:block>
+
   </div>
 </main>
 
