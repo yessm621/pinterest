@@ -59,7 +59,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
-        commentRepository.deleteById(commentId);
+    public void deleteComment(Long commentId, String email) {
+        commentRepository.deleteByIdAndMember_Email(commentId, email);
     }
 }
