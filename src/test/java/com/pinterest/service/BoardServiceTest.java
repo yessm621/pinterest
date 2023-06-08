@@ -6,6 +6,7 @@ import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.BoardRepository;
+import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,9 @@ class BoardServiceTest {
 
     @Mock
     private BoardRepository boardRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("검색어 없이 보드를 검색하면, 보드 리스트를 반환한다.")
@@ -113,16 +117,19 @@ class BoardServiceTest {
     void givenModifiedBoardInfo_whenUpdatingBoard_thenUpdatesBoard() throws Exception {
         // Given
         Board board = createBoard();
-        BoardDto dto = createBoardDto("new title", "new image");
+        BoardDto dto = createBoardDto("title", "image");
         given(boardRepository.getReferenceById(dto.getId())).willReturn(board);
+        given(memberRepository.getReferenceById(dto.getMemberDto().getId()))
+                .willReturn(dto.getMemberDto().toEntity());
 
         // When
-        sut.updateBoard(dto);
+        sut.updateBoard(dto.getId(), dto);
 
         // Then
         assertThat(board).hasFieldOrPropertyWithValue("title", dto.getTitle());
         assertThat(board).hasFieldOrPropertyWithValue("image", dto.getImage());
         then(boardRepository).should().getReferenceById(dto.getId());
+        then(memberRepository).should().getReferenceById(dto.getMemberDto().getId());
     }
 
     @Test
@@ -133,7 +140,7 @@ class BoardServiceTest {
         given(boardRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateBoard(dto);
+        sut.updateBoard(dto.getId(), dto);
 
         // Then
         then(boardRepository).should().getReferenceById(dto.getId());

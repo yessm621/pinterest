@@ -4,11 +4,14 @@ import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
+import com.pinterest.util.FormDataEncoder;
+import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BoardController.class)
+@Import({TestSecurityConfig.class, FormDataEncoder.class})
 @DisplayName("View 컨트롤러 - 보드")
 class BoardControllerTest {
 
@@ -122,12 +126,9 @@ class BoardControllerTest {
 
         // When & Then
         mvc.perform(get("/boards/" + boardId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("boards/detail"))
-                .andExpect(model().attributeExists("board"))
-                .andExpect(model().attributeExists("articles"));
-        then(boardService).should().getBoard(boardId);
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        then(boardService).shouldHaveNoInteractions();
     }
 
     private BoardWithArticleDto createBoardWithArticleDto() {
