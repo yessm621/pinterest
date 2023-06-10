@@ -4,6 +4,7 @@ import com.pinterest.config.MemberPrincipal;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.request.BoardRequest;
+import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -40,15 +41,20 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public String boardDetail(@PathVariable Long boardId, Model model) {
-        BoardWithArticleDto board = boardService.getBoard(boardId);
+    public String boardDetail(@PathVariable Long boardId,
+                              @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                              Model model) {
+        BoardWithArticleDto board = boardService.getBoardWithArticles(boardId);
         model.addAttribute("board", board);
         model.addAttribute("articles", board.getArticleDtoList());
+        if (board.getMemberDto().getEmail().equals(memberPrincipal.getUsername())) {
+            model.addAttribute("writer", true);
+        }
         return "boards/detail";
     }
 
     @GetMapping("/form")
-    public String boardForm() {
+    public String boardForm(Model model) {
         return "boards/form";
     }
 
@@ -59,10 +65,13 @@ public class BoardController {
         return "redirect:/boards";
     }
 
-    /*
-    TODO: 보드 업데이트 폼을 작성해야 함.
     @GetMapping("/{boardId}/form")
-    */
+    public String boardUpdateForm(@PathVariable Long boardId,
+                                  Model model) {
+        BoardResponse board = BoardResponse.from(boardService.getBoard(boardId));
+        model.addAttribute("board", board);
+        return "boards/updateForm";
+    }
 
     @PostMapping("/{boardId}/form")
     public String boardUpdateForm(@PathVariable Long boardId,
@@ -70,5 +79,11 @@ public class BoardController {
                                   BoardRequest boardRequest) {
         boardService.updateBoard(boardId, boardRequest.toDto(memberPrincipal.toDto()));
         return "redirect:/boards/" + boardId;
+    }
+
+    @PostMapping("/{boardId}/delete")
+    public String boardDelete(@PathVariable Long boardId, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        boardService.deleteBoard(boardId, memberPrincipal.getUsername());
+        return "redirect:/boards";
     }
 }

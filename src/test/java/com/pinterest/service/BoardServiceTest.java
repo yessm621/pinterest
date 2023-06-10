@@ -79,7 +79,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.of(board));
 
         // When
-        BoardWithArticleDto dto = sut.getBoard(boardId);
+        BoardWithArticleDto dto = sut.getBoardWithArticles(boardId);
 
         // Then
         assertThat(dto).hasFieldOrPropertyWithValue("title", board.getTitle());
@@ -94,7 +94,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getBoard(boardId));
+        assertThrows(EntityNotFoundException.class, () -> sut.getBoardWithArticles(boardId));
         then(boardRepository).should().findById(boardId);
     }
 
@@ -103,12 +103,14 @@ class BoardServiceTest {
     void givenBoardInfo_whenSavingBoard_thenSavesBoard() throws Exception {
         // Given
         BoardDto dto = createBoardDto("title", "image");
+        given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(boardRepository.save(any(Board.class))).willReturn(createBoard());
 
         // When
         sut.saveBoard(dto);
 
         // Then
+        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
         then(boardRepository).should().save(any(Board.class));
     }
 
@@ -119,8 +121,8 @@ class BoardServiceTest {
         Board board = createBoard();
         BoardDto dto = createBoardDto("title", "image");
         given(boardRepository.getReferenceById(dto.getId())).willReturn(board);
-        given(memberRepository.getReferenceById(dto.getMemberDto().getId()))
-                .willReturn(dto.getMemberDto().toEntity());
+        given(memberRepository.findByEmail(dto.getMemberDto().getEmail()))
+                .willReturn(Optional.of(dto.getMemberDto().toEntity()));
 
         // When
         sut.updateBoard(dto.getId(), dto);
@@ -129,7 +131,7 @@ class BoardServiceTest {
         assertThat(board).hasFieldOrPropertyWithValue("title", dto.getTitle());
         assertThat(board).hasFieldOrPropertyWithValue("image", dto.getImage());
         then(boardRepository).should().getReferenceById(dto.getId());
-        then(memberRepository).should().getReferenceById(dto.getMemberDto().getId());
+        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
     }
 
     @Test
@@ -151,13 +153,14 @@ class BoardServiceTest {
     void givenBoardId_whenDeletingBoard_thenDeletesBoard() throws Exception {
         // Given
         Long boardId = 1L;
-        willDoNothing().given(boardRepository).deleteById(boardId);
+        String email = "test@gmail.com";
+        willDoNothing().given(boardRepository).deleteByIdAndMember_Email(boardId, email);
 
         // When
-        sut.deleteBoard(boardId);
+        sut.deleteBoard(boardId, email);
 
         // Then
-        then(boardRepository).should().deleteById(boardId);
+        then(boardRepository).should().deleteByIdAndMember_Email(boardId, email);
     }
 
     private Board createBoard() {

@@ -671,7 +671,7 @@ insert into comment (comment_id, member_id, article_id, content, created_at, mod
 
 
 -- subscribe
-insert into subscribe (subscribe_id, member_id, board_id, created_at, modified_at) values (1, 3, 24, '2022-11-29 01:06:37', '2022-07-22 00:29:17');
+/*insert into subscribe (subscribe_id, member_id, board_id, created_at, modified_at) values (1, 3, 24, '2022-11-29 01:06:37', '2022-07-22 00:29:17');
 insert into subscribe (subscribe_id, member_id, board_id, created_at, modified_at) values (2, 5, 37, '2023-05-04 18:05:41', '2022-12-19 01:30:48');
 insert into subscribe (subscribe_id, member_id, board_id, created_at, modified_at) values (3, 3, 13, '2022-06-05 17:10:52', '2023-03-08 07:41:57');
 insert into subscribe (subscribe_id, member_id, board_id, created_at, modified_at) values (4, 8, 12, '2022-11-18 17:02:30', '2022-05-31 19:52:25');
@@ -823,4 +823,4 @@ insert into article_like (like_id, member_id, article_id, created_at, modified_a
 insert into article_like (like_id, member_id, article_id, created_at, modified_at) values (97, 9, 29, '2022-05-24 17:35:50', '2023-02-20 13:04:32');
 insert into article_like (like_id, member_id, article_id, created_at, modified_at) values (98, 5, 92, '2022-07-23 09:06:43', '2022-12-24 20:19:09');
 insert into article_like (like_id, member_id, article_id, created_at, modified_at) values (99, 3, 56, '2022-09-25 05:17:33', '2023-04-15 09:25:36');
-insert into article_like (like_id, member_id, article_id, created_at, modified_at) values (100, 5, 9, '2022-11-29 19:07:58', '2023-02-04 01:16:01');
+insert into article_like (like_id, member_id, article_id, created_at, modified_at) values (100, 5, 9, '2022-11-29 19:07:58', '2023-02-04 01:16:01');*/

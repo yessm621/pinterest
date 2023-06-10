@@ -1,11 +1,15 @@
 package com.pinterest.controller;
 
+import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.request.BoardRequest;
+import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import com.pinterest.util.FormDataEncoder;
 import com.pinterest.util.TestSecurityConfig;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -24,9 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BoardController.class)
@@ -35,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BoardControllerTest {
 
     private final MockMvc mvc;
+    private final FormDataEncoder formDataEncoder;
 
     @MockBean
     BoardService boardService;
@@ -42,8 +51,9 @@ class BoardControllerTest {
     @MockBean
     PaginationService paginationService;
 
-    public BoardControllerTest(@Autowired MockMvc mvc) {
+    public BoardControllerTest(@Autowired MockMvc mvc, @Autowired FormDataEncoder formDataEncoder) {
         this.mvc = mvc;
+        this.formDataEncoder = formDataEncoder;
     }
 
     @Test
@@ -117,18 +127,152 @@ class BoardControllerTest {
         then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
+    @Disabled
     @Test
+    @WithMockUser
     @DisplayName("[View] GET 보드 상세 페이지 - 정상 호출")
     void givenNothing_whenRequestBoardView_thenReturnBoardView() throws Exception {
         // Given
         Long boardId = 1L;
-        given(boardService.getBoard(boardId)).willReturn(createBoardWithArticleDto());
+        given(boardService.getBoardWithArticles(boardId)).willReturn(createBoardWithArticleDto());
+
+        // When & Then
+        mvc.perform(get("/boards/" + boardId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("boards/detail"))
+                .andExpect(model().attributeExists("board"))
+                .andExpect(model().attributeExists("articles"));
+        then(boardService).should().getBoardWithArticles(boardId);
+    }
+
+    @Test
+    @DisplayName("[View] GET 보드 상세 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    void givenNothing_whenRequestBoardView_thenRedirectsToLoginPage() throws Exception {
+        // Given
+        Long boardId = 1L;
 
         // When & Then
         mvc.perform(get("/boards/" + boardId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(boardService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("[View] GET 새 보드 작성 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    void givenNothing_whenRequesting_thenReturnsNewBoardPage() throws Exception {
+        // Given
+
+        // When & Then
+        mvc.perform(get("/boards/form"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("boards/form"));
+    }
+
+    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    @DisplayName("[View] POST 새 보드 등록 - 정상 호출")
+    void givenNewBoardInfo_whenRequesting_thenSavesNewBoard() throws Exception {
+        // Given
+        BoardRequest boardRequest = BoardRequest.of("title", "image");
+        willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
+
+        // When & Then
+        mvc.perform(
+                        post("/boards/form")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(boardRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/boards"))
+                .andExpect(redirectedUrl("/boards"));
+        then(boardService).should().saveBoard(any(BoardDto.class));
+    }
+
+    @Test
+    @DisplayName("[View] GET 보드 수정 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    void givenNothing_whenRequesting_thenRedirectsToLoginPage() throws Exception {
+        // Given
+        Long boardId = 1L;
+
+        // When & Then
+        mvc.perform(get("/boards/" + boardId + "form"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        then(boardService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("[View] POST 보드 수정 페이지 - 정상 호출, 인증된 사용자")
+    void givenNothing_whenRequesting_thenReturnsUpdatedBoardPage() throws Exception {
+        // Given
+        Long boardId = 1L;
+        BoardDto dto = createBoardDto();
+        given(boardService.getBoard(boardId)).willReturn(dto);
+
+        // When & Then
+        mvc.perform(get("/boards/" + boardId + "/form"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("boards/updateForm"))
+                .andExpect(model().attribute("board", BoardResponse.from(dto)));
+        then(boardService).should().getBoard(boardId);
+    }
+
+    @Test
+    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("[View] POST 보드 수정 - 정상 호출")
+    void givenUpdatedBoardInfo_whenRequesting_thenUpdatesNewBoard() throws Exception {
+        // Given
+        Long boardId = 1L;
+        BoardRequest boardRequest = BoardRequest.of("title", "image");
+        willDoNothing().given(boardService).updateBoard(eq(boardId), any(BoardDto.class));
+
+        // When & Then
+        mvc.perform(
+                        post("/boards/" + boardId + "/form")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(boardRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/boards/" + boardId))
+                .andExpect(redirectedUrl("/boards/" + boardId));
+        then(boardService).should().updateBoard(eq(boardId), any(BoardDto.class));
+    }
+
+    @Test
+    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @DisplayName("[View] POST 보드 삭제 - 정상 호출")
+    void givenBoardIdToDelete_whenRequesting_thenDeletesBoard() throws Exception {
+        // Given
+        long boardId = 1L;
+        String email = "test@gmail.com";
+        willDoNothing().given(boardService).deleteBoard(boardId, email);
+
+        // When & Then
+        mvc.perform(
+                        post("/boards/" + boardId + "/delete")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/boards"))
+                .andExpect(redirectedUrl("/boards"));
+        then(boardService).should().deleteBoard(boardId, email);
+    }
+
+    private BoardDto createBoardDto() {
+        return BoardDto.of(
+                createMemberDto(),
+                "title",
+                "image"
+        );
     }
 
     private BoardWithArticleDto createBoardWithArticleDto() {

@@ -12,6 +12,18 @@
     <h2 th:text="${board.title}">
       보드 이름
     </h2>
+    <th:block th:if="${writer}">
+      <form th:action="@{/boards/{boardId}/delete(boardId=${board.id})}" th:method="post">
+        <a class="material-icons"
+           style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
+           th:href="@{/boards/{boardId}/form(boardId=${board.id})}">
+          edit</a>
+        <button type="submit" class="material-icons"
+                style="box-shadow: 0 0 4px red; border-radius:10rem; padding: .4rem;">
+          cancel
+        </button>
+      </form>
+    </th:block>
   </div>
 
   <div class="text-center mb-5">
@@ -52,7 +64,6 @@
         <h1>No Article YET!</h1>
       </div>
     </th:block>
-    {% include 'snippets/pagination.html' with page_obj=page_obj %}
   </div>
   <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>

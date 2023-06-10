@@ -34,7 +34,13 @@ public class BoardService {
                 .map(BoardDto::from);
     }
 
-    public BoardWithArticleDto getBoard(Long boardId) {
+    public BoardDto getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(BoardDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
+    }
+
+    public BoardWithArticleDto getBoardWithArticles(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(BoardWithArticleDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
@@ -42,17 +48,20 @@ public class BoardService {
 
     @Transactional
     public void saveBoard(BoardDto dto) {
-        Member member = memberRepository.getReferenceById(dto.getMemberDto().getId());
+        Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
         boardRepository.save(dto.toEntity(member));
     }
 
     @Transactional
     public void updateBoard(Long boardId, BoardDto dto) {
+        System.out.println("dto = " + dto);
         try {
             Board board = boardRepository.getReferenceById(boardId);
-            Member member = memberRepository.getReferenceById(dto.getMemberDto().getId());
+            Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
 
-            if (board.getMember().equals(member)) {
+            if (board.getMember().getEmail().equals(member.getEmail())) {
                 if (dto.getTitle() != null) {
                     board.setTitle(dto.getTitle());
                 }
@@ -66,7 +75,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(long boardId) {
-        boardRepository.deleteById(boardId);
+    public void deleteBoard(long boardId, String email) {
+        boardRepository.deleteByIdAndMember_Email(boardId, email);
     }
 }

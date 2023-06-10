@@ -3,7 +3,9 @@ package com.pinterest.dto.request;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
 public class BoardRequest {
 

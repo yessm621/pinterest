@@ -31,7 +31,7 @@ public class Board extends BaseEntity {
     private String title;
 
     @Setter
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000)
     private String image;
 
     protected Board() {
