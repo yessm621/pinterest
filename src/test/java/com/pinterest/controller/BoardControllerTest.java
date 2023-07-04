@@ -9,7 +9,6 @@ import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import com.pinterest.util.FormDataEncoder;
 import com.pinterest.util.TestSecurityConfig;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,10 +126,9 @@ class BoardControllerTest {
         then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
-    @Disabled
     @Test
     @WithMockUser
-    @DisplayName("[View] GET 보드 상세 페이지 - 정상 호출")
+    @DisplayName("[View] GET 보드 상세 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequestBoardView_thenReturnBoardView() throws Exception {
         // Given
         Long boardId = 1L;

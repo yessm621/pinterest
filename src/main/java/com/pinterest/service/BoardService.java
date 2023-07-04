@@ -55,7 +55,6 @@ public class BoardService {
 
     @Transactional
     public void updateBoard(Long boardId, BoardDto dto) {
-        System.out.println("dto = " + dto);
         try {
             Board board = boardRepository.getReferenceById(boardId);
             Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
