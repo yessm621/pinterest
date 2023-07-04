@@ -42,7 +42,12 @@ public class ArticleService {
         }
     }
 
-    public ArticleWithCommentDto getArticle(Long articleId) {
+    public ArticleDto getArticle(Long articleId) {
+        return articleRepository.findById(articleId).map(ArticleDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
+    }
+
+    public ArticleWithCommentDto getArticleWithComment(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
@@ -57,20 +62,25 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(ArticleDto dto) {
+    public void updateArticle(Long articleId, ArticleDto dto) {
         try {
-            Article article = articleRepository.getReferenceById(dto.getId());
-            if (dto.getTitle() != null) {
-                article.setTitle(dto.getTitle());
-            }
-            if (dto.getContent() != null) {
-                article.setContent(dto.getContent());
-            }
-            if (dto.getImage() != null) {
-                article.setImage(dto.getImage());
-            }
-            if (dto.getHashtag() != null) {
-                article.setHashtag(dto.getHashtag());
+            Article article = articleRepository.getReferenceById(articleId);
+            Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+
+            if (article.getMember().getEmail().equals(member.getEmail())) {
+                if (dto.getTitle() != null) {
+                    article.setTitle(dto.getTitle());
+                }
+                if (dto.getContent() != null) {
+                    article.setContent(dto.getContent());
+                }
+                if (dto.getImage() != null) {
+                    article.setImage(dto.getImage());
+                }
+                if (dto.getHashtag() != null) {
+                    article.setHashtag(dto.getHashtag());
+                }
             }
         } catch (EntityNotFoundException e) {
             log.warn("게시글 업데이트 실패. 게시글을 찾을 수 없습니다.");
@@ -78,7 +88,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public void deleteArticles(Long articleId) {
-        articleRepository.deleteById(articleId);
+    public void deleteArticle(Long articleId, String email) {
+        articleRepository.deleteByIdAndMember_Email(articleId, email);
     }
 }

@@ -87,7 +87,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
         // When
-        ArticleWithCommentDto dto = sut.getArticle(articleId);
+        ArticleWithCommentDto dto = sut.getArticleWithComment(articleId);
 
         // Then
         assertThat(dto)
@@ -105,7 +105,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getArticle(articleId));
+        assertThrows(EntityNotFoundException.class, () -> sut.getArticleWithComment(articleId));
         then(articleRepository).should().findById(articleId);
     }
 
@@ -134,16 +134,20 @@ class ArticleServiceTest {
         Article article = createArticle();
         ArticleDto dto = createArticleDto("new title", "new content", "new image", "new hashtag");
         given(articleRepository.getReferenceById(dto.getId())).willReturn(article);
+        given(memberRepository.findByEmail(dto.getMemberDto().getEmail()))
+                .willReturn(Optional.of(dto.getMemberDto().toEntity()));
 
         // When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.getId(), dto);
 
         // Then
         assertThat(article)
                 .hasFieldOrPropertyWithValue("title", dto.getTitle())
                 .hasFieldOrPropertyWithValue("content", dto.getContent())
+                .hasFieldOrPropertyWithValue("image", dto.getImage())
                 .hasFieldOrPropertyWithValue("hashtag", dto.getHashtag());
         then(articleRepository).should().getReferenceById(dto.getId());
+        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
     }
 
     @Test
@@ -154,7 +158,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.getId(), dto);
 
         // Then
         then(articleRepository).should().getReferenceById(dto.getId());
@@ -165,13 +169,14 @@ class ArticleServiceTest {
     void givenArticleId_whenDeletingArticle_thenDeletesArticle() {
         // Given
         Long articleId = 1L;
-        willDoNothing().given(articleRepository).deleteById(articleId);
+        String email = "test@gmail.com";
+        willDoNothing().given(articleRepository).deleteByIdAndMember_Email(articleId, email);
 
         // When
-        sut.deleteArticles(articleId);
+        sut.deleteArticle(articleId, email);
 
         // Then
-        then(articleRepository).should().deleteById(articleId);
+        then(articleRepository).should().deleteByIdAndMember_Email(articleId, email);
     }
 
     private Article createArticle() {

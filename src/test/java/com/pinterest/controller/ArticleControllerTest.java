@@ -5,6 +5,7 @@ import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.request.ArticleRequest;
+import com.pinterest.dto.response.ArticleResponse;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -138,7 +139,7 @@ class ArticleControllerTest {
     void givenNothing_whenRequestingArticleView_thenReturnArticleView() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.getArticle(articleId)).willReturn(createArticleWithCommentDto());
+        given(articleService.getArticleWithComment(articleId)).willReturn(createArticleWithCommentDto());
 
         // When & Then
         mvc.perform(get("/articles/" + articleId))
@@ -147,7 +148,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/detail"))
                 .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("comments"));
-        then(articleService).should().getArticle(articleId);
+        then(articleService).should().getArticleWithComment(articleId);
     }
 
     @Test
@@ -196,26 +197,79 @@ class ArticleControllerTest {
 
     @Test
     @DisplayName("[View] GET Article 수정 페이지 - 인증 없을 땐 로그인 페이지로 이동")
-    void givenNothing_whenRequestUpdateArticleView_thenRedirectsToLoginPage() {
-
+    void givenNothing_whenRequestUpdateArticleView_thenRedirectsToLoginPage() throws Exception {
+        Long articleId = 1L;
+        mvc.perform(get("/articles/" + articleId + "/form"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        then(articleService).shouldHaveNoInteractions();
     }
 
     @Test
+    @WithMockUser
     @DisplayName("[View] GET Article 수정 페이지 - 정상 호출, 인증된 사용자")
-    void givenNothing_whenRequestUpdateArticleView_thenReturnUpdatedArticlePage() {
+    void givenNothing_whenRequestUpdateArticleView_thenReturnUpdatedArticlePage() throws Exception {
+        Long articleId = 1L;
+        ArticleDto dto = createArticleDto();
+        given(articleService.getArticle(articleId)).willReturn(dto);
 
+        mvc.perform(get("/articles/" + articleId + "/form"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("articles/updateForm"))
+                .andExpect(model().attribute("article", ArticleResponse.from(dto)));
+        then(articleService).should().getArticle(articleId);
     }
 
     @Test
+    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("[View] POST Article 수정 - 정상 호출")
-    void givenUpdatedArticleInfo_whenRequestUpdateArticle_thenUpdatesArticle() {
+    void givenUpdatedArticleInfo_whenRequestUpdateArticle_thenUpdatesArticle() throws Exception {
+        Long boardId = 1L;
+        Long articleId = 1L;
+        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "image", "hashtag");
+        willDoNothing().given(articleService).updateArticle(eq(articleId), any(ArticleDto.class));
 
+        mvc.perform(
+                        post("/articles/" + articleId + "/form")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(articleRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles/" + articleId))
+                .andExpect(redirectedUrl("/articles/" + articleId));
+        then(articleService).should().updateArticle(eq(articleId), any(ArticleDto.class));
     }
 
     @Test
+    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("[View] POST Article 삭제 - 정상 호출, 인증된 사용자")
-    void givenArticleId_whenRequestDeleteArticle_thenDeletesArticle() {
+    void givenArticleId_whenRequestDeleteArticle_thenDeletesArticle() throws Exception {
+        long articleId = 1L;
+        String email = "test@gmail.com";
+        willDoNothing().given(articleService).deleteArticle(articleId, email);
 
+        mvc.perform(
+                        post("/articles/" + articleId + "/delete")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/articles"))
+                .andExpect(redirectedUrl("/articles"));
+        then(articleService).should().deleteArticle(articleId, email);
+    }
+
+    private ArticleDto createArticleDto() {
+        return ArticleDto.of(
+                1L,
+                createMemberDto(),
+                "title",
+                "content",
+                "image",
+                "hashtag"
+        );
     }
 
     private ArticleWithCommentDto createArticleWithCommentDto() {

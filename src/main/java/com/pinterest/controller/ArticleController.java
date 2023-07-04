@@ -6,6 +6,7 @@ import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.request.ArticleRequest;
+import com.pinterest.dto.response.ArticleResponse;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -46,7 +47,7 @@ public class ArticleController {
 
     @GetMapping("{articleId}")
     public String articlesDetail(@PathVariable Long articleId, Model model) {
-        ArticleWithCommentDto article = articleService.getArticle(articleId);
+        ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         return "articles/detail";
@@ -63,14 +64,29 @@ public class ArticleController {
     @PostMapping("/form")
     public String articleForm(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
                               ArticleRequest articleRequest) {
-        System.out.println("articleRequest = " + articleRequest);
-        System.out.println("memberPrincipal = " + memberPrincipal);
         articleService.saveArticle(articleRequest.toDto(memberPrincipal.toDto()));
         return "redirect:/articles";
     }
 
-    @GetMapping("/update/{articleId}")
-    public String articlesUpdate(@PathVariable Long articleId) {
-        return "articles/update";
+    @GetMapping("/{articleId}/form")
+    public String articleUpdateForm(@PathVariable Long articleId, Model model) {
+        ArticleResponse article = ArticleResponse.from(articleService.getArticle(articleId));
+        model.addAttribute("article", article);
+        return "articles/updateForm";
+    }
+
+    @PostMapping("/{articleId}/form")
+    public String articlesUpdate(@PathVariable Long articleId,
+                                 @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                                 ArticleRequest articleRequest) {
+        articleService.updateArticle(articleId, articleRequest.toDto(memberPrincipal.toDto()));
+        return "redirect:/articles/" + articleId;
+    }
+
+    @PostMapping("/{articleId}/delete")
+    public String articleDelete(@PathVariable Long articleId,
+                                @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        articleService.deleteArticle(articleId, memberPrincipal.getUsername());
+        return "redirect:/articles";
     }
 }

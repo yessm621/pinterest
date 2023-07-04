@@ -34,16 +34,12 @@
 
     {% if target_article.writer == user %}
     <div class="py-4">
-      <a th:href="@{articles/update/1}" class="btn btn-primary rounded-pill col-3">
-        <!--<a th:href="@{articles/update/{articleId}(articleId=${article.id})}" class="btn btn-primary rounded-pill col-3">-->
-        <!--<a href="{% url 'articleapp:update' pk=target_article.pk %}" class="btn btn-primary rounded-pill col-3">-->
-        수정
-      </a>
-
-      <a th:href="@{articles/delete/1}" class="btn btn-danger rounded-pill col-3">
-        <!--<a href="{% url 'articleapp:delete' pk=target_article.pk %}" class="btn btn-danger rounded-pill col-3">-->
-        삭제
-      </a>
+      <form th:action="@{/articles/{articleId}/delete(articleId=${article.id})}" th:method="post">
+        <a th:href="@{/articles/{articleId}/form(articleId=${article.id})}" class="btn btn-primary rounded-pill col-3">
+          수정
+        </a>
+        <button type="submit" class="btn btn-danger rounded-pill col-3">삭제</button>
+      </form>
     </div>
 
     {% endif %}
@@ -56,7 +52,8 @@
           <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
           <h1 class="h3 mb-3 fw-normal">댓글 작성</h1>
           <div class="form-floating">
-            <textarea class="form-control" placeholder="내용" id="content" name="content" style="height: 100px"></textarea>
+            <textarea class="form-control" placeholder="내용" id="content" name="content"
+                      style="height: 100px"></textarea>
             <label for="content">내용</label>
           </div>
           <div class="mb-3"></div>
