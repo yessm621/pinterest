@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
@@ -25,24 +26,26 @@
       </a>
 
       <!--로그인 전 start-->
-      <a th:href="@{/members/login}" class="pragmatic_header_nav">
-      <!--<a href="{% url 'accountapp:login' %}?next={{ request.path }}" class="pragmatic_header_nav">-->
-        <span>로그인</span>
-      </a>
-      <a th:href="@{/members/signup}" class="pragmatic_header_nav">
-        <span>회원가입</span>
-      </a>
+      <th:block sec:authorize="!isAuthenticated()">
+        <!--TODO:: Custom Login 페이지로 변경해야 함-->
+        <a th:href="@{/login}" class="pragmatic_header_nav">
+          <span>로그인</span>
+        </a>
+        <a th:href="@{/members/signup}" class="pragmatic_header_nav">
+          <span>회원가입</span>
+        </a>
+      </th:block>
       <!--로그인 전 end-->
 
       <!--로그인 후 start-->
-      <a th:href="@{/profile}" class="pragmatic_header_nav">
-      <!--<a href="{% url 'accountapp:detail' pk=user.pk%}" class="pragmatic_header_nav">-->
-        <sapn>마이페이지</sapn>
-      </a>
-      <a th:href="@{/members/logout}" class="pragmatic_header_nav">
-      <!--<a href="{% url 'accountapp:logout'%}?next={{ request.path}}" class="pragmatic_header_nav">-->
-        <sapn>로그아웃</sapn>
-      </a>
+      <th:block sec:authorize="isAuthenticated()">
+        <a th:href="@{/profile}" class="pragmatic_header_nav">
+          <sapn>마이페이지</sapn>
+        </a>
+        <a th:href="@{/logout}" class="pragmatic_header_nav">
+          <sapn>로그아웃</sapn>
+        </a>
+      </th:block>
       <!--로그인 후 end-->
     </div>
   </div>

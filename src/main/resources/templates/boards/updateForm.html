@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html th:replace="~{base/base :: base(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>보드 만들기 | Pinterest</title>
+</head>
+<body>
+
+<main>
+  <div style="text-align:center; max-width: 400px; margin:4rem auto">
+    <div class="form-signin w-100 m-auto">
+      <form th:action="@{/boards/{boardId}/form(boardId=${board.id})}" th:method="post" enctype="multipart/form-data">
+        <h1 class="h3 mb-3 fw-normal">보드 만들기</h1>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="title" name="title" th:value="${board.title}" placeholder="제목">
+          <label for="title">제목</label>
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label"></label>
+          <!--<input class="form-control" type="file" id="image" name="image">-->
+          <input class="form-control" type="text" id="image" name="image" th:value="${board.image}">
+        </div>
+        <div class="mb-3"></div>
+        <button  class="btn btn-dark rounded-pill col-6 mt-3" type="submit">보드 만들기</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

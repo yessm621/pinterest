@@ -18,6 +18,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Queryds
 
     List<Comment> findByArticle_Id(Long articleId);
 
+    void deleteByIdAndMember_Email(Long commentId, String email);
+
     @Override
     default void customize(QuerydslBindings bindings, QComment root) {
         bindings.excludeUnlistedProperties(true);

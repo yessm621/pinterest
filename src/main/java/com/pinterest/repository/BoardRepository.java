@@ -19,6 +19,8 @@ public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPre
 
     Page<Board> findByTitleContaining(String searchKeyword, Pageable pageable);
 
+    void deleteByIdAndMember_Email(Long boardId, String email);
+
     @Override
     default void customize(QuerydslBindings bindings, QBoard root) {
         bindings.excludeUnlistedProperties(true);

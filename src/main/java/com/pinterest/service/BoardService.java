@@ -1,9 +1,11 @@
 package com.pinterest.service;
 
 import com.pinterest.domain.Board;
+import com.pinterest.domain.Member;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.repository.BoardRepository;
+import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     public Page<BoardDto> searchBoards(String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
@@ -31,7 +34,13 @@ public class BoardService {
                 .map(BoardDto::from);
     }
 
-    public BoardWithArticleDto getBoard(Long boardId) {
+    public BoardDto getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .map(BoardDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
+    }
+
+    public BoardWithArticleDto getBoardWithArticles(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(BoardWithArticleDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
@@ -39,18 +48,26 @@ public class BoardService {
 
     @Transactional
     public void saveBoard(BoardDto dto) {
-        boardRepository.save(dto.toEntity());
+        Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+        boardRepository.save(dto.toEntity(member));
     }
 
     @Transactional
-    public void updateBoard(BoardDto dto) {
+    public void updateBoard(Long boardId, BoardDto dto) {
+        System.out.println("dto = " + dto);
         try {
-            Board board = boardRepository.getReferenceById(dto.getId());
-            if (dto.getTitle() != null) {
-                board.setTitle(dto.getTitle());
-            }
-            if (dto.getImage() != null) {
-                board.setImage(dto.getImage());
+            Board board = boardRepository.getReferenceById(boardId);
+            Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                    .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+
+            if (board.getMember().getEmail().equals(member.getEmail())) {
+                if (dto.getTitle() != null) {
+                    board.setTitle(dto.getTitle());
+                }
+                if (dto.getImage() != null) {
+                    board.setImage(dto.getImage());
+                }
             }
         } catch (EntityNotFoundException e) {
             log.warn("보드 업데이트 실패. 보드를 찾을 수 없습니다.");
@@ -58,7 +75,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(long boardId) {
-        boardRepository.deleteById(boardId);
+    public void deleteBoard(long boardId, String email) {
+        boardRepository.deleteByIdAndMember_Email(boardId, email);
     }
 }

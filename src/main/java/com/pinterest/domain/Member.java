@@ -8,6 +8,9 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Table(indexes = {
+        @Index(columnList = "email", unique = true)
+})
 @Getter
 @ToString
 public class Member extends BaseEntity {
@@ -31,7 +34,7 @@ public class Member extends BaseEntity {
     private String description;
 
     @Setter
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000)
     private String image;
 
     protected Member() {

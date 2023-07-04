@@ -2,12 +2,16 @@ package com.pinterest.controller;
 
 import com.pinterest.dto.MemberDto;
 import com.pinterest.service.MemberService;
+import com.pinterest.util.FormDataEncoder;
+import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -19,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MemberController.class)
+@Import({TestSecurityConfig.class, FormDataEncoder.class})
 @DisplayName("View 컨트롤러 - 회원")
 class MemberControllerTest {
 
@@ -32,6 +37,7 @@ class MemberControllerTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("[View] GET 프로필 페이지 - 정상 호출")
     void givenNoting_whenRequestingProfileView_thenReturnProfileView() throws Exception {
         // Given
