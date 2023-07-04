@@ -2,11 +2,13 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
+import com.pinterest.domain.Member;
 import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
+import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,8 +25,8 @@ import javax.persistence.EntityNotFoundException;
 public class ArticleService {
 
     private final BoardRepository boardRepository;
-
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
 
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
@@ -48,9 +50,10 @@ public class ArticleService {
 
     @Transactional
     public void saveArticle(ArticleDto dto) {
+        Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
         Board board = boardRepository.getReferenceById(dto.getBoardId());
-
-        articleRepository.save(dto.toEntity(board));
+        articleRepository.save(dto.toEntity(member, board));
     }
 
     @Transactional

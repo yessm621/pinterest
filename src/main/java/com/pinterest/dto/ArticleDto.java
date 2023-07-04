@@ -2,6 +2,7 @@ package com.pinterest.dto;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
+import com.pinterest.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,10 @@ public class ArticleDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    public static ArticleDto of(Long boardId, MemberDto memberDto, String title, String content, String image, String hashtag) {
+        return new ArticleDto(null, boardId, memberDto, title, content, image, hashtag, null, null);
+    }
+
     public static ArticleDto of(Long id, Long boardId, MemberDto memberDto, String title, String content, String image, String hashtag, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         return new ArticleDto(id, boardId, memberDto, title, content, image, hashtag, createdAt, modifiedAt);
     }
@@ -43,10 +48,10 @@ public class ArticleDto {
     }
 
     // dto -> entity
-    public Article toEntity(Board entity) {
+    public Article toEntity(Member member, Board board) {
         return Article.of(
-                memberDto.toEntity(),
-                entity,
+                member,
+                board,
                 title,
                 content,
                 image,

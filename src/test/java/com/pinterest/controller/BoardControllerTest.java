@@ -206,7 +206,7 @@ class BoardControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("[View] POST 보드 수정 페이지 - 정상 호출, 인증된 사용자")
+    @DisplayName("[View] GET 보드 수정 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequesting_thenReturnsUpdatedBoardPage() throws Exception {
         // Given
         Long boardId = 1L;

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,12 @@ public class BoardService {
 
         return boardRepository.findByTitleContaining(searchKeyword, pageable)
                 .map(BoardDto::from);
+    }
+
+    public List<BoardDto> getBoards(String email) {
+        return boardRepository.findByMember_Email(email).stream()
+                .map(BoardDto::from)
+                .collect(Collectors.toList());
     }
 
     public BoardDto getBoard(Long boardId) {

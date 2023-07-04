@@ -4,9 +4,13 @@ import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.domain.SearchType;
-import com.pinterest.dto.*;
+import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.ArticleWithCommentDto;
+import com.pinterest.dto.BoardDto;
+import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
+import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +41,9 @@ class ArticleServiceTest {
 
     @Mock
     ArticleRepository articleRepository;
+
+    @Mock
+    MemberRepository memberRepository;
 
     @Test
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 리스트를 반환한다.")
@@ -108,6 +115,7 @@ class ArticleServiceTest {
         // Given
         ArticleDto dto = createArticleDto("title", "content", "image", "hashtag");
         given(boardRepository.getReferenceById(dto.getBoardId())).willReturn(createBoard());
+        given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(articleRepository.save(any(Article.class))).willReturn(createArticle());
 
         // When
@@ -115,6 +123,7 @@ class ArticleServiceTest {
 
         // Then
         then(boardRepository).should().getReferenceById(dto.getBoardId());
+        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
         then(articleRepository).should().save(any(Article.class));
     }
 
