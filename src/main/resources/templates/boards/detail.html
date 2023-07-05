@@ -12,7 +12,8 @@
     <h2 th:text="${board.title}">
       보드 이름
     </h2>
-    <th:block th:if="${writer}">
+    <th:block
+        th:if="${#authorization.expression('isAuthenticated()')} and ${board.getMemberDto().getEmail()} == ${#authentication.name}">
       <form th:action="@{/boards/{boardId}/delete(boardId=${board.id})}" th:method="post">
         <a class="material-icons"
            style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
@@ -51,7 +52,8 @@
           <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
             <div style="display: block; text-align: center;">
               <img th:src="${article.image}" alt="">
-              <h6 class="mt-2" th:text="${#strings.substring(article.title, 0, 8)}">
+              <h6 class="mt-2"
+                  th:text="${article.title.length() > 8 ? #strings.substring(article.title, 0, 8) : article.title}">
                 article 이름
               </h6>
             </div>

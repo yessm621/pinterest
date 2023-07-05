@@ -1,21 +1,24 @@
 package com.pinterest.controller;
 
+import com.pinterest.config.MemberPrincipal;
 import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
+import com.pinterest.dto.BoardDto;
+import com.pinterest.dto.request.ArticleRequest;
+import com.pinterest.dto.response.ArticleResponse;
 import com.pinterest.service.ArticleService;
+import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController {
 
+    private final BoardService boardService;
     private final ArticleService articleService;
     private final PaginationService paginationService;
 
@@ -43,19 +47,46 @@ public class ArticleController {
 
     @GetMapping("{articleId}")
     public String articlesDetail(@PathVariable Long articleId, Model model) {
-        ArticleWithCommentDto article = articleService.getArticle(articleId);
+        ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         return "articles/detail";
     }
 
-    @GetMapping("/create")
-    public String articlesCreate() {
-        return "articles/create";
+    @GetMapping("/form")
+    public String articleForm(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                              Model model) {
+        List<BoardDto> boards = boardService.getBoards(memberPrincipal.getUsername());
+        model.addAttribute("boards", boards);
+        return "articles/form";
     }
 
-    @GetMapping("/update/{articleId}")
-    public String articlesUpdate(@PathVariable Long articleId) {
-        return "articles/update";
+    @PostMapping("/form")
+    public String articleForm(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                              ArticleRequest articleRequest) {
+        articleService.saveArticle(articleRequest.toDto(memberPrincipal.toDto()));
+        return "redirect:/articles";
+    }
+
+    @GetMapping("/{articleId}/form")
+    public String articleUpdateForm(@PathVariable Long articleId, Model model) {
+        ArticleResponse article = ArticleResponse.from(articleService.getArticle(articleId));
+        model.addAttribute("article", article);
+        return "articles/updateForm";
+    }
+
+    @PostMapping("/{articleId}/form")
+    public String articlesUpdate(@PathVariable Long articleId,
+                                 @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                                 ArticleRequest articleRequest) {
+        articleService.updateArticle(articleId, articleRequest.toDto(memberPrincipal.toDto()));
+        return "redirect:/articles/" + articleId;
+    }
+
+    @PostMapping("/{articleId}/delete")
+    public String articleDelete(@PathVariable Long articleId,
+                                @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        articleService.deleteArticle(articleId, memberPrincipal.getUsername());
+        return "redirect:/articles";
     }
 }

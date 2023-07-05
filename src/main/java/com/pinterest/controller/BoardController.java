@@ -41,15 +41,11 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public String boardDetail(@PathVariable Long boardId,
-                              @AuthenticationPrincipal MemberPrincipal memberPrincipal,
-                              Model model) {
+    public String boardDetail(@PathVariable Long boardId, Model model) {
         BoardWithArticleDto board = boardService.getBoardWithArticles(boardId);
         model.addAttribute("board", board);
         model.addAttribute("articles", board.getArticleDtoList());
-        if (board.getMemberDto().getEmail().equals(memberPrincipal.getUsername())) {
-            model.addAttribute("writer", true);
-        }
+
         return "boards/detail";
     }
 

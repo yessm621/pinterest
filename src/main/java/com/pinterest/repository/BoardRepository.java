@@ -2,7 +2,6 @@ package com.pinterest.repository;
 
 import com.pinterest.domain.Board;
 import com.pinterest.domain.QBoard;
-import com.pinterest.dto.BoardDto;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import org.springframework.data.domain.Page;
@@ -13,11 +12,15 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 @RepositoryRestResource
 public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPredicateExecutor<Board>,
         QuerydslBinderCustomizer<QBoard> {
 
     Page<Board> findByTitleContaining(String searchKeyword, Pageable pageable);
+
+    List<Board> findByMember_Email(String email);
 
     void deleteByIdAndMember_Email(Long boardId, String email);
 
