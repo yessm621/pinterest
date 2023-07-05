@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +65,7 @@ class CommentServiceTest {
         // Given
         CommentDto dto = createCommentDto("comment");
         given(articleRepository.getReferenceById(dto.getArticleId())).willReturn(createArticle());
-        given(memberRepository.getReferenceById(dto.getMemberDto().getId())).willReturn(createMember());
+        given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(commentRepository.save(any(Comment.class))).willReturn(null);
 
         // When
@@ -72,7 +73,7 @@ class CommentServiceTest {
 
         // Then
         then(articleRepository).should().getReferenceById(dto.getArticleId());
-        then(memberRepository).should().getReferenceById(dto.getMemberDto().getId());
+        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
         then(commentRepository).should().save(any(Comment.class));
     }
 
@@ -89,40 +90,6 @@ class CommentServiceTest {
         // Then
         then(articleRepository).should().getReferenceById(dto.getArticleId());
         then(commentRepository).shouldHaveNoInteractions();
-    }
-
-    @Test
-    @DisplayName("댓글 수정 정보를 입력하면, 댓글을 수정한다.")
-    void givenCommentInfo_whenUpdatingComment_thenUpdatesComment() {
-        // Given
-        String oldContent = "old comment";
-        String updatedContent = "new comment";
-        Comment comment = createComment(oldContent);
-        CommentDto dto = createCommentDto(updatedContent);
-        given(commentRepository.getReferenceById(dto.getId())).willReturn(comment);
-
-        // When
-        sut.updateComment(dto);
-
-        // Then
-        assertThat(comment.getContent())
-                .isNotEqualTo(oldContent)
-                .isEqualTo(updatedContent);
-        then(commentRepository).should().getReferenceById(dto.getId());
-    }
-
-    @Test
-    @DisplayName("없는 댓글 정보를 수정하려고 하면, 경고 로그를 찍고 아무것도 안한다.")
-    void givenNoneExistentComment_whenUpdatingComment_thenLogsWarningAndDoesNoting() {
-        // Given
-        CommentDto dto = createCommentDto("comment");
-        given(commentRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
-
-        // When
-        sut.updateComment(dto);
-
-        // Then
-        then(commentRepository).should().getReferenceById(dto.getId());
     }
 
     @Test

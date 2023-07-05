@@ -27,6 +27,7 @@ public class Article extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
