@@ -32,17 +32,19 @@
       article 본문
     </div>
 
-    {% if target_article.writer == user %}
-    <div class="py-4">
-      <form th:action="@{/articles/{articleId}/delete(articleId=${article.id})}" th:method="post">
-        <a th:href="@{/articles/{articleId}/form(articleId=${article.id})}" class="btn btn-primary rounded-pill col-3">
-          수정
-        </a>
-        <button type="submit" class="btn btn-danger rounded-pill col-3">삭제</button>
-      </form>
-    </div>
+    <th:block
+        th:if="${#authorization.expression('isAuthenticated()')} and ${article.getMemberDto().getEmail()} == ${#authentication.name}">
+      <div class="py-4">
+        <form th:action="@{/articles/{articleId}/delete(articleId=${article.id})}" th:method="post">
+          <a th:href="@{/articles/{articleId}/form(articleId=${article.id})}"
+             class="btn btn-primary rounded-pill col-3">
+            수정
+          </a>
+          <button type="submit" class="btn btn-danger rounded-pill col-3">삭제</button>
+        </form>
+      </div>
+    </th:block>
 
-    {% endif %}
     <hr>
 
     <!--댓글 생성-->
@@ -77,13 +79,16 @@
           </div>
           <span th:text="${comment.content}">댓글 내용</span>
           <div style="margin:1rem 0;"></div>
-          {% if comment.writer == user %}
-          <div style="text-align:right">
-            <button type="submit" class="btn btn-danger rounded-pill px-4">
-              삭제
-            </button>
-          </div>
-          {% endif %}
+
+          <th:block
+              th:if="${#authorization.expression('isAuthenticated()')} and ${comment.getMemberDto().getEmail()} == ${#authentication.name}">
+            <div style="text-align:right">
+              <button type="submit" class="btn btn-danger rounded-pill px-4">
+                삭제
+              </button>
+            </div>
+          </th:block>
+
         </form>
       </div>
     </th:block>
