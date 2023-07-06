@@ -22,9 +22,11 @@
                 좋아요 갯수
       </span>
     </div>
-    <h6 th:text="${article.getMemberDto().nickname}">
-      작성자
-    </h6>
+    <a th:href="@{/members/{memberId}(memberId=${article.getMemberDto().id})}">
+      <h6 th:text="${article.getMemberDto().nickname}">
+        작성자
+      </h6>
+    </a>
     <hr>
 
     <img style="width: 100%; border-radius: 1rem; margin: 2rem 0;" th:src="${article.image}" alt="">

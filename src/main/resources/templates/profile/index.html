@@ -3,32 +3,9 @@
 <head>
   <title>마이페이지 | Pinterest</title>
 </head>
-<style>
-    .container {
-        padding: 0;
-        margin: 0 auto;
-    }
-
-    .container a {
-        width: 45%;
-        max-width: 250px;
-    }
-
-    .container div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 1rem;
-    }
-
-    .container img {
-        width: 100%;
-        border-radius: 1rem;
-    }
-</style>
 <body>
 
-<main>
+<main class="article">
   <div style="text-align: center; justify-content: center; max-width: 500px; margin: 4rem auto;">
     <p>
       마지막 로그인 시간
@@ -52,56 +29,40 @@
     </th:block>
     <h2>
       <th:block th:text="${profile.nickname}">프로필 이름</th:block>
-      <!--TODO:: if 로그인한 회원과 프로필 조회한 회원이 같을 경우에 `수정`, `삭제` 할 수 있도록 함-->
-      <th:block th:if="${profile.image != null and profile.image != ''}">
+      <th:block
+          th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
         <a class="material-icons"
            style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
-           th:href="@{/members/update/{memberId}(memberId=${profile.id})}">
+           th:href="@{/members/{memberId}/form(memberId=${profile.id})}">
           edit</a>
       </th:block>
-      <a class="material-icons"
-         style="box-shadow: 0 0 4px red; border-radius:10rem; padding: .4rem;"
-         th:href="@{/members/delete/{memberId}(memberId=${profile.id})}">
-        cancel
-      </a>
     </h2>
-    <th:block th:if="${profile.image != null and profile.image != ''}">
+    <th:block th:if="${profile.description != null and profile.description != ''}">
       <h5 style="margin-bottom:4rem;">
         <th:block th:text="${profile.description}">프로필 설명</th:block>
       </h5>
     </th:block>
-
-
-    <!--else 프로필이 없을 경우-->
-    <th:block th:if="${profile.image == null or profile.image == ''}">
-      <!--TODO:: if 로그인한 회원과 프로필 조회한 회원이 같을 경우에 `프로필을 생성` 할 수 있도록 함-->
-      <a th:href="@{/members/create}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
-        프로필 만들기
-      </a>
-      <!--TODO:: else 로그인한 회원과 프로필 조회한 회원이 같지 않으면 `닉네임 미설정`으로 표시-->
-      <h2>닉네임 미설정</h2>
-    </th:block>
   </div>
 
-
-  <!--magic grid-->
-  <div>
-    {% if article_list %}
+  <th:block th:if="${!articles.isEmpty()}">
     <div class="container">
-      {% for article in article_list %}
-      <a href="{% url 'articleapp:detail' pk=article.pk %}">
-        <div>
-          <img src="{{ article.image.url }}" alt="">
-        </div>
-      </a>
-      {% endfor %}
+      <th:block th:each="article: ${articles}">
+        <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+          <div>
+            <img th:src="${article.image}" alt="">
+          </div>
+          <h6 class="mt-2" th:text="${article.title}">
+            article 이름
+          </h6>
+        </a>
+      </th:block>
     </div>
-    {% else %}
+  </th:block>
+  <th:block th:if="${articles.isEmpty()}">
     <div class="text-center">
-      <h1>No Article YET!</h1>
+      <h1>생성된 Article 이 없습니다.</h1>
     </div>
-    {% endif %}
-    {% include 'snippets/pagination.html' with page_obj=page_obj %}
+  </th:block>
   </div>
   <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>
