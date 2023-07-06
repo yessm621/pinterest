@@ -12,6 +12,8 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+
 @RepositoryRestResource
 public interface ArticleRepository extends JpaRepository<Article, Long>, QuerydslPredicateExecutor<Article>,
         QuerydslBinderCustomizer<QArticle> {
@@ -21,6 +23,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Queryds
     Page<Article> findByHashtag(String searchKeyword, Pageable pageable);
 
     void deleteByIdAndMember_Email(Long articleId, String email);
+
+    List<Article> findByMember_Email(String email);
+
+    List<Article> findByMember_Id(Long memberId);
 
     @Override
     default void customize(QuerydslBindings bindings, QArticle root) {

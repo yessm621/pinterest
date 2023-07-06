@@ -39,7 +39,7 @@
 
       <!--로그인 후 start-->
       <th:block sec:authorize="isAuthenticated()">
-        <a th:href="@{/profile}" class="pragmatic_header_nav">
+        <a th:href="@{/members/profile}" class="pragmatic_header_nav">
           <sapn>마이페이지</sapn>
         </a>
         <a th:href="@{/logout}" class="pragmatic_header_nav">

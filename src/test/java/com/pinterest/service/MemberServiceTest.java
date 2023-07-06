@@ -16,7 +16,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("비즈니스 로직 - 프로필")
@@ -65,7 +66,7 @@ class MemberServiceTest {
         given(memberRepository.getReferenceById(dto.getId())).willReturn(member);
 
         // When
-        sut.updateMember(dto);
+        sut.updateMember(dto.getId(), dto);
 
         // Then
         assertThat(member).hasFieldOrPropertyWithValue("nickname", dto.getNickname());
@@ -82,24 +83,10 @@ class MemberServiceTest {
         given(memberRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateMember(dto);
+        sut.updateMember(dto.getId(), dto);
 
         // Then
         then(memberRepository).should().getReferenceById(dto.getId());
-    }
-
-    @Test
-    @DisplayName("사용자 ID를 입력하면, 사용자를 삭제한다.")
-    void givenArticleId_whenDeletingMember_thenDeletesMember() {
-        // Given
-        Long articleId = 1L;
-        willDoNothing().given(memberRepository).deleteById(articleId);
-
-        // When
-        sut.deleteMember(articleId);
-
-        // Then
-        then(memberRepository).should().deleteById(articleId);
     }
 
     private Member createMember() {
