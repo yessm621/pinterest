@@ -21,7 +21,7 @@ public class Subscribe {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id")
+    @JoinColumn(name = "board_id")
     private Article article;
 
     protected Subscribe() {

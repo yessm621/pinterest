@@ -10,17 +10,19 @@ import lombok.Data;
 @AllArgsConstructor
 public class SubscribeDto {
 
-    private Long memberId;
+    private Long id;
     private Long articleId;
+    private MemberDto memberDto;
 
-    public static SubscribeDto of(Long memberId, Long articleId) {
-        return new SubscribeDto(memberId, articleId);
+    public static SubscribeDto of(Long articleId, MemberDto memberDto) {
+        return new SubscribeDto(null, articleId, memberDto);
     }
 
-    public static SubscribeDto from(Member member, Article article) {
+    public static SubscribeDto from(Subscribe entity) {
         return new SubscribeDto(
-                member.getId(),
-                article.getId()
+                entity.getId(),
+                entity.getArticle().getId(),
+                MemberDto.from(entity.getMember())
         );
     }
 

@@ -2,6 +2,7 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Member;
+import com.pinterest.domain.Subscribe;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.SubscribeDto;
 import com.pinterest.repository.ArticleRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,11 +36,17 @@ public class SubscribeService {
 
     @Transactional
     public void saveSubscribe(SubscribeDto dto) {
-        Member member = memberRepository.findById(dto.getMemberId())
+        Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원이 없습니다."));
         Article article = articleRepository.findById(dto.getArticleId())
                 .orElseThrow(() -> new EntityNotFoundException("article이 없습니다."));
-        subscribeRepository.save(dto.toEntity(member, article));
+        Optional<Subscribe> findBySubscribe = subscribeRepository
+                .findSubscribeByArticle_IdAndMember_id(article.getId(), member.getId());
+        if (findBySubscribe.isEmpty()) {
+            subscribeRepository.save(dto.toEntity(member, article));
+        } else {
+            subscribeRepository.deleteById(findBySubscribe.get().getId());
+        }
     }
 
     @Transactional

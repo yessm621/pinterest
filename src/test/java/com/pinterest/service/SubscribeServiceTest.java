@@ -62,7 +62,7 @@ public class SubscribeServiceTest {
     void givenSubscribeInfo_whenSavingSubscribe_thenSavesMemberAndArticle() {
         // Given
         Subscribe subscribe = createSubscribe();
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
+        given(memberRepository.findByEmail(any())).willReturn(Optional.of(createMember()));
         given(articleRepository.findById(anyLong())).willReturn(Optional.of(createArticle()));
         given(subscribeRepository.save(any(Subscribe.class))).willReturn(subscribe);
 
@@ -70,7 +70,7 @@ public class SubscribeServiceTest {
         sut.saveSubscribe(createSubscribeDto());
 
         // Then
-        then(memberRepository).should().findById(anyLong());
+        then(memberRepository).should().findByEmail(any());
         then(articleRepository).should().findById(anyLong());
         then(subscribeRepository).should().save(any(Subscribe.class));
     }
@@ -99,7 +99,7 @@ public class SubscribeServiceTest {
     private SubscribeDto createSubscribeDto() {
         return SubscribeDto.of(
                 1L,
-                1L
+                createMemberDto()
         );
     }
 
