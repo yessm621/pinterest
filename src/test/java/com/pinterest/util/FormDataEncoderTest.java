@@ -3,6 +3,7 @@ package com.pinterest.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ class FormDataEncoderTest {
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     static class TestObject {
         private String str;
