@@ -1,14 +1,11 @@
 package com.pinterest.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,13 +13,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("테스트 도구 - Form 데이터 인코더")
-@Import({FormDataEncoder.class, ObjectMapper.class})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = FormDataEncoder.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
+        classes = {FormDataEncoder.class, ObjectMapper.class})
 class FormDataEncoderTest {
 
     private final FormDataEncoder formDataEncoder;
 
-    public FormDataEncoderTest(@Autowired FormDataEncoder formDataEncoder) {
+    FormDataEncoderTest(@Autowired FormDataEncoder formDataEncoder) {
         this.formDataEncoder = formDataEncoder;
     }
 
@@ -60,9 +57,7 @@ class FormDataEncoderTest {
     }
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class TestObject {
+    class TestObject {
         private String str;
         private String listStr1;
         private String listStr2;
@@ -72,6 +67,57 @@ class FormDataEncoderTest {
         private Boolean bool;
         private BigDecimal bigDecimal;
         private TestEnum testEnum;
+
+        public TestObject() {
+        }
+
+        public TestObject(String str, String listStr1, String listStr2, String nullStr, Integer number, Double floatingNumber, Boolean bool, BigDecimal bigDecimal, TestEnum testEnum) {
+            this.str = str;
+            this.listStr1 = listStr1;
+            this.listStr2 = listStr2;
+            this.nullStr = nullStr;
+            this.number = number;
+            this.floatingNumber = floatingNumber;
+            this.bool = bool;
+            this.bigDecimal = bigDecimal;
+            this.testEnum = testEnum;
+        }
+
+        public String getStr() {
+            return str;
+        }
+
+        public String getListStr1() {
+            return listStr1;
+        }
+
+        public String getListStr2() {
+            return listStr2;
+        }
+
+        public String getNullStr() {
+            return nullStr;
+        }
+
+        public Integer getNumber() {
+            return number;
+        }
+
+        public Double getFloatingNumber() {
+            return floatingNumber;
+        }
+
+        public Boolean getBool() {
+            return bool;
+        }
+
+        public BigDecimal getBigDecimal() {
+            return bigDecimal;
+        }
+
+        public TestEnum getTestEnum() {
+            return testEnum;
+        }
     }
 
     enum TestEnum {
