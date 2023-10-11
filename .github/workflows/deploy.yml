@@ -9,6 +9,7 @@ env:
   S3_BUCKET_NAME: pinterest-file
   CODE_DEPLOY_APPLICATION_NAME: pinterest
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: pinterest-deployment-group
+  RESOURCE_PATH: ./src/main/resources/application.yml
 
 permissions:
   contents: read
@@ -30,10 +31,13 @@ jobs:
         java-version: '11'
         
     - name: Set YML File
-      run: |
-        mkdir -p src/main/resources
-        echo "${{ secrets.DI_FROM_SECRET }}" | base64 --decode > src/main/resources/application.yml
-        find src
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: ${{ env.RESOURCE_PATH }} 
+      env:
+        spring.datasource.url: ${{ secrets.RDS_HOST }} 
+        spring.datasource.username: ${{ secrets.RDS_USERNAME }} 
+        spring.datasource.password: ${{ secrets.RDS_PASSWORD }}  
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
