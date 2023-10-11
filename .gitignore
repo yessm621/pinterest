@@ -201,8 +201,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-application.yml
-
 ## Querydsl
 /src/main/generated
 
