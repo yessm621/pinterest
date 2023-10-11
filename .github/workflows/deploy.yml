@@ -28,6 +28,12 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
+        
+    - name: Set YML File
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.DI_FROM_SECRET }}" | base64 --decode > src/main/resources/application.yml
+        find src
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
