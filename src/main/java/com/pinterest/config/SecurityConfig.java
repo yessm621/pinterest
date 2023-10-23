@@ -1,19 +1,16 @@
 package com.pinterest.config;
 
-import com.pinterest.dto.MemberDto;
-import com.pinterest.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean
@@ -23,33 +20,29 @@ public class SecurityConfig {
                         .requestMatchers(
                                 PathRequest.toStaticResources().atCommonLocations()
                         ).permitAll()
-                        .mvcMatchers(
-                                HttpMethod.GET,
-                                "/",
-                                "/members/signup",
-                                "/boards",
-                                "/articles"
-                        ).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/members/signup"),
+                                new AntPathRequestMatcher("/members/login"),
+                                new AntPathRequestMatcher("/boards"),
+                                new AntPathRequestMatcher("/articles"),
+                                new AntPathRequestMatcher("/"))
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin().and()
-                .logout()
-                .logoutSuccessUrl("/")
+                .formLogin()
+                .loginPage("/members/login")
+                .defaultSuccessUrl("/")
+                .usernameParameter("email")
                 .and()
+                .logout()
+                .logoutSuccessUrl("/members/login")
+                .invalidateHttpSession(true)
+                .and()
+                .csrf().disable()
                 .build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(MemberRepository memberRepository) {
-        return username -> memberRepository
-                .findByEmail(username)
-                .map(MemberDto::from)
-                .map(MemberPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다. - username: " + username));
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

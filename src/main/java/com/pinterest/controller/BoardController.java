@@ -1,6 +1,6 @@
 package com.pinterest.controller;
 
-import com.pinterest.config.MemberPrincipal;
+import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.request.BoardRequest;
@@ -55,9 +55,9 @@ public class BoardController {
     }
 
     @PostMapping("/form")
-    public String boardForm(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+    public String boardForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                             BoardRequest boardRequest) {
-        boardService.saveBoard(boardRequest.toDto(memberPrincipal.toDto()));
+        boardService.saveBoard(boardRequest.toDto(customUserDetails.toDto()));
         return "redirect:/boards";
     }
 
@@ -71,15 +71,15 @@ public class BoardController {
 
     @PostMapping("/{boardId}/form")
     public String boardUpdateForm(@PathVariable Long boardId,
-                                  @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                                  @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                   BoardRequest boardRequest) {
-        boardService.updateBoard(boardId, boardRequest.toDto(memberPrincipal.toDto()));
+        boardService.updateBoard(boardId, boardRequest.toDto(customUserDetails.toDto()));
         return "redirect:/boards/" + boardId;
     }
 
     @PostMapping("/{boardId}/delete")
-    public String boardDelete(@PathVariable Long boardId, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        boardService.deleteBoard(boardId, memberPrincipal.getUsername());
+    public String boardDelete(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        boardService.deleteBoard(boardId, customUserDetails.getUsername());
         return "redirect:/boards";
     }
 }

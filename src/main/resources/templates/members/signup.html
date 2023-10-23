@@ -7,27 +7,23 @@
 
 <main>
   <div style="text-align:center; max-width: 400px; margin:4rem auto">
-    <div class="form-signin w-100 m-auto">
+    <div class="form-signup w-100 m-auto">
       <form th:action="@{/members/signup}" method="post">
         <h1 class="h3 mb-3 fw-normal">회원가입</h1>
 
         <div class="form-floating">
-          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-          <label for="floatingInput">이메일</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com">
+          <label for="email">이메일</label>
         </div>
         <div class="form-floating">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="패스워드">
-          <label for="floatingPassword">패스워드</label>
-        </div>
-        <div class="form-floating">
-          <input type="password" class="form-control" id="password-check" placeholder="패스워드 확인">
-          <label for="floatingPassword">패스워드 확인</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="패스워드">
+          <label for="password">패스워드</label>
         </div>
 
         <div class="mb-3"></div>
         <button class="mb-2 w-100 btn btn-lg btn-primary" type="submit">회원가입</button>
-        <button class="mb-2 w-100 btn btn-lg btn-success">네이버 로그인</button>
-        <button class="mb-2 w-100 btn btn-lg btn-warning">카카오 로그인</button>
+        <!--<button class="mb-2 w-100 btn btn-lg btn-success">네이버 로그인</button>
+        <button class="mb-2 w-100 btn btn-lg btn-warning">카카오 로그인</button>-->
       </form>
     </div>
   </div>

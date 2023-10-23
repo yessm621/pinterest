@@ -26,16 +26,19 @@ public class Member extends BaseEntity {
     private String password;
 
     @Setter
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String nickname;
 
     @Setter
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000)
     private String description;
 
     @Setter
     @Column(length = 2000)
     private String image;
+
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole = MemberRole.USER;
 
     protected Member() {
     }
@@ -50,6 +53,10 @@ public class Member extends BaseEntity {
 
     public static Member of(String email, String password, String nickname, String description, String image) {
         return new Member(email, password, nickname, description, image);
+    }
+
+    public static Member of(String email, String password) {
+        return new Member(email, password, null, null, null);
     }
 
     @Override
