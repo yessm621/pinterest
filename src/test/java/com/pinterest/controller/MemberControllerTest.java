@@ -1,5 +1,6 @@
 package com.pinterest.controller;
 
+import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.request.MemberRequest;
@@ -7,7 +8,6 @@ import com.pinterest.dto.response.MemberResponse;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.MemberService;
 import com.pinterest.util.FormDataEncoder;
-import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -32,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MemberController.class)
-@Import({TestSecurityConfig.class, FormDataEncoder.class})
+@Import(FormDataEncoder.class)
 @DisplayName("View 컨트롤러 - 회원")
 class MemberControllerTest {
 
@@ -61,7 +58,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET 프로필 페이지 - 정상 호출")
     void givenNoting_whenRequestingProfileView_thenReturnProfileView() throws Exception {
         // Given
@@ -79,7 +76,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET 프로필 수정 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequestUpdateProfileView_thenReturnUpdatedProfilePage() throws Exception {
         Long memberId = 1L;
@@ -95,7 +92,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST 프로필 수정 - 정상 호출")
     void givenUpdatedMemberInfo_whenRequestUpdateMember_thenUpdatesMember() throws Exception {
         Long memberId = 1L;

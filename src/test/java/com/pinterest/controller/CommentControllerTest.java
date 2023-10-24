@@ -1,10 +1,10 @@
 package com.pinterest.controller;
 
+import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.CommentDto;
 import com.pinterest.dto.request.CommentRequest;
 import com.pinterest.service.CommentService;
 import com.pinterest.util.FormDataEncoder;
-import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
@@ -26,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CommentController.class)
-@Import({TestSecurityConfig.class, FormDataEncoder.class})
+@Import(FormDataEncoder.class)
 @DisplayName("View 컨트롤러 - Comment")
 class CommentControllerTest {
 
@@ -41,8 +39,8 @@ class CommentControllerTest {
         this.formDataEncoder = formDataEncoder;
     }
 
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] POST 댓글 등록 - 정상 호출")
     void givenCommentInfo_whenRequesting_thenSavesNewComment() throws Exception {
         // Given
@@ -64,8 +62,8 @@ class CommentControllerTest {
         then(commentService).should().saveComment(any(CommentDto.class));
     }
 
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] POST 댓글 삭제 - 정상 호출")
     void givenCommentIdTo_whenRequesting_thenDeletesComment() throws Exception {
         // Given
