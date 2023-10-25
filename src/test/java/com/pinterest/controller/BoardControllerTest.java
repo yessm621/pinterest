@@ -1,5 +1,6 @@
 package com.pinterest.controller;
 
+import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
@@ -8,7 +9,6 @@ import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import com.pinterest.util.FormDataEncoder;
-import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -37,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BoardController.class)
-@Import({TestSecurityConfig.class, FormDataEncoder.class})
+@Import(FormDataEncoder.class)
 @DisplayName("View 컨트롤러 - 보드")
 class BoardControllerTest {
 
@@ -56,6 +53,7 @@ class BoardControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET 보드 리스트 페이지 - 정상 호출")
     void givenNothing_whenRequestingBoardsView_thenReturnsBoardsView() throws Exception {
         // Given
@@ -75,6 +73,7 @@ class BoardControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET 보드 리스트 페이지 - 키워드를 통해 정상 호출")
     void givenSearchKeyword_whenRequestingBoardsView_thenReturnsBoardsView() throws Exception {
         // Given
@@ -98,6 +97,7 @@ class BoardControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET 게시글 리스트 (게시판) 페이지 - 페이징, 정렬 기능")
     void givenPagingAndSortingParams_whenSearchingBoardsView_thenReturnsBoardsView() throws Exception {
         // Given
@@ -127,7 +127,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET 보드 상세 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequestBoardView_thenReturnBoardView() throws Exception {
         // Given
@@ -158,8 +158,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
-    @DisplayName("[View] GET 새 보드 작성 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    @WithMockCustomUser
+    @DisplayName("[View] GET 새 보드 작성 페이지 - 정상 호출")
     void givenNothing_whenRequesting_thenReturnsNewBoardPage() throws Exception {
         // Given
 
@@ -170,8 +170,8 @@ class BoardControllerTest {
                 .andExpect(view().name("boards/form"));
     }
 
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] POST 새 보드 등록 - 정상 호출")
     void givenNewBoardInfo_whenRequesting_thenSavesNewBoard() throws Exception {
         // Given
@@ -205,7 +205,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET 보드 수정 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequesting_thenReturnsUpdatedBoardPage() throws Exception {
         // Given
@@ -223,7 +223,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST 보드 수정 - 정상 호출")
     void givenUpdatedBoardInfo_whenRequesting_thenUpdatesNewBoard() throws Exception {
         // Given
@@ -245,7 +245,7 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST 보드 삭제 - 정상 호출")
     void givenBoardIdToDelete_whenRequesting_thenDeletesBoard() throws Exception {
         // Given

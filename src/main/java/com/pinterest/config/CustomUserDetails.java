@@ -13,44 +13,36 @@ import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
-public class MemberPrincipal implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private String username;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
-    private String nickname;
-    private String description;
 
-    public static MemberPrincipal of(String username, String password, String nickname, String description) {
+    public static CustomUserDetails of(String username, String password) {
         Set<RoleType> roleTypes = Set.of(RoleType.USER);
 
-        return new MemberPrincipal(
+        return new CustomUserDetails(
                 username,
                 password,
                 roleTypes.stream()
                         .map(RoleType::getName)
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toUnmodifiableSet()),
-                nickname,
-                description
+                        .collect(Collectors.toUnmodifiableSet())
         );
     }
 
-    public static MemberPrincipal from(MemberDto dto) {
-        return MemberPrincipal.of(
+    public static CustomUserDetails from(MemberDto dto) {
+        return CustomUserDetails.of(
                 dto.getEmail(),
-                dto.getPassword(),
-                dto.getNickname(),
-                dto.getDescription()
+                dto.getPassword()
         );
     }
 
     public MemberDto toDto() {
         return MemberDto.of(
                 username,
-                password,
-                nickname,
-                description
+                password
         );
     }
 

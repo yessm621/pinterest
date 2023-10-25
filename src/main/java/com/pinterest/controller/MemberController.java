@@ -1,8 +1,9 @@
 package com.pinterest.controller;
 
-import com.pinterest.config.MemberPrincipal;
+import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.dto.request.MemberRequest;
 import com.pinterest.dto.response.MemberResponse;
 import com.pinterest.service.ArticleService;
@@ -36,11 +37,17 @@ public class MemberController {
         return "members/signup";
     }
 
+    @PostMapping("/signup")
+    public String signup(JoinRequest request) {
+        memberService.save(request);
+        return "redirect:/members/login";
+    }
+
     @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal MemberPrincipal memberPrincipal,
+    public String profile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                           Model model) {
-        MemberDto member = memberService.getMemberEmail(memberPrincipal.getUsername());
-        List<ArticleDto> articles = articleService.getArticles(memberPrincipal.getUsername());
+        MemberDto member = memberService.getMemberEmail(customUserDetails.getUsername());
+        List<ArticleDto> articles = articleService.getArticles(customUserDetails.getUsername());
         model.addAttribute("profile", member);
         model.addAttribute("articles", articles);
         return "profile/index";
@@ -64,9 +71,9 @@ public class MemberController {
 
     @PostMapping("/{profileId}/form")
     public String profileModify(@PathVariable Long profileId,
-                                @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+                                @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                 MemberRequest memberRequest) {
-        memberService.updateMember(profileId, memberRequest.toDto(memberPrincipal.getUsername()));
+        memberService.updateMember(profileId, memberRequest.toDto(customUserDetails.getUsername()));
         return "redirect:/members/" + profileId;
     }
 }

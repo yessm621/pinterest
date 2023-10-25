@@ -1,22 +1,45 @@
 package com.pinterest.service;
 
+import com.pinterest.config.CustomUserDetails;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Override
+    public CustomUserDetails loadUserByUsername(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(email));
+
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getMemberRole().name()));
+
+        return new CustomUserDetails(member.getEmail(), member.getPassword(), authorities);
+    }
+
+    @Transactional
+    public void save(JoinRequest dto) {
+        Member member = Member.of(dto.getEmail(), bCryptPasswordEncoder.encode(dto.getPassword()));
+        memberRepository.save(member);
+    }
 
     public MemberDto getMemberEmail(String email) {
         return memberRepository.findByEmail(email)

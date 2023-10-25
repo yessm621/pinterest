@@ -1,5 +1,6 @@
 package com.pinterest.controller;
 
+import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
@@ -10,7 +11,6 @@ import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import com.pinterest.util.FormDataEncoder;
-import com.pinterest.util.TestSecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -39,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ArticleController.class)
-@Import({TestSecurityConfig.class, FormDataEncoder.class})
+@Import(FormDataEncoder.class)
 @DisplayName("View 컨트롤러 - Article")
 class ArticleControllerTest {
 
@@ -61,6 +58,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET Article 리스트 페이지 - 정상 호출")
     void givenNothing_whenRequestingArticlesView_thenReturnArticlesView() throws Exception {
         // Given
@@ -80,6 +78,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET Article 리스트 페이지 - 키워드를 통해 정상 호출")
     void givenSearchKeyword_whenRequestingArticlesView_thenReturnArticlesView() throws Exception {
         // Given
@@ -105,6 +104,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
     @DisplayName("[View] GET Article 리스트 페이지 - 페이징, 정렬 기능")
     void givenPagingAndSortingParams_whenSearchingArticlesView_thenReturnArticlesView() throws Exception {
         // Given
@@ -134,7 +134,7 @@ class ArticleControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET Article 상세 페이지 - 정상 호출")
     void givenNothing_whenRequestingArticleView_thenReturnArticleView() throws Exception {
         // Given
@@ -174,7 +174,7 @@ class ArticleControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST Article 등록 - 정상 호출")
     void givenNewArticleInfo_whenRequestCreateArticle_thenSaveNewArticle() throws Exception {
         // Given
@@ -206,7 +206,7 @@ class ArticleControllerTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockCustomUser
     @DisplayName("[View] GET Article 수정 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequestUpdateArticleView_thenReturnUpdatedArticlePage() throws Exception {
         Long articleId = 1L;
@@ -222,7 +222,7 @@ class ArticleControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST Article 수정 - 정상 호출")
     void givenUpdatedArticleInfo_whenRequestUpdateArticle_thenUpdatesArticle() throws Exception {
         Long boardId = 1L;
@@ -243,7 +243,7 @@ class ArticleControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = "test@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithMockCustomUser
     @DisplayName("[View] POST Article 삭제 - 정상 호출, 인증된 사용자")
     void givenArticleId_whenRequestDeleteArticle_thenDeletesArticle() throws Exception {
         long articleId = 1L;
