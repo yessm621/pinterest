@@ -9,13 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SubscribeRequest {
 
-    private Long articleId;
+    private Long boardId;
 
     public static SubscribeRequest of(Long articleId) {
         return new SubscribeRequest(articleId);
     }
 
     public SubscribeDto toDto(MemberDto memberDto) {
-        return SubscribeDto.of(articleId, memberDto);
+        return SubscribeDto.of(boardId, memberDto);
     }
 }
