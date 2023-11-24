@@ -28,24 +28,6 @@
       </h6>
     </a>
 
-
-    <div class="text-center mb-5">
-      <th:block th:if="${#authorization.expression('isAuthenticated()')}">
-
-        <form th:action="@{/subscribes}" method="post">
-          <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
-          <button type="submit" class="btn btn-primary rounded-pill px-4">
-            Subscribe
-          </button>
-        </form>
-
-        <!--<a href="{% url 'subscribeapp:subscribe' %}?project_pk={{ target_project.pk }}"
-           class="btn btn-dark rounded-pill px-4">
-          Unsubscribe
-        </a>-->
-      </th:block>
-    </div>
-
     <hr>
 
     <img style="width: 100%; border-radius: 1rem; margin: 2rem 0;" th:src="${article.image}" alt="">

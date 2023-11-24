@@ -30,27 +30,27 @@
 <body>
 
 <main>
-  {% if article_list %}
-  <div class="container">
+  <th:block th:if="${!boards.isEmpty()}">
+    <div class="container">
+      <th:block th:each="board: ${boards}">
+        <a th:href="@{/boards/{boardId}(boardId=${board.id})}">
+          <div style="display: block; text-align: center;">
+            <img th:src="${board.image}" alt="">
+            <h5 class="mt-2" th:text="${board.title.length() > 8 ? #strings.substring(board.title, 0, 8) : board.title}">
+              보드 이름
+            </h5>
+          </div>
+        </a>
+      </th:block>
+    </div>
+  </th:block>
+  <th:block th:if="${boards.isEmpty()}">
+    <div class="text-center">
+      <h1>구독한 Board 가 없습니다.</h1>
+    </div>
+  </th:block>
 
-    {% for article in article_list %}
-      <a th:href="@{/articles/1}">
-      <!--<a th:href="@{/articles/{articleId}(articleId=${article.id})}">-->
-      <!--<a href="{% url 'articleapp:detail' pk=article.pk %}">-->
-        <div>
-          <img src="{{ article.image.url }}" alt="">
-        </div>
-      </a>
-    {% endfor %}
-  </div>
 
-  {% else %}
-  <div class="text-center">
-    <h1>구독한 Article 이 없습니다.</h1>
-  </div>
-  {% endif %}
-
-  {% include 'snippets/pagination.html' with page_obj=page_obj %}
   <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>
 
