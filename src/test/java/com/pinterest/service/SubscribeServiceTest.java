@@ -1,15 +1,15 @@
 package com.pinterest.service;
 
-import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.domain.Subscribe;
-import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.SubscribeDto;
-import com.pinterest.repository.ArticleRepository;
+import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.SubscribeRepository;
+import com.pinterest.repository.query.SubscribeQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,44 +40,47 @@ public class SubscribeServiceTest {
     MemberRepository memberRepository;
 
     @Mock
-    ArticleRepository articleRepository;
+    BoardRepository boardRepository;
+
+    @Mock
+    SubscribeQueryRepository subscribeQueryRepository;
 
     @Test
     @DisplayName("회원 이메일로 조회하면, 해당하는 구독 리스트를 반환한다.")
-    void givenMemberId_whenSearchingArticles_thenReturnArticles() {
+    void givenMemberId_whenSearchingBoards_thenReturnBoards() {
         // Given
         String email = "yessm621@gmail.com";
-        given(articleRepository.findByMember_Email(email)).willReturn(List.of(createArticle()));
+        given(subscribeQueryRepository.findSubscribeBoards(email)).willReturn(List.of(createBoard()));
 
         // When
-        List<ArticleDto> articles = sut.searchArticles(email);
+        List<BoardDto> boards = sut.searchBoards(email);
 
         // Then
-        then(articleRepository).should().findByMember_Email(email);
-        assertThat(articles).isNotEmpty();
+        then(subscribeQueryRepository).should().findSubscribeBoards(email);
+        assertThat(boards).isNotEmpty();
     }
 
     @Test
-    @DisplayName("구독을 하면, 회원과 article 정보를 저장한다.")
-    void givenSubscribeInfo_whenSavingSubscribe_thenSavesMemberAndArticle() {
+    @DisplayName("구독을 하면, 회원과 board 정보를 저장한다.")
+    void givenSubscribeInfo_whenSavingSubscribe_thenSavesMemberAndBoard() {
         // Given
         Subscribe subscribe = createSubscribe();
         given(memberRepository.findByEmail(any())).willReturn(Optional.of(createMember()));
-        given(articleRepository.findById(anyLong())).willReturn(Optional.of(createArticle()));
-        given(subscribeRepository.save(any(Subscribe.class))).willReturn(subscribe);
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(createBoard()));
 
         // When
         sut.saveSubscribe(createSubscribeDto());
 
         // Then
         then(memberRepository).should().findByEmail(any());
-        then(articleRepository).should().findById(anyLong());
-        then(subscribeRepository).should().save(any(Subscribe.class));
+        then(boardRepository).should().findById(anyLong());
+        verify(subscribeRepository, times(1)).save(any());
+        verify(subscribeRepository, never()).deleteById(any());
     }
 
     @Test
-    @DisplayName("구독을 취소하면, 회원과 article 정보를 삭제한다.")
-    void givenSubscribeInfo_whenDeletingSubscribe_thenDeletingMemberAndArticle() {
+    @DisplayName("구독을 취소하면, 회원과 board 정보를 삭제한다.")
+    void givenSubscribeInfo_whenDeletingSubscribe_thenDeletingMemberAndBoard() {
         // Given
         Long subscribe_id = 1L;
         willDoNothing().given(subscribeRepository).deleteById(subscribe_id);
@@ -92,7 +95,7 @@ public class SubscribeServiceTest {
     private Subscribe createSubscribe() {
         return Subscribe.of(
                 createMember(),
-                createArticle()
+                createBoard()
         );
     }
 
@@ -103,28 +106,11 @@ public class SubscribeServiceTest {
         );
     }
 
-    private Article createArticle() {
-        return Article.of(
-                createMember(),
-                createBoard(),
-                "article title",
-                "article content",
-                "article image",
-                "#hashtag"
-        );
-    }
-
-    private ArticleDto createArticleDto(String title, String content, String image, String hashtag) {
-        return ArticleDto.of(
-                1L,
-                1L,
+    private BoardDto createBoardDto() {
+        return BoardDto.of(
                 createMemberDto(),
-                title,
-                content,
-                image,
-                hashtag,
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                "board title",
+                "board image"
         );
     }
 
