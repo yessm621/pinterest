@@ -34,6 +34,9 @@ public class Board extends BaseEntity {
     @Column(length = 2000)
     private String image;
 
+    @OneToMany(mappedBy = "board")
+    private List<Subscribe> subscribes = new ArrayList<>();
+
     protected Board() {
     }
 
