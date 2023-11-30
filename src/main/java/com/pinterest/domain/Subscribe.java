@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@ToString(exclude = {"member", "article"})
+@ToString(exclude = {"member", "board"})
 public class Subscribe {
 
     @Id
@@ -22,18 +22,18 @@ public class Subscribe {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    private Article article;
+    private Board board;
 
     protected Subscribe() {
     }
 
-    private Subscribe(Member member, Article article) {
+    private Subscribe(Member member, Board board) {
         this.member = member;
-        this.article = article;
+        this.board = board;
     }
 
-    public static Subscribe of(Member member, Article article) {
-        return new Subscribe(member, article);
+    public static Subscribe of(Member member, Board board) {
+        return new Subscribe(member, board);
     }
 
     @Override

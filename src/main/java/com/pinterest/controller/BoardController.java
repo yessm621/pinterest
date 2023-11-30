@@ -7,6 +7,7 @@ import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
+import com.pinterest.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final SubscribeService subscribeService;
     private final PaginationService paginationService;
 
     @GetMapping
@@ -41,10 +43,13 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public String boardDetail(@PathVariable Long boardId, Model model) {
+    public String boardDetail(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                              Model model) {
         BoardWithArticleDto board = boardService.getBoardWithArticles(boardId);
+        boolean subscribeCheck = subscribeService.subscribeCheck(boardId, customUserDetails.getUsername());
         model.addAttribute("board", board);
         model.addAttribute("articles", board.getArticleDtoList());
+        model.addAttribute("subscribeCheck", subscribeCheck);
 
         return "boards/detail";
     }

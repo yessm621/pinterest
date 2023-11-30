@@ -25,6 +25,22 @@
         </button>
       </form>
     </th:block>
+    <th:block th:unless="${#authorization.expression('isAuthenticated()')} and ${board.getMemberDto().getEmail()} == ${#authentication.name}">
+      <form th:action="@{/subscribes}" method="post">
+        <input type="hidden" class="boards-id" th:name="boardId" th:value="${board.id}">
+        <th:block th:if="${subscribeCheck}">
+          <button type="submit" class="btn btn-danger rounded-pill px-4">
+            Subscribe Cancel
+          </button>
+        </th:block>
+        <th:block th:unless="${subscribeCheck}">
+          <button type="submit" class="btn btn-primary rounded-pill px-4">
+            Subscribe
+          </button>
+        </th:block>
+
+      </form>
+    </th:block>
   </div>
 
   <!--magic grid-->
