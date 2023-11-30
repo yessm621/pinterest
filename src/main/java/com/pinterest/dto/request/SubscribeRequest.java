@@ -11,8 +11,8 @@ public class SubscribeRequest {
 
     private Long boardId;
 
-    public static SubscribeRequest of(Long articleId) {
-        return new SubscribeRequest(articleId);
+    public static SubscribeRequest of(Long boardId) {
+        return new SubscribeRequest(boardId);
     }
 
     public SubscribeDto toDto(MemberDto memberDto) {
