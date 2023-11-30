@@ -35,6 +35,6 @@ public class SubscribeController {
     public String saveSubscribe(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                 SubscribeRequest request) {
         subscribeService.saveSubscribe(request.toDto(customUserDetails.toDto()));
-        return "redirect:/boards/" + request.getBoardId();
+        return "redirect:/subscribes";
     }
 }

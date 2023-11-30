@@ -4,6 +4,8 @@ import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.SubscribeDto;
+import com.pinterest.dto.request.SubscribeRequest;
 import com.pinterest.service.SubscribeService;
 import com.pinterest.util.FormDataEncoder;
 import org.junit.jupiter.api.DisplayName;
@@ -12,15 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SubscribeController.class)
@@ -67,6 +71,28 @@ class SubscribeControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(subscribeService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("[View] POST 구독 페이지 - 구독/구독취소 하기")
+    void givenSubscribeInfo_whenRequestSubscribeOrCancel_thenSave() throws Exception {
+        // Given
+        Long boardId = 1L;
+        SubscribeRequest subscribeRequest = SubscribeRequest.of(boardId);
+        willDoNothing().given(subscribeService).saveSubscribe(any(SubscribeDto.class));
+
+        // When & Then
+        mvc.perform(
+                        post("/subscribes")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .contentType(formDataEncoder.encode(subscribeRequest))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/subscribes"))
+                .andExpect(redirectedUrl("/subscribes"));
+        then(subscribeService).should().saveSubscribe(any(SubscribeDto.class));
     }
 
     private BoardDto createBoardDto() {
