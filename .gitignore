@@ -204,6 +204,9 @@ gradle-app.setting
 ## Querydsl
 /src/main/generated
 
+# Tailwind CSS
+node_modules/
+
 *.yml
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,gradle,windows,macos
