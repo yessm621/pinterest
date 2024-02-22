@@ -1,5 +1,6 @@
 package com.pinterest.config;
 
+import com.pinterest.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +14,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomOAuth2UserService customOAuth2UserService;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 PathRequest.toStaticResources().atCommonLocations()
@@ -33,12 +37,12 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/")
                 .usernameParameter("email")
                 .and()
-                .logout()
-                .logoutSuccessUrl("/members/login")
-                .invalidateHttpSession(true)
-                .and()
-                .csrf().disable()
-                .build();
+                .oauth2Login()
+                .loginPage("/members/login")
+                .defaultSuccessUrl("/")
+                .userInfoEndpoint().userService(customOAuth2UserService);
+
+        return http.build();
     }
 
     @Bean

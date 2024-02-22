@@ -22,7 +22,7 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false, length = 255)
     private String email;
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String password;
 
     @Setter
@@ -40,23 +40,41 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole = MemberRole.USER;
 
+    private String provider;
+
     protected Member() {
     }
 
-    private Member(String email, String password, String nickname, String description, String image) {
+    private Member(String email, String password, String nickname, String description, String image, MemberRole memberRole) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.description = description;
         this.image = image;
+        this.memberRole = memberRole;
+    }
+
+    public Member update(String nickname, String image, String provider) {
+        this.nickname = nickname;
+        this.image = image;
+        this.provider = provider;
+        return this;
+    }
+
+    public String getMemberRoleKey() {
+        return this.memberRole.getKey();
     }
 
     public static Member of(String email, String password, String nickname, String description, String image) {
-        return new Member(email, password, nickname, description, image);
+        return new Member(email, password, nickname, description, image, null);
     }
 
-    public static Member of(String email, String password) {
-        return new Member(email, password, null, null, null);
+    public static Member of(String email, String password, MemberRole memberRole) {
+        return new Member(email, password, null, null, null, memberRole);
+    }
+
+    public static Member of(String email, String nickname, String image, MemberRole memberRole) {
+        return new Member(email, null, nickname, null, image, memberRole);
     }
 
     @Override

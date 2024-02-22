@@ -2,6 +2,7 @@ package com.pinterest.service;
 
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.domain.Member;
+import com.pinterest.domain.MemberRole;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.repository.MemberRepository;
@@ -30,14 +31,18 @@ public class MemberService implements UserDetailsService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException(email));
 
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getMemberRole().name()));
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getMemberRole().getKey()));
 
-        return new CustomUserDetails(member.getEmail(), member.getPassword(), authorities);
+        return new CustomUserDetails(member.getEmail(), member.getPassword(), authorities, null);
     }
 
     @Transactional
     public void save(JoinRequest dto) {
-        Member member = Member.of(dto.getEmail(), bCryptPasswordEncoder.encode(dto.getPassword()));
+        Member member = Member.of(
+                dto.getEmail(),
+                bCryptPasswordEncoder.encode(dto.getPassword()),
+                MemberRole.USER
+        );
         memberRepository.save(member);
     }
 
