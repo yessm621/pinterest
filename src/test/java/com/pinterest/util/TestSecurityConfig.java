@@ -24,7 +24,6 @@ public class TestSecurityConfig {
                 "test@gmail.com",
                 "pw",
                 "test-nickname",
-                "test description",
                 "test image"
         )));
     }

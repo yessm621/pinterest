@@ -291,7 +291,6 @@ class BoardControllerTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()

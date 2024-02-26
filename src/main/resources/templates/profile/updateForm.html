@@ -6,29 +6,45 @@
 <body>
 
 <main>
-  <div style="text-align:center; max-width: 400px; margin:4rem auto">
-    <div class="form-signin w-100 m-auto">
-      <form th:action="@{/members/{memberId}/form(memberId=${profile.id})}" method="post" enctype="multipart/form-data"
-            th:object="${profile}">
-        <h1 class="h3 mb-3 fw-normal">프로필 수정</h1>
-        <div class="form-floating">
-          <input type="text" class="form-control" id="nickname" th:field="${profile.nickname}"
-                 placeholder="닉네임">
-          <label for="nickname">닉네임</label>
+  <div class="max-w-2xl mx-auto my-10 p-8 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6">프로필 수정</h1>
+    <p class="text-sm mb-6">
+      개인 정보는 비공개로 유지하세요.
+      여기에 작성한 정보는 회원님의 프로필을 볼 수 있는 모든 사람에게 표시됩니다.
+    </p>
+    <form th:action="@{/members/{memberId}/form(memberId=${profile.id})}" method="post" enctype="multipart/form-data"
+          th:object="${profile}">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">사진</label>
+        <div class="flex items-center space-x-4">
+          <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+            <th:block th:if="${profile.image != null and profile.image != ''}">
+              <img th:src="${profile.image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
+            </th:block>
+            <th:block th:if="${profile.image == null or profile.image == ''}">
+              <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                   th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
+            </th:block>
+          </span>
+          <!--TODO:: 파일 업로드로 변경-->
+          <input type="file"
+                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
         </div>
-        <div class="form-floating">
-          <textarea class="form-control" placeholder="소개" id="description" th:field="${profile.description}"
-                    style="height: 100px"></textarea>
-          <label for="description">소개</label>
-        </div>
-        <div class="mb-3">
-          <label for="image" class="form-label"></label>
-          <input class="form-control" type="text" id="image" th:field="${profile.image}">
-          <!--<input class="form-control" type="file" id="image" th:field="${profile.image}">-->
-        </div>
-        <button class="btn btn-dark rounded-pill col-6 mt-3" type="submit">프로필 수정</button>
-      </form>
-    </div>
+        <input class="form-control mt-2" type="text" id="image" th:field="${profile.image}">
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-1" for="nickname">닉네임</label>
+        <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="nickname" th:field="${profile.nickname}" placeholder="닉네임">
+      </div>
+      <div class="flex justify-between">
+        <button type="submit"
+                class="rounded-full bg-gray-400 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+          저장
+        </button>
+      </div>
+    </form>
   </div>
 </main>
 

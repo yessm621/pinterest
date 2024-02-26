@@ -203,7 +203,6 @@ class ArticleServiceTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image"
         );
     }
@@ -239,7 +238,6 @@ class ArticleServiceTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()

@@ -9,11 +9,10 @@ import lombok.Data;
 public class MemberRequest {
 
     private String nickname;
-    private String description;
     private String image;
 
-    public static MemberRequest of(String nickname, String description, String image) {
-        return new MemberRequest(nickname, description, image);
+    public static MemberRequest of(String nickname, String image) {
+        return new MemberRequest(nickname, image);
     }
 
     public MemberDto toDto(String email) {
@@ -22,7 +21,6 @@ public class MemberRequest {
                 email,
                 null,
                 nickname,
-                description,
                 image,
                 null,
                 null

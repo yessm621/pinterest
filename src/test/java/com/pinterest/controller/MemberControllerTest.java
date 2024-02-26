@@ -96,7 +96,7 @@ class MemberControllerTest {
     @DisplayName("[View] POST 프로필 수정 - 정상 호출")
     void givenUpdatedMemberInfo_whenRequestUpdateMember_thenUpdatesMember() throws Exception {
         Long memberId = 1L;
-        MemberRequest memberRequest = MemberRequest.of("nickname", "description", "image");
+        MemberRequest memberRequest = MemberRequest.of("nickname", "image");
         willDoNothing().given(memberService).updateMember(eq(memberId), any(MemberDto.class));
 
         mvc.perform(
@@ -117,7 +117,6 @@ class MemberControllerTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()

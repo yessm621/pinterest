@@ -70,7 +70,6 @@ class MemberServiceTest {
 
         // Then
         assertThat(member).hasFieldOrPropertyWithValue("nickname", dto.getNickname());
-        assertThat(member).hasFieldOrPropertyWithValue("description", dto.getDescription());
         assertThat(member).hasFieldOrPropertyWithValue("image", dto.getImage());
         then(memberRepository).should().getReferenceById(dto.getId());
     }
@@ -94,7 +93,6 @@ class MemberServiceTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image"
         );
     }
@@ -105,7 +103,6 @@ class MemberServiceTest {
                 "yessm621@gmail.com",
                 "test123",
                 "yessm",
-                "승미입니다.",
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()

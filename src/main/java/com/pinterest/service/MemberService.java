@@ -67,9 +67,6 @@ public class MemberService implements UserDetailsService {
                 if (dto.getNickname() != null) {
                     member.setNickname(dto.getNickname());
                 }
-                if (dto.getDescription() != null) {
-                    member.setDescription(dto.getDescription());
-                }
                 if (dto.getImage() != null) {
                     member.setImage(dto.getImage());
                 }

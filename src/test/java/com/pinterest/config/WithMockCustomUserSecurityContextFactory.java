@@ -17,7 +17,7 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("USER"));
-        CustomUserDetails principal = new CustomUserDetails("test@gmail.com", "test", authorities);
+        CustomUserDetails principal = new CustomUserDetails("test@gmail.com", "test", authorities, null);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities());
         context.setAuthentication(auth);

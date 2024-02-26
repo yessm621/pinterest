@@ -31,10 +31,6 @@ public class Member extends BaseEntity {
 
     @Setter
     @Column(length = 2000)
-    private String description;
-
-    @Setter
-    @Column(length = 2000)
     private String image;
 
     @Enumerated(EnumType.STRING)
@@ -45,11 +41,10 @@ public class Member extends BaseEntity {
     protected Member() {
     }
 
-    private Member(String email, String password, String nickname, String description, String image, MemberRole memberRole) {
+    private Member(String email, String password, String nickname, String image, MemberRole memberRole) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.description = description;
         this.image = image;
         this.memberRole = memberRole;
     }
@@ -65,16 +60,16 @@ public class Member extends BaseEntity {
         return this.memberRole.getKey();
     }
 
-    public static Member of(String email, String password, String nickname, String description, String image) {
-        return new Member(email, password, nickname, description, image, null);
+    public static Member of(String email, String password, String nickname, String image) {
+        return new Member(email, password, nickname, image, null);
     }
 
     public static Member of(String email, String password, MemberRole memberRole) {
-        return new Member(email, password, null, null, null, memberRole);
+        return new Member(email, password, null, null, memberRole);
     }
 
     public static Member of(String email, String nickname, String image, MemberRole memberRole) {
-        return new Member(email, null, nickname, null, image, memberRole);
+        return new Member(email, null, nickname, image, memberRole);
     }
 
     @Override

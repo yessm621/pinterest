@@ -16,25 +16,24 @@ public class MemberDto {
     private String email;
     private String password;
     private String nickname;
-    private String description;
     private String image;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static MemberDto of(String nickname, String description, String image) {
-        return new MemberDto(null, null, null, nickname, description, image, null, null);
+    public static MemberDto of(String email, String nickname, String image) {
+        return new MemberDto(null, email, null, nickname, image, null, null);
     }
 
     public static MemberDto of(String email, String password) {
-        return new MemberDto(null, email, password, null, null, null, null, null);
+        return new MemberDto(null, email, password, null, null, null, null);
     }
 
     public static MemberDto of(String email) {
-        return new MemberDto(null, email, null, null, null, null, null, null);
+        return new MemberDto(null, email, null, null, null, null, null);
     }
 
-    public static MemberDto of(Long id, String email, String password, String nickname, String description, String image, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new MemberDto(id, email, password, nickname, description, image, createdAt, modifiedAt);
+    public static MemberDto of(Long id, String email, String password, String nickname, String image, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new MemberDto(id, email, password, nickname, image, createdAt, modifiedAt);
     }
 
     // entity -> dto
@@ -44,7 +43,6 @@ public class MemberDto {
                 entity.getEmail(),
                 entity.getPassword(),
                 entity.getNickname(),
-                entity.getDescription(),
                 entity.getImage(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
@@ -57,7 +55,6 @@ public class MemberDto {
                 email,
                 password,
                 nickname,
-                description,
                 image
         );
     }
