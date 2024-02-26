@@ -6,65 +6,129 @@
 <body>
 
 <main class="article">
-  <div style="text-align: center; justify-content: center; max-width: 500px; margin: 4rem auto;">
-    <p>
-      마지막 로그인 시간
-      <br>
-      <th:block th:datetime="${profile.modifiedAt}"
-                th:text="${#temporals.format(profile.modifiedAt, 'yyyy-MM-dd HH:mm:ss')}">
-        마지막 로그인 시간
+  <div class="flex w-full flex-col items-center justify-center bg-white text-center mt-6">
+    <div class="mb-2 flex items-center justify-center">
+      <th:block th:if="${profile.image != null and profile.image != ''}">
+        <img th:src="${profile.image}" alt="" class="w-32 h-32 rounded-full">
       </th:block>
-    </p>
-    <!--if 프로필이 있을 경우-->
-    <th:block th:if="${profile.image != null and profile.image != ''}">
-      <img th:src="${profile.image}" alt=""
-           style="height: 12rem; width: 12rem; border-radius:20rem; margin-bottom:2rem; object-fit: cover;">
+      <th:block th:if="${profile.image == null or profile.image == ''}">
+        <div class="w-32 h-32 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-lg font-bold"
+             th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
+      </th:block>
+    </div>
+    <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>
+    <p class="mt-1 text-sm text-gray-500" th:text="${profile.email}">이메일</p>
+    <!--TODO:: 구독자 수 표시하기-->
+    <p class="mt-1 text-base text-gray-900">구독 0명</p>
+    <div class="mt-2 flex space-x-2">
+    <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
+      <a th:href="@{/members/{memberId}/form(memberId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
+        프로필 수정
+      </a>
     </th:block>
-    <th:block th:if="${profile.image == null or profile.image == ''}">
-      <div
-          style="margin: 0 auto; height: 12rem; width: 12rem; border-radius:20rem; margin-bottom:2rem; font-size: 4rem; color:#ffffff; background-color: #4a5568; padding: 3rem 0;"
-          th:text="${#strings.substring(profile.email, 0, 1)}">
-        프로필 이니셜
+    <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} != ${#authentication.name}">
+      <a href="#" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
+        구독
+      </a>
+    </th:block>
+    </div>
+    <div class="mt-6 flex space-x-4">
+      <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+        <ul id="tab-button-nav" class="flex flex-wrap -mb-px">
+          <li class="me-2">
+            <a href="#" data-tab-section="tab-section-1" class="tab-section-1 tab-button inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">생성됨</a>
+          </li>
+          <li class="me-2">
+            <a href="#" data-tab-section="tab-section-2" class="tab-section-2 tab-button inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">저장됨</a>
+          </li>
+        </ul>
       </div>
-    </th:block>
-    <h2>
-      <th:block th:text="${profile.nickname}">프로필 이름</th:block>
-      <th:block
-          th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
-        <a class="material-icons"
-           style="box-shadow: 0 0 4px #ccc; border-radius:10rem; padding: .4rem;"
-           th:href="@{/members/{memberId}/form(memberId=${profile.id})}">
-          edit</a>
-      </th:block>
-    </h2>
-    <th:block th:if="${profile.description != null and profile.description != ''}">
-      <h5 style="margin-bottom:4rem;">
-        <th:block th:text="${profile.description}">프로필 설명</th:block>
-      </h5>
-    </th:block>
+      <div>
+
+      </div>
+    </div>
   </div>
 
-  <th:block th:if="${!articles.isEmpty()}">
-    <div class="container">
-      <th:block th:each="article: ${articles}">
-        <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-          <div>
-            <img th:src="${article.image}" alt="">
-          </div>
-          <h6 class="mt-2" th:text="${article.title}">
-            article 이름
-          </h6>
+  <section id="tab-section-1" class="tab-section" hidden>
+    <!--TODO:: 내가 생성한 핀들만 표출되도록 변경-->
+    <th:block th:if="${articles.isEmpty()}">
+      <div class="text-center">
+        <p class="mt-10 mb-6 text-base">아직 아무것도 없네요! 내가 만든 핀이 여기에 보관됩니다.</p>
+        <a th:href="@{/articles/form}" class="rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+          핀 만들기
         </a>
-      </th:block>
-    </div>
-  </th:block>
-  <th:block th:if="${articles.isEmpty()}">
-    <div class="text-center">
-      <h1>생성된 Article 이 없습니다.</h1>
-    </div>
-  </th:block>
+      </div>
+    </th:block>
+    <th:block th:if="${!articles.isEmpty()}">
+      내가 생성한 핀들을 표출합니다.
+    </th:block>
+  </section>
+
+  <section id="tab-section-2" class="tab-section">
+    <th:block th:if="${articles.isEmpty()}">
+      <div class="text-center">
+        <p class="mt-10 mb-6 text-base">아직 아무것도 없네요! 아이디어를 수집해보세요.</p>
+        <a th:href="@{/}" class="rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+          아이디어 둘러보기
+        </a>
+      </div>
+    </th:block>
+    <th:block th:if="${!articles.isEmpty()}">
+      <div class="container">
+        <th:block th:each="article: ${articles}">
+          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+            <div>
+              <img th:src="${article.image}" alt="">
+            </div>
+            <h6 class="mt-2" th:text="${article.title}">
+              article 이름
+            </h6>
+          </a>
+        </th:block>
+      </div>
+    </th:block>
+  </section>
   </div>
   <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
+  <script>
+      const $nav = document.querySelector('#tab-button-nav')
+      const $sections = document.querySelectorAll('.tab-section');
+
+      $nav.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('tab-button')) {
+              return;
+          }
+
+          const focusedTabId = e.target.dataset.tabSection;
+
+          $sections.forEach(($section) => {
+              if ($section.id === focusedTabId) {
+                  $section.removeAttribute('hidden');
+              } else {
+                  $section.setAttribute('hidden', true);
+              }
+          });
+      });
+
+      var currentButton;
+      var buttons = document.querySelector('#tab-button-nav')
+
+      function clickHandler(e){
+          if(currentButton){
+              currentButton.classList.remove('text-red-600');
+              currentButton.classList.remove('border-red-600');
+              currentButton.classList.remove('dark:text-red-500');
+              currentButton.classList.remove('dark:border-red-500');
+          }
+          e.target.classList.add('text-red-600');
+          e.target.classList.add('border-red-600');
+          e.target.classList.add('dark:text-red-500');
+          e.target.classList.add('dark:border-red-500');
+          currentButton = e.target;
+      }
+
+      buttons.addEventListener('click', clickHandler);
+  </script>
 </main>
 
 </body>

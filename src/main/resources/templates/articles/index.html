@@ -3,109 +3,76 @@
 <head>
   <title>Articles | Pinterest</title>
 </head>
+<style>
+    .bg::before {
+        content: "";
+        opacity: 0.5;
+        position: absolute;
+        background-color: #000;
+    }
+</style>
 <body>
 
 <main class="article">
-  <div class="flex align-content-center justify-content-center h-100">
-    <form th:action="@{/articles}" method="get" style="width: 60%; margin: auto;">
-      <div class="input-group mb-3">
-        <div>
-          <select class="form-select" id="search-type" name="searchType">
-            <th:block th:each="searchType: ${searchTypes}">
-              <option th:value="${searchType.name()}" th:text="${searchType.getDescription()}"
-                      th:selected="${param.searchType != null && (param.searchType.toString == searchType.name())}">
-                옵션
-              </option>
-            </th:block>
-          </select>
-        </div>
-        <input type="text" class="form-control" name="searchKeyword" th:value="${param.searchKeyword}">
-        <div class="input-group-append">
-          <button type="submit" class="btn btn-secondary">검색</button>
-        </div>
-      </div>
-    </form>
-  </div>
+  <div class="relative isolate px-6 lg:px-8">
 
-  <div th:object="${articles}" class="row aos-init aos-animate py-2" data-aos="fade-up">
-    <div class="col-lg-12 d-flex justify-content-center">
-      <ul id="sort-tab">
-        <a th:href="@{/articles(
-            page=${articles.number},
-            sort='title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} != 'DESC' ? ',desc': '') : ''))}">
-          <li id="active-title" th:text="'제목'">제목</li>
-        </a>
-        <a th:href="@{/articles(
-            page=${articles.number},
-            sort='hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} != 'DESC' ? ',desc': '') : ''))}">
-          <li id="active-hashtag" th:text="'해시태그'">해시태그</li>
-        </a>
-        <a th:href="@{/articles(
-            page=${articles.number},
-            sort='createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} != 'DESC' ? ',desc': '') : ''))}">
-          <li id="active-created" th:text="'작성일'">작성일</li>
-        </a>
-      </ul>
-    </div>
-  </div>
-
-  <th:block th:if="${!articles.isEmpty()}">
-    <div class="container">
-      <th:block th:each="article: ${articles}">
-        <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-          <div>
-            <img th:src="${article.image}" alt="">
+    <th:block th:if="${!articles.isEmpty()}">
+      <div class="max-w-2xl mx-auto mb-10">
+        <form th:action="@{/articles}" method="get">
+          <div class="flex items-center w-full px-4 py-2 bg-gray-200 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+            </svg>
+            <input
+                class="flex h-10 rounded-md border border-input px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full pl-2 bg-transparent focus:outline-none"
+                placeholder="검색" type="search" name="searchKeyword" th:value="${param.searchKeyword}">
           </div>
-          <h6 class="mt-2" th:text="${article.title}">
-            article 이름
-          </h6>
-        </a>
-      </th:block>
-    </div>
-    <div th:object="${articles}" style="margin: 1rem 0;" class="row aos-init aos-animate py-2" data-aos="fade-up">
-      <div class="col-lg-12 d-flex justify-content-center">
-        <ul id="pagination">
-          <a th:href="@{/articles(page=${articles.number - 1},
-               sort=(*{sort.getOrderFor('title')} != null ?
-               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
-               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
-               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
-            <li>&laquo;</li>
-          </a>
-          <a th:each="page: ${pagination}"
-             th:href="@{/articles(
-               page=${page},
-               sort=(*{sort.getOrderFor('title')} != null ?
-               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
-               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
-               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
-            <li th:text="${page + 1}" th:class="(${page} == ${articles.number} ? 'filter-active' : '')">
-              페이지
-            </li>
-          </a>
-          <a th:href="@{/articles(page=(${articles.number == articles.totalPages - 1} ? ${articles.number} : ${articles.number + 1}),
-               sort=(*{sort.getOrderFor('title')} != null ?
-               'title'+(*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} == 'DESC' ? ',desc': '') : '') :
-               (*{sort.getOrderFor('hashtag')} != null ? 'hashtag'+(*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} == 'DESC' ? ',desc': '') : '') :
-               'createdAt'+(*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} == 'DESC' ? ',desc': '') : ''))))}">
-            <li>&raquo;</li>
-          </a>
-        </ul>
+        </form>
       </div>
-    </div>
-  </th:block>
-  <th:block th:if="${articles.isEmpty()}">
-    <div class="text-center">
-      <h1>생성된 Article 이 없습니다.</h1>
-    </div>
-  </th:block>
+      <div class="container">
+        <th:block th:each="article: ${articles}">
+          <!--TODO:: 무한 스크롤 기능 추가하기-->
+          <!--TODO:: 검색 시 데이터가 없을 경우엔 생성된 아이디어가 없다는 문구가 안나오도록 설정하기-->
+          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+            <div>
+              <img th:src="${article.image}" alt="">
+            </div>
+            <h6 class="mt-2" th:text="${article.title}">
+              핀 이름
+            </h6>
+          </a>
+        </th:block>
+      </div>
+    </th:block>
 
-  <div style="text-align:center;">
-    <a th:href="@{/articles/form}" class="btn btn-dark rounded-pill mt-3 mb-3 px-3">
-      Article 만들기
-    </a>
+    <th:block th:if="${articles.isEmpty()}">
+<!--      <div th:style="'background: url(/images/pinterest_bg.png) no-repeat center; background-size: cover;'"></div>-->
+        <div class="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+             aria-hidden="true">
+          <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#e03d48] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+               style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+        </div>
+        <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+            <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+              생성된 핀이 없습니다.
+              <a th:href="@{/articles/form}" class="font-semibold text-red-600">
+                <span class="absolute inset-0" aria-hidden="true"></span>핀 만들기 <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+             aria-hidden="true">
+          <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#e03d48] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+               style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+        </div>
+
+    </th:block>
+    <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
   </div>
-  <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>
 
 </body>

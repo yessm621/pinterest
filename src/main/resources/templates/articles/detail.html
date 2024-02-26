@@ -6,97 +6,218 @@
 <body>
 
 <main>
-  <div style="text-align: center; max-width: 700px; margin: 4rem auto;">
-    <span class="badge badge-pill badge-dark" style="background-color: black;"
-          th:text="${article.hashtag}">해시태그</span>
-    <h1 th:text="${article.title}">
-      article 제목
-    </h1>
-    <div style="height:2rem;">
-      <a href="{% url 'likeapp:article_like' pk=target_article.pk %}">
-        <i style="verticla-align: middle; font-size:1.2rem; color: #f77" class="material-icons">
-          favorite
-        </i>
-      </a>
-      <span style="verticla-align: middle; font-size:1.2rem;">
-                좋아요 갯수
-      </span>
+  <div class="max-w-4xl mx-auto h-192 my-8 px-6 py-10 bg-white rounded-lg shadow-md flex">
+    <div class="flex-none w-1/2 relative">
+      <img th:src="${article.image}" alt="" class="absolute inset-0 h-full object-cover rounded-lg m-auto"
+           style="aspect-ratio: 192 / 192;">
     </div>
-    <a th:href="@{/members/{memberId}(memberId=${article.getMemberDto().id})}">
-      <h6 th:text="${article.getMemberDto().nickname}">
-        작성자
-      </h6>
-    </a>
+    <div class="flex-auto pl-6">
+      <div class="flex items-start justify-between">
+        <div></div>
+        <div class="flex justify-between">
+          <!--TODO:: Board 가져오기, 만들기-->
+          <div class="relative mt-2">
+            <button onclick="boardToggleBtn()" id="boardBtn" type="button"
+                    class="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900"
+                    aria-expanded="false">
+              <span>배경화면</span>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                      clip-rule="evenodd"/>
+              </svg>
+            </button>
+            <div id="boardToggle"
+                 class="absolute -left-10 max-w-sm mx-auto my-3 bg-white rounded-lg shadow-md overflow-hidden opacity-0">
+              <div class="px-2 py-4">
+                <div class="w-full font-bold text-sm-center mb-2">저장</div>
 
-    <hr>
-
-    <img style="width: 100%; border-radius: 1rem; margin: 2rem 0;" th:src="${article.image}" alt="">
-    <div style="text-align:left;" th:text="${article.content}">
-      article 본문
-    </div>
-
-    <th:block
-        th:if="${#authorization.expression('isAuthenticated()')} and ${article.getMemberDto().getEmail()} == ${#authentication.name}">
-      <div class="py-4">
-        <form th:action="@{/articles/{articleId}/delete(articleId=${article.id})}" th:method="post">
-          <a th:href="@{/articles/{articleId}/form(articleId=${article.id})}"
-             class="btn btn-primary rounded-pill col-3">
-            수정
-          </a>
-          <button type="submit" class="btn btn-danger rounded-pill col-3">삭제</button>
-        </form>
-      </div>
-    </th:block>
-
-    <hr>
-
-    <!--댓글 생성-->
-    <div style="text-align:center; max-width: 400px; margin:4rem auto">
-      <div class="form-signin w-100 m-auto">
-        <form th:action="@{/comments/new}" method="post">
-          <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
-          <h1 class="h3 mb-3 fw-normal">댓글 작성</h1>
-          <div class="form-floating">
-            <textarea class="form-control" placeholder="내용" id="content" name="content"
-                      style="height: 100px"></textarea>
-            <label for="content">내용</label>
-          </div>
-          <div class="mb-3"></div>
-          <button class="btn btn-dark rounded-pill col-6 mt-3" type="submit">작성</button>
-        </form>
-      </div>
-    </div>
-
-    <th:block th:if="${!comments.isEmpty()}">
-      <div th:each="comment: ${comments}"
-           style="text-align:left; padding:4%; margin:1rem 0; border-radius:1rem; border: 1px solid #bbb;">
-        <form th:action="@{/comments/{commentId}/delete(commentId=${comment.id})}" method="post">
-          <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
-          <div>
-            <strong th:text="${comment.getMemberDto().nickname}">
-              댓글 작성자
-            </strong>
-            &nbsp&nbsp&nbsp
-            <span th:datetime="${comment.createdAt}"
-                  th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">댓글 작성시간</span>
-          </div>
-          <span th:text="${comment.content}">댓글 내용</span>
-          <div style="margin:1rem 0;"></div>
-
-          <th:block
-              th:if="${#authorization.expression('isAuthenticated()')} and ${comment.getMemberDto().getEmail()} == ${#authentication.name}">
-            <div style="text-align:right">
-              <button type="submit" class="btn btn-danger rounded-pill px-4">
-                삭제
-              </button>
+                <div class="w-full overflow-auto h-64">
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center ml-4 mt-4">
+                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-200"></span>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold">배경화면</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-full flex items-center justify-between mt-4">
+                  <button
+                      class="mx-10 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground hover:bg-primary/90 h-10 flex items-center justify-center px-16 py-2 bg-gray-200 rounded-full">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="h-5 w-5 text-gray-600"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="M12 5v14"></path>
+                    </svg>
+                    <span class="ml-2 text-sm">보드 만들기</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </th:block>
-
-        </form>
+          </div>
+          <a href="#"
+             class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+            저장
+          </a>
+        </div>
       </div>
-    </th:block>
+      <div class="items-start mt-2">
+        <h2 class="text-2xl font-bold" th:text="${article.title}">핀 제목</h2>
+        <p class="mt-2 text-sm text-gray-600" th:text="${article.hashtag}">해시태그</p>
+      </div>
+      <div class="text-left mt-6" th:text="${article.content}">
+        article 본문
+      </div>
+      <div class="flex items-baseline my-8">
+        <div class="space-x-1 text-sm font-medium leading-none">
+          <div class="flex items-center space-x-3">
+            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
+                <img th:src="${article.getMemberDto().image}" alt="">
+              </th:block>
+              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
+                <div
+                    class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
+                    th:text="${#strings.substring(article.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
+              </th:block>
+            </span>
+            <div>
+              <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname}">작성자</div>
+              <!--TODO:: 구독 표시-->
+              <div class="text-xs text-gray-500">구독 0명</div>
+            </div>
+          </div>
+        </div>
+        <div class="ml-auto my-auto text-sm font-medium leading-none text-red-600">
+          <a href="#"
+             class="inline-flex items-center justify-center rounded-full bg-gray-200 px-3.5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+            구독
+          </a>
+        </div>
+      </div>
 
+
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">댓글</h2>
+      </div>
+      <div class="space-y-4">
+        <th:block th:if="${comments.isEmpty()}">
+          <p class="text-sm text-gray-500 mb-10">
+            아직 댓글이 없습니다! 대화를 시작하려면 하나를 추가하세요.
+          </p>
+        </th:block>
+        <th:block th:if="${!comments.isEmpty()}">
+          <div class="flex items-start space-x-3 mb-2" th:each="comment: ${comments}">
+            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+              <th:block th:if="${comment.getMemberDto().image != null and comment.getMemberDto().image != ''}">
+                <img th:src="${comment.getMemberDto().image}" alt="">
+              </th:block>
+              <th:block th:if="${comment.getMemberDto().image == null or comment.getMemberDto().image == ''}">
+                <div
+                    class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
+                    th:text="${#strings.substring(comment.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
+              </th:block>
+            </span>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold" th:text="${comment.getMemberDto().nickname}">닉네임</span>
+                <span class="text-xs text-gray-500" th:datetime="${comment.createdAt}"
+                      th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">댓글 작성시간</span>
+              </div>
+              <p class="text-sm" th:text="${comment.content}">댓글 내용</p>
+            </div>
+          </div>
+        </th:block>
+        <div class="flex items-start space-x-3 mt-4">
+            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+              <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
+              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
+                <img th:src="${article.getMemberDto().image}" alt="">
+              </th:block>
+              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
+                <div class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
+                     th:text="${#strings.substring(article.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
+              </th:block>
+            </span>
+          <div class="flex-1">
+            <form th:action="@{/comments/new}" method="post">
+              <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
+              <div class="flex items-center space-x-4">
+                <div class="flex-grow">
+                  <input id="content" name="content"
+                         class="flex h-10 w-full border border-input ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-full bg-gray-100 px-4 py-2 text-sm"
+                         placeholder="댓글 추가">
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button type="submit"
+                          class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 bg-red-500 text-white rounded-full p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="text-white">
+                      <path d="m22 2-7 20-4-9-9-4Z"></path>
+                      <path d="M22 2 11 13"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  <script type="text/javascript">
+      function boardToggleBtn() {
+          var board = document.getElementById("boardToggle");
+          console.log(board)
+          if (board.classList.contains("opacity-0")) {
+              board.classList.remove("opacity-0");
+              board.classList.add("opacity-1");
+          } else {
+              board.classList.remove("opacity-1");
+              board.classList.add("opacity-0");
+          }
+      }
+  </script>
 </main>
 
 </body>
