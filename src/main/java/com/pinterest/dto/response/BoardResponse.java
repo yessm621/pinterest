@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 public class BoardResponse {
     private Long id;
     private String title;
-    private String image;
     private LocalDateTime createdAt;
     private String email;
     private String nickname;
 
-    public static BoardResponse of(Long id, String title, String image, LocalDateTime createdAt, String email, String nickname) {
-        return new BoardResponse(id, title, image, createdAt, email, nickname);
+    public static BoardResponse of(Long id, String title, LocalDateTime createdAt, String email, String nickname) {
+        return new BoardResponse(id, title, createdAt, email, nickname);
     }
 
     public static BoardResponse from(BoardDto dto) {
@@ -29,7 +28,6 @@ public class BoardResponse {
         return new BoardResponse(
                 dto.getId(),
                 dto.getTitle(),
-                dto.getImage(),
                 dto.getCreatedAt(),
                 dto.getMemberDto().getEmail(),
                 nickname

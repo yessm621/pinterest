@@ -193,8 +193,7 @@ class ArticleServiceTest {
     private Board createBoard() {
         return Board.of(
                 createMember(),
-                "board title",
-                "board image"
+                "board title"
         );
     }
 
@@ -207,12 +206,11 @@ class ArticleServiceTest {
         );
     }
 
-    private BoardDto createBoardDto(String title, String image) {
+    private BoardDto createBoardDto(String title) {
         return BoardDto.of(
                 1L,
                 createMemberDto(),
                 title,
-                image,
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

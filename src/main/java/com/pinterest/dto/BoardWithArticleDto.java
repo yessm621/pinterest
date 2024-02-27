@@ -18,12 +18,11 @@ public class BoardWithArticleDto {
     private MemberDto memberDto;
     private ArrayList<ArticleDto> articleDtoList;
     private String title;
-    private String image;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static BoardWithArticleDto of(Long id, MemberDto memberDto, ArrayList<ArticleDto> articleDtoList, String title, String image, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new BoardWithArticleDto(id, memberDto, articleDtoList, title, image, createdAt, modifiedAt);
+    public static BoardWithArticleDto of(Long id, MemberDto memberDto, ArrayList<ArticleDto> articleDtoList, String title, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new BoardWithArticleDto(id, memberDto, articleDtoList, title, createdAt, modifiedAt);
     }
 
     // entity -> dto
@@ -35,7 +34,6 @@ public class BoardWithArticleDto {
                         .map(ArticleDto::from)
                         .collect(Collectors.toCollection(ArrayList::new)),
                 entity.getTitle(),
-                entity.getImage(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
         );

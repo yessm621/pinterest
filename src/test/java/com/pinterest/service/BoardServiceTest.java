@@ -102,7 +102,7 @@ class BoardServiceTest {
     @DisplayName("보드 정보를 입력하면, 보드를 생성한다.")
     void givenBoardInfo_whenSavingBoard_thenSavesBoard() throws Exception {
         // Given
-        BoardDto dto = createBoardDto("title", "image");
+        BoardDto dto = createBoardDto("title");
         given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(boardRepository.save(any(Board.class))).willReturn(createBoard());
 
@@ -119,7 +119,7 @@ class BoardServiceTest {
     void givenModifiedBoardInfo_whenUpdatingBoard_thenUpdatesBoard() throws Exception {
         // Given
         Board board = createBoard();
-        BoardDto dto = createBoardDto("title", "image");
+        BoardDto dto = createBoardDto("title");
         given(boardRepository.getReferenceById(dto.getId())).willReturn(board);
         given(memberRepository.findByEmail(dto.getMemberDto().getEmail()))
                 .willReturn(Optional.of(dto.getMemberDto().toEntity()));
@@ -129,7 +129,6 @@ class BoardServiceTest {
 
         // Then
         assertThat(board).hasFieldOrPropertyWithValue("title", dto.getTitle());
-        assertThat(board).hasFieldOrPropertyWithValue("image", dto.getImage());
         then(boardRepository).should().getReferenceById(dto.getId());
         then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
     }
@@ -138,7 +137,7 @@ class BoardServiceTest {
     @DisplayName("없는 보드의 수정 정보를 입력하면, 경고 로그를 찍고 아무것도 하지 않는다.")
     void givenNoneExistentBoardInfo_whenUpdatingBoard_thenLogsWarningAndDoesNothing() throws Exception {
         // Given
-        BoardDto dto = createBoardDto("new title", "new image");
+        BoardDto dto = createBoardDto("new title");
         given(boardRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
@@ -166,8 +165,7 @@ class BoardServiceTest {
     private Board createBoard() {
         return Board.of(
                 createMember(),
-                "title",
-                "image"
+                "title"
         );
     }
 
@@ -180,12 +178,11 @@ class BoardServiceTest {
         );
     }
 
-    private BoardDto createBoardDto(String title, String image) {
+    private BoardDto createBoardDto(String title) {
         return BoardDto.of(
                 1L,
                 createMemberDto(),
                 title,
-                image,
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

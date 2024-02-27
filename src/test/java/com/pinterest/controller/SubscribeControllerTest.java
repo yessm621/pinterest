@@ -98,8 +98,7 @@ class SubscribeControllerTest {
     private BoardDto createBoardDto() {
         return BoardDto.of(
                 createMemberDto(),
-                "title",
-                "image"
+                "title"
         );
     }
 

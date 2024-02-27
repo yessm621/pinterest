@@ -16,16 +16,15 @@ public class BoardDto {
     private Long id;
     private MemberDto memberDto;
     private String title;
-    private String image;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static BoardDto of(MemberDto memberDto, String title, String image) {
-        return new BoardDto(null, memberDto, title, image, null, null);
+    public static BoardDto of(MemberDto memberDto, String title) {
+        return new BoardDto(null, memberDto, title, null, null);
     }
 
-    public static BoardDto of(Long id, MemberDto memberDto, String title, String image, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new BoardDto(id, memberDto, title, image, createdAt, modifiedAt);
+    public static BoardDto of(Long id, MemberDto memberDto, String title, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new BoardDto(id, memberDto, title, createdAt, modifiedAt);
     }
 
     // entity -> dto
@@ -34,7 +33,6 @@ public class BoardDto {
                 entity.getId(),
                 MemberDto.from(entity.getMember()),
                 entity.getTitle(),
-                entity.getImage(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
         );
@@ -44,8 +42,7 @@ public class BoardDto {
     public Board toEntity(Member member) {
         return Board.of(
                 member,
-                title,
-                image
+                title
         );
     }
 }

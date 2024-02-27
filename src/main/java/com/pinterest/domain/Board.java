@@ -30,24 +30,19 @@ public class Board extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Setter
-    @Column(length = 2000)
-    private String image;
-
     @OneToMany(mappedBy = "board")
     private List<Subscribe> subscribes = new ArrayList<>();
 
     protected Board() {
     }
 
-    private Board(Member member, String title, String image) {
+    private Board(Member member, String title) {
         this.member = member;
         this.title = title;
-        this.image = image;
     }
 
-    public static Board of(Member member, String title, String image) {
-        return new Board(member, title, image);
+    public static Board of(Member member, String title) {
+        return new Board(member, title);
     }
 
     @Override

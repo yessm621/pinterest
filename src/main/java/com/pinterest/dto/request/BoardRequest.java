@@ -10,17 +10,15 @@ import lombok.Data;
 public class BoardRequest {
 
     private String title;
-    private String image;
 
-    public static BoardRequest of(String title, String image) {
-        return new BoardRequest(title, image);
+    public static BoardRequest of(String title) {
+        return new BoardRequest(title);
     }
 
     public BoardDto toDto(MemberDto memberDto) {
         return BoardDto.of(
                 memberDto,
-                title,
-                image
+                title
         );
     }
 }

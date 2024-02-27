@@ -109,16 +109,14 @@ public class SubscribeServiceTest {
     private BoardDto createBoardDto() {
         return BoardDto.of(
                 createMemberDto(),
-                "board title",
-                "board image"
+                "board title"
         );
     }
 
     private Board createBoard() {
         return Board.of(
                 createMember(),
-                "board title",
-                "board image"
+                "board title"
         );
     }
 

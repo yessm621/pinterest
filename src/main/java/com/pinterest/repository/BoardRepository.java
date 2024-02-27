@@ -27,7 +27,7 @@ public interface BoardRepository extends JpaRepository<Board, Long>, QuerydslPre
     @Override
     default void customize(QuerydslBindings bindings, QBoard root) {
         bindings.excludeUnlistedProperties(true);
-        bindings.including(root.title, root.image, root.createdAt);
+        bindings.including(root.title, root.createdAt);
         bindings.bind(root.title).first(StringExpression::containsIgnoreCase);
         bindings.bind(root.createdAt).first(DateTimeExpression::eq);
     }

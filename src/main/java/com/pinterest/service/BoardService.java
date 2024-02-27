@@ -72,9 +72,6 @@ public class BoardService {
                 if (dto.getTitle() != null) {
                     board.setTitle(dto.getTitle());
                 }
-                if (dto.getImage() != null) {
-                    board.setImage(dto.getImage());
-                }
             }
         } catch (EntityNotFoundException e) {
             log.warn("보드 업데이트 실패. 보드를 찾을 수 없습니다.");

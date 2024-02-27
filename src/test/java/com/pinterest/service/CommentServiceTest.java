@@ -152,8 +152,7 @@ class CommentServiceTest {
     private Board createBoard() {
         return Board.of(
                 createMember(),
-                "board title",
-                "board image"
+                "board title"
         );
     }
 

@@ -35,7 +35,6 @@
       <th:block th:each="board: ${boards}">
         <a th:href="@{/boards/{boardId}(boardId=${board.id})}">
           <div style="display: block; text-align: center;">
-            <img th:src="${board.image}" alt="">
             <h5 class="mt-2" th:text="${board.title.length() > 8 ? #strings.substring(board.title, 0, 8) : board.title}">
               보드 이름
             </h5>

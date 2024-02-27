@@ -175,7 +175,7 @@ class BoardControllerTest {
     @DisplayName("[View] POST 새 보드 등록 - 정상 호출")
     void givenNewBoardInfo_whenRequesting_thenSavesNewBoard() throws Exception {
         // Given
-        BoardRequest boardRequest = BoardRequest.of("title", "image");
+        BoardRequest boardRequest = BoardRequest.of("title");
         willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
 
         // When & Then
@@ -228,7 +228,7 @@ class BoardControllerTest {
     void givenUpdatedBoardInfo_whenRequesting_thenUpdatesNewBoard() throws Exception {
         // Given
         Long boardId = 1L;
-        BoardRequest boardRequest = BoardRequest.of("title", "image");
+        BoardRequest boardRequest = BoardRequest.of("title");
         willDoNothing().given(boardService).updateBoard(eq(boardId), any(BoardDto.class));
 
         // When & Then
@@ -268,8 +268,7 @@ class BoardControllerTest {
     private BoardDto createBoardDto() {
         return BoardDto.of(
                 createMemberDto(),
-                "title",
-                "image"
+                "title"
         );
     }
 
@@ -279,7 +278,6 @@ class BoardControllerTest {
                 createMemberDto(),
                 new ArrayList<>(),
                 "보드 타이틀",
-                "http://dummyimage.com/246x205.png/dddddd/000000",
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
