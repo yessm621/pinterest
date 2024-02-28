@@ -39,9 +39,9 @@ public class Article extends BaseEntity {
     @Column(nullable = false, length = 2000)
     private String content;
 
-    @Setter
-    @Column(length = 2000)
-    private String image;
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private FileEntity file;
 
     @Setter
     @Column(length = 100)
@@ -50,17 +50,17 @@ public class Article extends BaseEntity {
     protected Article() {
     }
 
-    private Article(Member member, Board board, String title, String content, String image, String hashtag) {
+    private Article(Member member, Board board, String title, String content, FileEntity file, String hashtag) {
         this.member = member;
         this.board = board;
         this.title = title;
         this.content = content;
-        this.image = image;
+        this.file = file;
         this.hashtag = hashtag;
     }
 
-    public static Article of(Member member, Board board, String title, String content, String image, String hashtag) {
-        return new Article(member, board, title, content, image, hashtag);
+    public static Article of(Member member, Board board, String title, String content, FileEntity file, String hashtag) {
+        return new Article(member, board, title, content, file, hashtag);
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
+import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
-import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.repository.ArticleRepository;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -29,19 +30,15 @@ public class ArticleService {
     private final BoardRepository boardRepository;
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
+    private final FileService fileService;
 
-    public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
+    public Page<ArticleDto> searchArticles(String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
             return articleRepository.findAll(pageable).map(ArticleDto::from);
         }
 
-        if (searchType.equals(SearchType.TITLE)) {
-            return articleRepository.findByTitleContaining(searchKeyword, pageable)
-                    .map(ArticleDto::from);
-        } else {
-            return articleRepository.findByHashtag("#" + searchKeyword, pageable)
-                    .map(ArticleDto::from);
-        }
+        return articleRepository.findByTitleContaining(searchKeyword, pageable)
+                .map(ArticleDto::from);
     }
 
     public ArticleDto getArticle(Long articleId) {
@@ -68,11 +65,14 @@ public class ArticleService {
     }
 
     @Transactional
-    public void saveArticle(ArticleDto dto) {
+    public void saveArticle(MultipartFile file, ArticleDto dto) {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+
+        FileEntity fileEntity = fileService.saveFile(file);
+
         Board board = boardRepository.getReferenceById(dto.getBoardId());
-        articleRepository.save(dto.toEntity(member, board));
+        articleRepository.save(dto.toEntity(member, board, fileEntity));
     }
 
     @Transactional
@@ -89,9 +89,9 @@ public class ArticleService {
                 if (dto.getContent() != null) {
                     article.setContent(dto.getContent());
                 }
-                if (dto.getImage() != null) {
+                /*if (dto.getImage() != null) {
                     article.setImage(dto.getImage());
-                }
+                }*/
                 if (dto.getHashtag() != null) {
                     article.setHashtag(dto.getHashtag());
                 }

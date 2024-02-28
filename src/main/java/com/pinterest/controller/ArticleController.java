@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,11 +33,10 @@ public class ArticleController {
     private final PaginationService paginationService;
 
     @GetMapping
-    public String articles(@RequestParam(required = false) SearchType searchType,
-                           @RequestParam(required = false) String searchKeyword,
+    public String articles(@RequestParam(required = false) String searchKeyword,
                            @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                            Model model) {
-        Page<ArticleDto> articles = articleService.searchArticles(searchType, searchKeyword, pageable);
+        Page<ArticleDto> articles = articleService.searchArticles(searchKeyword, pageable);
         List<Integer> pagination = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         model.addAttribute("articles", articles);
         model.addAttribute("pagination", pagination);
@@ -63,8 +63,9 @@ public class ArticleController {
 
     @PostMapping("/form")
     public String articleForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                              @RequestParam(value = "file", required = false) MultipartFile file,
                               ArticleRequest articleRequest) {
-        articleService.saveArticle(articleRequest.toDto(customUserDetails.toDto()));
+        articleService.saveArticle(file, articleRequest.toDto(customUserDetails.toDto()));
         return "redirect:/articles";
     }
 

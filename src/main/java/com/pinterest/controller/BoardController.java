@@ -54,16 +54,11 @@ public class BoardController {
         return "boards/detail";
     }
 
-    @GetMapping("/form")
-    public String boardForm(Model model) {
-        return "boards/form";
-    }
-
     @PostMapping("/form")
     public String boardForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                             BoardRequest boardRequest) {
         boardService.saveBoard(boardRequest.toDto(customUserDetails.toDto()));
-        return "redirect:/boards";
+        return "redirect:/articles/form";
     }
 
     @GetMapping("/{boardId}/form")

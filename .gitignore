@@ -209,4 +209,6 @@ node_modules/
 
 *.yml
 
+file-dir/
+
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,gradle,windows,macos

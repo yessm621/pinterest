@@ -6,10 +6,9 @@
 <body>
 
 <main>
-  <div class="max-w-4xl mx-auto h-192 my-8 px-6 py-10 bg-white rounded-lg shadow-md flex">
-    <div class="flex-none w-1/2 relative">
-      <img th:src="${article.image}" alt="" class="absolute inset-0 h-full object-cover rounded-lg m-auto"
-           style="aspect-ratio: 192 / 192;">
+  <div class="max-w-4xl mx-auto h-auto overflow-hidden my-8 px-6 py-10 bg-white rounded-lg shadow-md flex">
+    <div class="w-1/2 relative">
+      <img th:src="|/image/${article.fileId}|" alt="" class="absolute inset-0 w-3/4 h-auto object-contain rounded-lg m-auto">
     </div>
     <div class="flex-auto pl-6">
       <div class="flex items-start justify-between">

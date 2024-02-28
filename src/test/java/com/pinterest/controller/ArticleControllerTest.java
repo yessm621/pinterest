@@ -62,7 +62,7 @@ class ArticleControllerTest {
     @DisplayName("[View] GET Article 리스트 페이지 - 정상 호출")
     void givenNothing_whenRequestingArticlesView_thenReturnArticlesView() throws Exception {
         // Given
-        given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class)))
+        given(articleService.searchArticles(eq(null), any(Pageable.class)))
                 .willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
 
@@ -73,7 +73,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/index"))
                 .andExpect(model().attributeExists("articles"))
                 .andExpect(model().attributeExists("pagination"));
-        then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(articleService).should().searchArticles(eq(null), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
@@ -84,7 +84,7 @@ class ArticleControllerTest {
         // Given
         SearchType searchType = SearchType.TITLE;
         String searchKeyword = "title";
-        given(articleService.searchArticles(eq(searchType), eq(searchKeyword), any(Pageable.class)))
+        given(articleService.searchArticles(eq(searchKeyword), any(Pageable.class)))
                 .willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
 
@@ -99,7 +99,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/index"))
                 .andExpect(model().attributeExists("articles"))
                 .andExpect(model().attributeExists("pagination"));
-        then(articleService).should().searchArticles(eq(searchType), eq(searchKeyword), any(Pageable.class));
+        then(articleService).should().searchArticles(eq(searchKeyword), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
@@ -114,7 +114,7 @@ class ArticleControllerTest {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc(sortName)));
         List<Integer> barNumbers = List.of(1, 2, 3, 4, 5);
-        given(articleService.searchArticles(null, null, pageable)).willReturn(Page.empty());
+        given(articleService.searchArticles(null, pageable)).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages())).willReturn(barNumbers);
 
         // When & Then
@@ -129,7 +129,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/index"))
                 .andExpect(model().attributeExists("articles"))
                 .andExpect(model().attribute("pagination", barNumbers));
-        then(articleService).should().searchArticles(null, null, pageable);
+        then(articleService).should().searchArticles(null, pageable);
         then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
@@ -179,8 +179,8 @@ class ArticleControllerTest {
     void givenNewArticleInfo_whenRequestCreateArticle_thenSaveNewArticle() throws Exception {
         // Given
         Long boardId = 1L;
-        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "image", "hashtag");
-        willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
+        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "hashtag");
+        willDoNothing().given(articleService).saveArticle(null, any(ArticleDto.class));
 
         // When & Then
         mvc.perform(
@@ -192,7 +192,7 @@ class ArticleControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/articles"))
                 .andExpect(redirectedUrl("/articles"));
-        then(articleService).should().saveArticle(any(ArticleDto.class));
+        then(articleService).should().saveArticle(null, any(ArticleDto.class));
     }
 
     @Test
@@ -227,7 +227,7 @@ class ArticleControllerTest {
     void givenUpdatedArticleInfo_whenRequestUpdateArticle_thenUpdatesArticle() throws Exception {
         Long boardId = 1L;
         Long articleId = 1L;
-        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "image", "hashtag");
+        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "hashtag");
         willDoNothing().given(articleService).updateArticle(eq(articleId), any(ArticleDto.class));
 
         mvc.perform(
@@ -279,7 +279,7 @@ class ArticleControllerTest {
                 new ArrayList<>(),
                 "article 타이틀",
                 "article 내용입니다.",
-                "image",
+                null,
                 "#hashtag",
                 LocalDateTime.now(),
                 LocalDateTime.now()

@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class BoardRequest {
 
-    private String title;
+    private String boardTitle;
 
     public static BoardRequest of(String title) {
         return new BoardRequest(title);
@@ -18,7 +18,7 @@ public class BoardRequest {
     public BoardDto toDto(MemberDto memberDto) {
         return BoardDto.of(
                 memberDto,
-                title
+                boardTitle
         );
     }
 }

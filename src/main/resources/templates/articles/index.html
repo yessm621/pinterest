@@ -37,7 +37,7 @@
           <!--TODO:: 검색 시 데이터가 없을 경우엔 생성된 아이디어가 없다는 문구가 안나오도록 설정하기-->
           <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
             <div>
-              <img th:src="${article.image}" alt="">
+              <img th:src="|/image/${article.fileId}|" alt="">
             </div>
             <h6 class="mt-2" th:text="${article.title}">
               핀 이름

@@ -58,7 +58,9 @@ public class BoardService {
     public void saveBoard(BoardDto dto) {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
-        boardRepository.save(dto.toEntity(member));
+        if (dto.getTitle() != null && !dto.getTitle().equals("")) {
+            boardRepository.save(dto.toEntity(member));
+        }
     }
 
     @Transactional

@@ -10,22 +10,22 @@ public class ArticleResponse {
 
     private Long id;
     private Long boardId;
+    private Long fileId;
     private String title;
     private String content;
-    private String image;
     private String hashtag;
 
-    public static ArticleResponse of(Long id, Long boardId, String title, String content, String image, String hashtag) {
-        return new ArticleResponse(id, boardId, title, content, image, hashtag);
+    public static ArticleResponse of(Long id, Long boardId, Long fileId, String title, String content, String hashtag) {
+        return new ArticleResponse(id, boardId, fileId, title, content, hashtag);
     }
 
     public static ArticleResponse from(ArticleDto dto) {
         return new ArticleResponse(
                 dto.getId(),
                 dto.getBoardId(),
+                dto.getFileId(),
                 dto.getTitle(),
                 dto.getContent(),
-                dto.getImage(),
                 dto.getHashtag()
         );
     }

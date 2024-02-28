@@ -78,7 +78,7 @@
         <th:block th:each="article: ${articles}">
           <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
             <div>
-              <img th:src="${article.image}" alt="">
+              <img th:src="|/image/${article.fileId}|" alt="">
             </div>
             <h6 class="mt-2" th:text="${article.title}">
               article 이름
