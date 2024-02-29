@@ -15,8 +15,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 
 @RepositoryRestResource
-public interface ArticleRepository extends JpaRepository<Article, Long>, QuerydslPredicateExecutor<Article>,
-        QuerydslBinderCustomizer<QArticle> {
+public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Page<Article> findByTitleContaining(String searchKeyword, Pageable pageable);
 
@@ -27,14 +26,4 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Queryds
     List<Article> findByMember_Email(String email);
 
     List<Article> findByMember_Id(Long memberId);
-
-    @Override
-    default void customize(QuerydslBindings bindings, QArticle root) {
-        bindings.excludeUnlistedProperties(true);
-        bindings.including(root.title, root.content, root.image, root.hashtag, root.createdAt);
-        bindings.bind(root.title).first(StringExpression::containsIgnoreCase);
-        bindings.bind(root.content).first(StringExpression::containsIgnoreCase);
-        bindings.bind(root.hashtag).first(StringExpression::containsIgnoreCase);
-        bindings.bind(root.createdAt).first(DateTimeExpression::eq);
-    }
 }

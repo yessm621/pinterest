@@ -13,6 +13,7 @@ import com.pinterest.service.PaginationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,11 +37,8 @@ public class ArticleController {
     public String articles(@RequestParam(required = false) String searchKeyword,
                            @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                            Model model) {
-        Page<ArticleDto> articles = articleService.searchArticles(searchKeyword, pageable);
-        List<Integer> pagination = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
+        Slice<ArticleDto> articles = articleService.searchArticles(searchKeyword, pageable);
         model.addAttribute("articles", articles);
-        model.addAttribute("pagination", pagination);
-        model.addAttribute("searchTypes", SearchType.values());
 
         return "articles/index";
     }

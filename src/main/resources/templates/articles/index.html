@@ -3,14 +3,6 @@
 <head>
   <title>Articles | Pinterest</title>
 </head>
-<style>
-    .bg::before {
-        content: "";
-        opacity: 0.5;
-        position: absolute;
-        background-color: #000;
-    }
-</style>
 <body>
 
 <main class="article">
@@ -48,7 +40,6 @@
     </th:block>
 
     <th:block th:if="${articles.isEmpty()}">
-<!--      <div th:style="'background: url(/images/pinterest_bg.png) no-repeat center; background-size: cover;'"></div>-->
         <div class="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
              aria-hidden="true">
           <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#e03d48] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
