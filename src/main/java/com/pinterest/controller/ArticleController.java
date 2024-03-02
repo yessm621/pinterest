@@ -66,21 +66,6 @@ public class ArticleController {
         return "redirect:/articles";
     }
 
-    @GetMapping("/{articleId}/form")
-    public String articleUpdateForm(@PathVariable Long articleId, Model model) {
-        ArticleResponse article = ArticleResponse.from(articleService.getArticle(articleId));
-        model.addAttribute("article", article);
-        return "articles/updateForm";
-    }
-
-    @PostMapping("/{articleId}/form")
-    public String articlesUpdate(@PathVariable Long articleId,
-                                 @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                 ArticleRequest articleRequest) {
-        articleService.updateArticle(articleId, articleRequest.toDto(customUserDetails.toDto()));
-        return "redirect:/articles/" + articleId;
-    }
-
     @PostMapping("/{articleId}/delete")
     public String articleDelete(@PathVariable Long articleId,
                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {

@@ -2,8 +2,8 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
+import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
-import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.BoardDto;
@@ -11,6 +11,7 @@ import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
+import com.pinterest.repository.query.ArticleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +20,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -43,39 +46,44 @@ class ArticleServiceTest {
     ArticleRepository articleRepository;
 
     @Mock
+    ArticleQueryRepository articleQueryRepository;
+
+    @Mock
     MemberRepository memberRepository;
+
+    @Mock
+    FileService fileService;
 
     @Test
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 리스트를 반환한다.")
     void givenNoSearchParameters_whenSearchingArticles_thenReturnsArticles() {
         // Given
         Pageable pageable = Pageable.ofSize(16);
-        given(articleRepository.findAll(pageable)).willReturn(Page.empty());
+        given(articleQueryRepository.searchArticles(null, pageable)).willReturn(Page.empty());
 
         // When
-        Page<ArticleDto> articles = sut.searchArticles(null, null, pageable);
+        Page<ArticleDto> articles = sut.searchArticles(null, pageable);
 
         // Then
         assertThat(articles).isNotNull();
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(pageable);
+        then(articleQueryRepository).should().searchArticles(null, pageable);
     }
 
     @Test
     @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 리스트를 반환한다.")
     void givenSearchParameters_whenSearchingArticles_thenReturnsArticles() {
         // Given
-        SearchType searchType = SearchType.TITLE;
         String searchKeyword = "title";
         Pageable pageable = Pageable.ofSize(16);
-        given(articleRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
+        given(articleQueryRepository.searchArticles(searchKeyword, pageable)).willReturn(Page.empty());
 
         // When
-        Page<ArticleDto> articles = sut.searchArticles(searchType, searchKeyword, pageable);
+        Page<ArticleDto> articles = sut.searchArticles(searchKeyword, pageable);
 
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findByTitleContaining(searchKeyword, pageable);
+        then(articleQueryRepository).should().searchArticles(searchKeyword, pageable);
     }
 
     @Test
@@ -113,18 +121,22 @@ class ArticleServiceTest {
     @DisplayName("게시글 정보를 입력하면, 게시글을 생성한다.")
     void givenArticleInfo_whenSavingArticle_thenSavesArticle() {
         // Given
-        ArticleDto dto = createArticleDto("title", "content", "image", "hashtag");
+        ArticleDto dto = createArticleDto("title", "content", "hashtag");
+        MockMultipartFile file = new MockMultipartFile("fileName", "test.png", "image/*", "test file".getBytes(StandardCharsets.UTF_8));
+
         given(boardRepository.getReferenceById(dto.getBoardId())).willReturn(createBoard());
         given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(articleRepository.save(any(Article.class))).willReturn(createArticle());
+        given(fileService.saveFile(file)).willReturn(createFile());
 
         // When
-        sut.saveArticle(dto);
+        sut.saveArticle(file, dto);
 
         // Then
         then(boardRepository).should().getReferenceById(dto.getBoardId());
         then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
         then(articleRepository).should().save(any(Article.class));
+        then(fileService).should().saveFile(file);
     }
 
     @Test
@@ -132,7 +144,7 @@ class ArticleServiceTest {
     void givenModifiedArticleInfo_whenUpdatingArticle_thenUpdatesArticle() {
         // Given
         Article article = createArticle();
-        ArticleDto dto = createArticleDto("new title", "new content", "new image", "new hashtag");
+        ArticleDto dto = createArticleDto("new title", "new content", "new hashtag");
         given(articleRepository.getReferenceById(dto.getId())).willReturn(article);
         given(memberRepository.findByEmail(dto.getMemberDto().getEmail()))
                 .willReturn(Optional.of(dto.getMemberDto().toEntity()));
@@ -144,7 +156,6 @@ class ArticleServiceTest {
         assertThat(article)
                 .hasFieldOrPropertyWithValue("title", dto.getTitle())
                 .hasFieldOrPropertyWithValue("content", dto.getContent())
-                .hasFieldOrPropertyWithValue("image", dto.getImage())
                 .hasFieldOrPropertyWithValue("hashtag", dto.getHashtag());
         then(articleRepository).should().getReferenceById(dto.getId());
         then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
@@ -154,7 +165,7 @@ class ArticleServiceTest {
     @DisplayName("없는 게시글의 수정 정보를 입력하면, 경고 로그를 찍고 아무 것도 하지 않는다.")
     void givenNoneExistentArticleInfo_whenUpdatingArticle_thenLogsWarningAndDoesNothing() {
         // Given
-        ArticleDto dto = createArticleDto("new title", "new content", "new image", "new hashtag");
+        ArticleDto dto = createArticleDto("new title", "new content", "new hashtag");
         given(articleRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
@@ -185,8 +196,16 @@ class ArticleServiceTest {
                 createBoard(),
                 "article title",
                 "article content",
-                "article image",
+                createFile(),
                 "#hashtag"
+        );
+    }
+
+    private FileEntity createFile() {
+        return FileEntity.of(
+                "fileName",
+                "savedName",
+                "savedPath"
         );
     }
 
@@ -216,14 +235,14 @@ class ArticleServiceTest {
         );
     }
 
-    private ArticleDto createArticleDto(String title, String content, String image, String hashtag) {
+    private ArticleDto createArticleDto(String title, String content, String hashtag) {
         return ArticleDto.of(
                 1L,
                 1L,
+                null,
                 createMemberDto(),
                 title,
                 content,
-                image,
                 hashtag,
                 LocalDateTime.now(),
                 LocalDateTime.now()
