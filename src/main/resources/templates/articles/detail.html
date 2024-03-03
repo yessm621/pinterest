@@ -6,11 +6,11 @@
 <body>
 
 <main>
-  <div class="max-w-4xl mx-auto h-auto overflow-hidden my-8 px-6 py-10 bg-white rounded-lg shadow-md flex">
-    <div class="w-1/2 relative">
-      <img th:src="|/image/${article.fileId}|" alt="" class="absolute inset-0 w-3/4 h-auto object-contain rounded-lg m-auto">
+  <div class="max-w-5xl mx-auto h-auto overflow-hidden my-8 px-6 py-10 bg-white rounded-lg shadow-md grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+    <div class="flex sm:col-span-3 items-center">
+      <img th:src="|/image/${article.fileId}|" alt="" class="w-68 h-auto object-contain rounded-lg m-auto">
     </div>
-    <div class="flex-auto pl-6">
+    <div class="sm:col-span-3 flex-auto pl-6 m-4">
       <div class="flex items-start justify-between">
         <div></div>
         <div class="flex justify-between">
@@ -36,7 +36,7 @@
                 </svg>
               </button>
               <div id="boardToggle"
-                   class="absolute -left-10 max-w-sm mx-auto my-3 bg-white rounded-lg shadow-md overflow-hidden opacity-0">
+                   class="absolute -left-40 max-w-sm mx-auto my-3 bg-white rounded-lg shadow-md overflow-hidden opacity-0">
                 <div class="px-2 py-4">
                   <div class="w-full font-bold text-sm-center mb-2">저장</div>
 
@@ -103,7 +103,7 @@
               </div>
             </div>
             <a href="#"
-               class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+               class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 ml-4">
               저장
             </a>
           </th:block>
@@ -113,24 +113,23 @@
         <h2 class="text-2xl font-bold" th:text="${article.title}">핀 제목</h2>
         <p class="mt-2 text-sm text-gray-600" th:text="${article.hashtag}">해시태그</p>
       </div>
-      <div class="text-left mt-6" th:text="${article.content}">
+      <div class="text-left my-8" th:text="${article.content}">
         article 본문
       </div>
-      <div class="flex items-baseline my-8">
+      <div class="flex items-baseline my-10">
         <div class="space-x-1 text-sm font-medium leading-none">
           <div class="flex items-center space-x-3">
             <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-                <img th:src="${article.getMemberDto().image}" alt="">
+                <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
               </th:block>
               <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-                <div
-                    class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
-                    th:text="${#strings.substring(article.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
+                <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                     th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
               </th:block>
             </span>
             <div>
-              <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname}">작성자</div>
+              <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
               <!--TODO:: 구독 표시-->
               <div class="text-xs text-gray-500">구독 0명</div>
             </div>
@@ -149,26 +148,26 @@
         <h2 class="text-lg font-semibold">댓글</h2>
       </div>
       <div class="space-y-4">
-        <th:block th:if="${comments.isEmpty()}">
+        <th:block th:if="${comments == null}">
           <p class="text-sm text-gray-500 mb-10">
             아직 댓글이 없습니다! 대화를 시작하려면 하나를 추가하세요.
           </p>
         </th:block>
-        <th:block th:if="${!comments.isEmpty()}">
+        <th:block th:if="${comments != null}">
           <div class="flex items-start space-x-3 mb-2" th:each="comment: ${comments}">
             <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <th:block th:if="${comment.getMemberDto().image != null and comment.getMemberDto().image != ''}">
-                <img th:src="${comment.getMemberDto().image}" alt="">
+              <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
+              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
+                <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
               </th:block>
-              <th:block th:if="${comment.getMemberDto().image == null or comment.getMemberDto().image == ''}">
-                <div
-                    class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
-                    th:text="${#strings.substring(comment.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
+              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
+                <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                     th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
               </th:block>
             </span>
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-bold" th:text="${comment.getMemberDto().nickname}">닉네임</span>
+                <span class="text-sm font-bold" th:text="${comment.getMemberDto().nickname != null ? comment.getMemberDto().nickname : comment.getMemberDto().email}">닉네임</span>
                 <span class="text-xs text-gray-500" th:datetime="${comment.createdAt}"
                       th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">댓글 작성시간</span>
               </div>
@@ -177,16 +176,16 @@
           </div>
         </th:block>
         <div class="flex items-start space-x-3 mt-4">
-            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
-              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-                <img th:src="${article.getMemberDto().image}" alt="">
-              </th:block>
-              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-                <div class="inline-flex items-center justify-center bg-gray-700 text-white text-6xl font-bold"
-                     th:text="${#strings.substring(article.getMemberDto().image, 0, 1)}">프로필 이니셜</div>
-              </th:block>
-            </span>
+          <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+            <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
+            <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
+              <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
+            </th:block>
+            <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
+              <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                   th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
+            </th:block>
+          </span>
           <div class="flex-1">
             <form th:action="@{/comments/new}" method="post">
               <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
@@ -217,7 +216,6 @@
   <script type="text/javascript">
       function boardToggleBtn() {
           var board = document.getElementById("boardToggle");
-          console.log(board)
           if (board.classList.contains("opacity-0")) {
               board.classList.remove("opacity-0");
               board.classList.add("opacity-1");
