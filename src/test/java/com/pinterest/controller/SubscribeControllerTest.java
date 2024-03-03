@@ -117,10 +117,10 @@ class SubscribeControllerTest {
     private ArticleDto createArticleDto() {
         return ArticleDto.of(
                 1L,
+                1L,
                 createMemberDto(),
                 "title",
                 "content",
-                "image",
                 "hashtag"
         );
     }

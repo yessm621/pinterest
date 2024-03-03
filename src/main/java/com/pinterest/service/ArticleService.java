@@ -12,8 +12,8 @@ import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.query.ArticleQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,11 +34,8 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final FileService fileService;
 
-    public Slice<ArticleDto> searchArticles(String searchKeyword, Pageable pageable) {
-        if (searchKeyword == null || searchKeyword.isBlank()) {
-            return articleRepository.findAll(pageable).map(ArticleDto::from);
-        }
-        return articleQueryRepository.findArticles(searchKeyword, pageable)
+    public Page<ArticleDto> searchArticles(String searchKeyword, Pageable pageable) {
+        return articleQueryRepository.searchArticles(searchKeyword, pageable)
                 .map(ArticleDto::from);
     }
 

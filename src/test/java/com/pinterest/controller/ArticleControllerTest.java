@@ -1,12 +1,11 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.WithMockCustomUser;
-import com.pinterest.domain.SearchType;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
+import com.pinterest.dto.CommentDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.request.ArticleRequest;
-import com.pinterest.dto.response.ArticleResponse;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -26,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -82,8 +82,7 @@ class ArticleControllerTest {
     @DisplayName("[View] GET Article 리스트 페이지 - 키워드를 통해 정상 호출")
     void givenSearchKeyword_whenRequestingArticlesView_thenReturnArticlesView() throws Exception {
         // Given
-        SearchType searchType = SearchType.TITLE;
-        String searchKeyword = "title";
+        String searchKeyword = "search keyword";
         given(articleService.searchArticles(eq(searchKeyword), any(Pageable.class)))
                 .willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
@@ -91,7 +90,6 @@ class ArticleControllerTest {
         // When & Then
         mvc.perform(
                         get("/articles")
-                                .queryParam("searchType", SearchType.TITLE.toString())
                                 .queryParam("searchKeyword", searchKeyword)
                 )
                 .andExpect(status().isOk())
@@ -180,7 +178,7 @@ class ArticleControllerTest {
         // Given
         Long boardId = 1L;
         ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "hashtag");
-        willDoNothing().given(articleService).saveArticle(null, any(ArticleDto.class));
+        willDoNothing().given(articleService).saveArticle(any(), any(ArticleDto.class));
 
         // When & Then
         mvc.perform(
@@ -192,7 +190,7 @@ class ArticleControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/articles"))
                 .andExpect(redirectedUrl("/articles"));
-        then(articleService).should().saveArticle(null, any(ArticleDto.class));
+        then(articleService).should().saveArticle(any(), any(ArticleDto.class));
     }
 
     @Test
@@ -203,43 +201,6 @@ class ArticleControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(articleService).shouldHaveNoInteractions();
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET Article 수정 페이지 - 정상 호출, 인증된 사용자")
-    void givenNothing_whenRequestUpdateArticleView_thenReturnUpdatedArticlePage() throws Exception {
-        Long articleId = 1L;
-        ArticleDto dto = createArticleDto();
-        given(articleService.getArticle(articleId)).willReturn(dto);
-
-        mvc.perform(get("/articles/" + articleId + "/form"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("articles/updateForm"))
-                .andExpect(model().attribute("article", ArticleResponse.from(dto)));
-        then(articleService).should().getArticle(articleId);
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] POST Article 수정 - 정상 호출")
-    void givenUpdatedArticleInfo_whenRequestUpdateArticle_thenUpdatesArticle() throws Exception {
-        Long boardId = 1L;
-        Long articleId = 1L;
-        ArticleRequest articleRequest = ArticleRequest.of(boardId, "title", "content", "hashtag");
-        willDoNothing().given(articleService).updateArticle(eq(articleId), any(ArticleDto.class));
-
-        mvc.perform(
-                        post("/articles/" + articleId + "/form")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(articleRequest))
-                                .with(csrf())
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/articles/" + articleId))
-                .andExpect(redirectedUrl("/articles/" + articleId));
-        then(articleService).should().updateArticle(eq(articleId), any(ArticleDto.class));
     }
 
     @Test
@@ -264,10 +225,10 @@ class ArticleControllerTest {
     private ArticleDto createArticleDto() {
         return ArticleDto.of(
                 1L,
+                1L,
                 createMemberDto(),
                 "title",
                 "content",
-                "image",
                 "hashtag"
         );
     }
@@ -275,12 +236,23 @@ class ArticleControllerTest {
     private ArticleWithCommentDto createArticleWithCommentDto() {
         return ArticleWithCommentDto.of(
                 1L,
+                1L,
                 createMemberDto(),
-                new ArrayList<>(),
-                "article 타이틀",
+                new ArrayList<>(Arrays.asList(createCommentDto())),
                 "article 내용입니다.",
                 null,
                 "#hashtag",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private CommentDto createCommentDto() {
+        return CommentDto.of(
+                1L,
+                1L,
+                createMemberDto(),
+                "content",
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

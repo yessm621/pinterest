@@ -133,7 +133,7 @@ class CommentServiceTest {
     private Comment createComment(String content) {
         return Comment.of(
                 createMember(),
-                Article.of(createMember(), createBoard(), "title", "content", "image", "hashtag"),
+                Article.of(createMember(), createBoard(), "title", "content", null, "hashtag"),
                 content
         );
     }
@@ -144,7 +144,7 @@ class CommentServiceTest {
                 createBoard(),
                 "article title",
                 "article content",
-                "article image",
+                null,
                 "#hashtag"
         );
     }
