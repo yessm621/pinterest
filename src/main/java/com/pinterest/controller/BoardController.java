@@ -3,20 +3,22 @@ package com.pinterest.controller;
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
+import com.pinterest.dto.request.BoardArticleRequest;
 import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
-import com.pinterest.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -26,14 +28,13 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private final SubscribeService subscribeService;
     private final PaginationService paginationService;
 
     @GetMapping
-    public String boards(@RequestParam(required = false) String searchKeyword,
-                         @PageableDefault(size = 15, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+    public String boards(@PageableDefault(size = 30) Pageable pageable,
+                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
                          Model model) {
-        Page<BoardDto> boards = boardService.searchBoards(searchKeyword, pageable);
+        Page<BoardDto> boards = boardService.searchBoards(customUserDetails.getUsername(), pageable);
         List<Integer> pagination = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), boards.getTotalPages());
 
         model.addAttribute("boards", boards);
@@ -46,18 +47,31 @@ public class BoardController {
     public String boardDetail(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                               Model model) {
         BoardWithArticleDto board = boardService.getBoardWithArticles(boardId);
-        boolean subscribeCheck = subscribeService.subscribeCheck(boardId, customUserDetails.getUsername());
         model.addAttribute("board", board);
         model.addAttribute("articles", board.getArticleDtoList());
-        model.addAttribute("subscribeCheck", subscribeCheck);
 
         return "boards/detail";
     }
 
+    @GetMapping("/create")
+    public String boardCreate() {
+        return "boards/create";
+    }
+
+    @PostMapping("/create")
+    public String boardCreate(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                              BoardRequest boardRequest) {
+        boardService.saveBoard(boardRequest.toDto(customUserDetails.toDto()));
+        return "redirect:/boards";
+    }
+
+    /**
+     * 핀 생성 페이지에서 보드 생성
+     */
     @PostMapping("/form")
     public String boardForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                            BoardRequest boardRequest) {
-        boardService.saveBoard(boardRequest.toDto(customUserDetails.toDto()));
+                            BoardArticleRequest boardArticleRequest) {
+        boardService.saveBoard(boardArticleRequest.toDto(customUserDetails.toDto()));
         return "redirect:/articles/form";
     }
 
@@ -74,7 +88,7 @@ public class BoardController {
                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                   BoardRequest boardRequest) {
         boardService.updateBoard(boardId, boardRequest.toDto(customUserDetails.toDto()));
-        return "redirect:/boards/" + boardId;
+        return "redirect:/boards";
     }
 
     @PostMapping("/{boardId}/delete")

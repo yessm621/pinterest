@@ -26,7 +26,6 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/members/signup"),
                                 new AntPathRequestMatcher("/members/login"),
-                                new AntPathRequestMatcher("/boards"),
                                 new AntPathRequestMatcher("/articles"),
                                 new AntPathRequestMatcher("/image/**"),
                                 new AntPathRequestMatcher("/"))
