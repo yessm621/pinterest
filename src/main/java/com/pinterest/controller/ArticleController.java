@@ -2,10 +2,11 @@ package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.ArticleLikeDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.request.ArticleRequest;
-import com.pinterest.dto.response.ArticleResponse;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -28,6 +29,7 @@ public class ArticleController {
 
     private final BoardService boardService;
     private final ArticleService articleService;
+    private final ArticleLikeService articleLikeService;
     private final PaginationService paginationService;
 
     @GetMapping
@@ -43,10 +45,16 @@ public class ArticleController {
     }
 
     @GetMapping("{articleId}")
-    public String articlesDetail(@PathVariable Long articleId, Model model) {
+    public String articlesDetail(@PathVariable Long articleId,
+                                 @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                 Model model) {
         ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
+        List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
+        ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
+        model.addAttribute("boards", boards);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
+        model.addAttribute("articleLike", articleLike);
         return "articles/detail";
     }
 

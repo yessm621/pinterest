@@ -1,11 +1,12 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
+import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
-import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.request.BoardArticleRequest;
 import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ArticleLikeService articleLikeService;
     private final PaginationService paginationService;
 
     @GetMapping
@@ -46,9 +48,10 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public String boardDetail(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                               Model model) {
-        BoardWithArticleDto board = boardService.getBoardWithArticles(boardId);
+        BoardDto board = boardService.getBoard(boardId);
+        List<ArticleDto> articles = articleLikeService.getArticleLikes(boardId, customUserDetails.getUsername());
         model.addAttribute("board", board);
-        model.addAttribute("articles", board.getArticleDtoList());
+        model.addAttribute("articles", articles);
 
         return "boards/detail";
     }
