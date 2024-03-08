@@ -60,7 +60,7 @@ public class ArticleLikeService {
         Board board = boardRepository.findById(dto.getBoardId())
                 .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
         Article article = articleRepository.findById(dto.getArticleId())
-                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
 
         articleLikeRepository.save(dto.toEntity(member, board, article));
     }
@@ -71,7 +71,7 @@ public class ArticleLikeService {
     @Transactional
     public void deleteArticleLike(Long articleLikeId) {
         ArticleLike articleLike = articleLikeRepository.findById(articleLikeId)
-                .orElseThrow(() -> new EntityNotFoundException("글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("핀을 찾을 수 없습니다."));
         articleLikeRepository.delete(articleLike);
     }
 }
