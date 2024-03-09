@@ -1,11 +1,14 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.WithMockCustomUser;
+import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.request.BoardArticleRequest;
 import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
 import com.pinterest.util.FormDataEncoder;
@@ -16,9 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,6 +46,9 @@ class BoardControllerTest {
     BoardService boardService;
 
     @MockBean
+    ArticleLikeService articleLikeService;
+
+    @MockBean
     PaginationService paginationService;
 
     public BoardControllerTest(@Autowired MockMvc mvc, @Autowired FormDataEncoder formDataEncoder) {
@@ -57,7 +61,7 @@ class BoardControllerTest {
     @DisplayName("[View] GET 보드 리스트 페이지 - 정상 호출")
     void givenNothing_whenRequestingBoardsView_thenReturnsBoardsView() throws Exception {
         // Given
-        given(boardService.searchBoards(eq(null), any(Pageable.class))).willReturn(Page.empty());
+        given(boardService.searchBoards(anyString(), any(Pageable.class))).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
 
         // When & Then
@@ -68,62 +72,8 @@ class BoardControllerTest {
                 .andExpect(model().attributeExists("boards"))
                 .andExpect(model().attributeExists("pagination"));
 
-        then(boardService).should().searchBoards(eq(null), any(Pageable.class));
+        then(boardService).should().searchBoards(anyString(), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET 보드 리스트 페이지 - 키워드를 통해 정상 호출")
-    void givenSearchKeyword_whenRequestingBoardsView_thenReturnsBoardsView() throws Exception {
-        // Given
-        String searchKeyword = "title";
-        given(boardService.searchBoards(eq(searchKeyword), any(Pageable.class))).willReturn(Page.empty());
-        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
-
-        // When & Then
-        mvc.perform(
-                        get("/boards")
-                                .queryParam("searchKeyword", searchKeyword)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("boards/index"))
-                .andExpect(model().attributeExists("boards"))
-                .andExpect(model().attributeExists("pagination"));
-
-        then(boardService).should().searchBoards(eq(searchKeyword), any(Pageable.class));
-        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET 게시글 리스트 (게시판) 페이지 - 페이징, 정렬 기능")
-    void givenPagingAndSortingParams_whenSearchingBoardsView_thenReturnsBoardsView() throws Exception {
-        // Given
-        String sortName = "title";
-        String direction = "desc";
-        int pageNumber = 0;
-        int pageSize = 5;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc(sortName)));
-        List<Integer> barNumbers = List.of(1, 2, 3, 4, 5);
-        given(boardService.searchBoards(null, pageable)).willReturn(Page.empty());
-        given(paginationService.getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages())).willReturn(barNumbers);
-
-        // When & Then
-        mvc.perform(
-                        get("/boards")
-                                .queryParam("page", String.valueOf(pageNumber))
-                                .queryParam("size", String.valueOf(pageSize))
-                                .queryParam("sort", sortName + "," + direction)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("boards/index"))
-                .andExpect(model().attributeExists("boards"))
-                .andExpect(model().attribute("pagination", barNumbers));
-        then(boardService).should().searchBoards(null, pageable);
-        then(paginationService).should().getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
     @Test
@@ -132,7 +82,9 @@ class BoardControllerTest {
     void givenNothing_whenRequestBoardView_thenReturnBoardView() throws Exception {
         // Given
         Long boardId = 1L;
-        given(boardService.getBoardWithArticles(boardId)).willReturn(createBoardWithArticleDto());
+        String email = "test@gmail.com";
+        given(boardService.getBoard(boardId)).willReturn(createBoardDto());
+        given(articleLikeService.getArticleLikes(boardId, email)).willReturn(List.of(createArticleDto()));
 
         // When & Then
         mvc.perform(get("/boards/" + boardId))
@@ -141,7 +93,8 @@ class BoardControllerTest {
                 .andExpect(view().name("boards/detail"))
                 .andExpect(model().attributeExists("board"))
                 .andExpect(model().attributeExists("articles"));
-        then(boardService).should().getBoardWithArticles(boardId);
+        then(boardService).should().getBoard(boardId);
+        then(articleLikeService).should().getArticleLikes(boardId, email);
     }
 
     @Test
@@ -159,35 +112,55 @@ class BoardControllerTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("[View] GET 새 보드 작성 페이지 - 정상 호출")
-    void givenNothing_whenRequesting_thenReturnsNewBoardPage() throws Exception {
+    @DisplayName("[View] GET 보드 페이지 -> 보드 생성 페이지로 이동")
+    void givenNothing_whenRequestCreateBoardView_thenReturnsBoardView() throws Exception {
         // Given
 
         // When & Then
-        mvc.perform(get("/boards/form"))
+        mvc.perform(get("/boards/create"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("boards/form"));
+                .andExpect(view().name("boards/create"));
     }
 
     @Test
     @WithMockCustomUser
-    @DisplayName("[View] POST 새 보드 등록 - 정상 호출")
+    @DisplayName("[View] POST 보드 페이지 -> 보드 생성 페이지에서 보드를 생성")
+    void givenBoardRequest_whenRequestCreateBoard_thenReturnsBoard() throws Exception {
+        // Given
+        BoardRequest request = BoardRequest.of("title");
+        willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
+
+        // When & Then
+        mvc.perform(
+                        post("/boards/create")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(request))
+                                .with(csrf())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/boards"))
+                .andExpect(redirectedUrl("/boards"));
+        then(boardService).should().saveBoard(any(BoardDto.class));
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("[View] POST 핀 생성 페이지에서 보드 생성")
     void givenNewBoardInfo_whenRequesting_thenSavesNewBoard() throws Exception {
         // Given
-        BoardRequest boardRequest = BoardRequest.of("title");
+        BoardArticleRequest request = BoardArticleRequest.of("title");
         willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
 
         // When & Then
         mvc.perform(
                         post("/boards/form")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(boardRequest))
+                                .content(formDataEncoder.encode(request))
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/boards"))
-                .andExpect(redirectedUrl("/boards"));
+                .andExpect(view().name("redirect:/articles/form"))
+                .andExpect(redirectedUrl("/articles/form"));
         then(boardService).should().saveBoard(any(BoardDto.class));
     }
 
@@ -239,8 +212,8 @@ class BoardControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/boards/" + boardId))
-                .andExpect(redirectedUrl("/boards/" + boardId));
+                .andExpect(view().name("redirect:/boards"))
+                .andExpect(redirectedUrl("/boards"));
         then(boardService).should().updateBoard(eq(boardId), any(BoardDto.class));
     }
 
@@ -292,6 +265,17 @@ class BoardControllerTest {
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()
+        );
+    }
+
+    private ArticleDto createArticleDto() {
+        return ArticleDto.of(
+                1L,
+                1L,
+                createMemberDto(),
+                "title",
+                "content",
+                "hashtag"
         );
     }
 }

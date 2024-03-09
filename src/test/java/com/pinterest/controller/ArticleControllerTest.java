@@ -1,11 +1,9 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.WithMockCustomUser;
-import com.pinterest.dto.ArticleDto;
-import com.pinterest.dto.ArticleWithCommentDto;
-import com.pinterest.dto.CommentDto;
-import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.*;
 import com.pinterest.dto.request.ArticleRequest;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -48,6 +46,9 @@ class ArticleControllerTest {
 
     @MockBean
     ArticleService articleService;
+
+    @MockBean
+    ArticleLikeService articleLikeService;
 
     @MockBean
     PaginationService paginationService;
@@ -138,15 +139,22 @@ class ArticleControllerTest {
         // Given
         Long articleId = 1L;
         given(articleService.getArticleWithComment(articleId)).willReturn(createArticleWithCommentDto());
+        given(boardService.getBoards(anyString())).willReturn(List.of(createBoardDto("title")));
+        given(articleLikeService.getArticleLike(anyLong(), anyString())).willReturn(createArticleLikeDto());
 
         // When & Then
         mvc.perform(get("/articles/" + articleId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("articles/detail"))
+                .andExpect(model().attributeExists("boards"))
                 .andExpect(model().attributeExists("article"))
-                .andExpect(model().attributeExists("comments"));
+                .andExpect(model().attributeExists("comments"))
+                .andExpect(model().attributeExists("articleLike"));
+
         then(articleService).should().getArticleWithComment(articleId);
+        then(boardService).should().getBoards(anyString());
+        then(articleLikeService).should().getArticleLike(anyLong(), anyString());
     }
 
     @Test
@@ -267,6 +275,24 @@ class ArticleControllerTest {
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()
+        );
+    }
+
+    private BoardDto createBoardDto(String title) {
+        return BoardDto.of(
+                1L,
+                createMemberDto(),
+                title,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private ArticleLikeDto createArticleLikeDto() {
+        return ArticleLikeDto.of(
+                createMemberDto(),
+                1L,
+                1L
         );
     }
 }

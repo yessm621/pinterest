@@ -7,6 +7,7 @@ import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
+import com.pinterest.repository.query.BoardQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,38 +37,26 @@ class BoardServiceTest {
     private BoardRepository boardRepository;
 
     @Mock
+    private BoardQueryRepository boardQueryRepository;
+
+    @Mock
     private MemberRepository memberRepository;
 
     @Test
-    @DisplayName("검색어 없이 보드를 검색하면, 보드 리스트를 반환한다.")
+    @DisplayName("보드 리스트를 반환한다.")
     void givenNoSearchParameters_whenSearchingBoard_thenReturnsBoards() {
         // Given
+        String email = "email";
         Pageable pageable = Pageable.ofSize(16);
-        given(boardRepository.findAll(pageable)).willReturn(Page.empty());
+        given(boardQueryRepository.searchBoards(email, pageable)).willReturn(Page.empty());
 
         // When
-        Page<BoardDto> boards = sut.searchBoards(null, pageable);
+        Page<BoardDto> boards = sut.searchBoards(email, pageable);
 
         // Then
         assertThat(boards).isNotNull();
         assertThat(boards).isEmpty();
-        then(boardRepository).should().findAll(pageable);
-    }
-
-    @Test
-    @DisplayName("검색어와 함께 보드를 검색하면, 보드 리스트를 반환한다.")
-    void givenSearchParameters_whenSearchingBoard_thenReturnsBoards() {
-        // Given
-        String searchKeyword = "search keyword";
-        Pageable pageable = Pageable.ofSize(16);
-        given(boardRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
-
-        // When
-        Page<BoardDto> boards = sut.searchBoards(searchKeyword, pageable);
-
-        // Then
-        assertThat(boards).isNotNull();
-        then(boardRepository).should().findByTitleContaining(searchKeyword, pageable);
+        then(boardQueryRepository).should().searchBoards(email, pageable);
     }
 
     @Test
