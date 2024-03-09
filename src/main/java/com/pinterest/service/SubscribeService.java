@@ -55,7 +55,7 @@ public class SubscribeService {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원이 없습니다."));
         Board board = boardRepository.findById(dto.getBoardId())
-                .orElseThrow(() -> new EntityNotFoundException("article이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
         Optional<Subscribe> findBySubscribe = subscribeRepository
                 .findSubscribeByBoard_IdAndMember_id(board.getId(), member.getId());
         if (findBySubscribe.isEmpty()) {

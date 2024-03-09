@@ -7,18 +7,18 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BoardRequest {
+public class BoardArticleRequest {
 
-    private String title;
+    private String boardTitle;
 
-    public static BoardRequest of(String title) {
-        return new BoardRequest(title);
+    public static BoardArticleRequest of(String title) {
+        return new BoardArticleRequest(title);
     }
 
     public BoardDto toDto(MemberDto memberDto) {
         return BoardDto.of(
                 memberDto,
-                title
+                boardTitle
         );
     }
 }

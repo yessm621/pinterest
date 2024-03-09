@@ -6,6 +6,7 @@ import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
+import com.pinterest.repository.query.BoardQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,15 +25,11 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardQueryRepository boardQueryRepository;
     private final MemberRepository memberRepository;
 
-    public Page<BoardDto> searchBoards(String searchKeyword, Pageable pageable) {
-        if (searchKeyword == null || searchKeyword.isBlank()) {
-            return boardRepository.findAll(pageable)
-                    .map(BoardDto::from);
-        }
-
-        return boardRepository.findByTitleContaining(searchKeyword, pageable)
+    public Page<BoardDto> searchBoards(String email, Pageable pageable) {
+        return boardQueryRepository.searchBoards(email, pageable)
                 .map(BoardDto::from);
     }
 

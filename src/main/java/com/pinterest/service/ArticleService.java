@@ -41,7 +41,7 @@ public class ArticleService {
 
     public ArticleDto getArticle(Long articleId) {
         return articleRepository.findById(articleId).map(ArticleDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
     }
 
     public List<ArticleDto> getArticles(String email) {
@@ -59,7 +59,7 @@ public class ArticleService {
     public ArticleWithCommentDto getArticleWithComment(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
     }
 
     @Transactional
