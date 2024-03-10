@@ -1,6 +1,6 @@
 package com.pinterest.dto.response;
 
-import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class MemberResponse {
         return new MemberResponse(id, email, nickname, image);
     }
 
-    public static MemberResponse from(MemberDto dto) {
+    public static MemberResponse from(ProfileDto dto) {
         return new MemberResponse(
                 dto.getId(),
                 dto.getEmail(),

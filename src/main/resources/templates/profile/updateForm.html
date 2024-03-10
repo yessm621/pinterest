@@ -17,17 +17,20 @@
       <div class="mb-4">
         <label class="block text-sm font-medium mb-1">사진</label>
         <div class="flex items-center space-x-4">
-          <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+          <th:block th:if="${profile.fileId == null}">
             <th:block th:if="${profile.image != null and profile.image != ''}">
-              <img th:src="${profile.image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
+              <img th:src="${profile.image}" alt="" class="w-10 h-10 object-cover rounded-full">
             </th:block>
             <th:block th:if="${profile.image == null or profile.image == ''}">
-              <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+              <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-lg font-bold"
                    th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
             </th:block>
-          </span>
-          <!--TODO:: 파일 업로드로 변경-->
+          </th:block>
+          <th:block th:if="${profile.fileId != null}">
+            <img th:src="|/image/${profile.fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
+          </th:block>
           <input type="file"
+                 id="file" name="file"
                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
         </div>
         <input class="form-control mt-2" type="text" id="image" th:field="${profile.image}">

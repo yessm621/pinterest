@@ -1,9 +1,11 @@
 package com.pinterest.service;
 
 import com.pinterest.config.CustomUserDetails;
+import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.domain.MemberRole;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.List;
 @Slf4j
 public class MemberService implements UserDetailsService {
 
+    private final FileService fileService;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -46,29 +50,29 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(member);
     }
 
-    public MemberDto getMemberEmail(String email) {
+    public ProfileDto getMemberEmail(String email) {
         return memberRepository.findByEmail(email)
-                .map(MemberDto::from)
+                .map(ProfileDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("프로필이 없습니다."));
     }
 
-    public MemberDto getMember(Long memberId) {
+    public ProfileDto getMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .map(MemberDto::from)
+                .map(ProfileDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("프로필이 없습니다."));
     }
 
     @Transactional
-    public void updateMember(Long profileId, MemberDto dto) {
+    public void updateMember(Long profileId, MemberDto dto, MultipartFile file) {
         try {
             Member member = memberRepository.getReferenceById(profileId);
 
             if (member.getEmail().equals(dto.getEmail())) {
-                if (dto.getNickname() != null) {
-                    member.setNickname(dto.getNickname());
-                }
-                if (dto.getImage() != null) {
-                    member.setImage(dto.getImage());
+                if (file.isEmpty()) {
+                    member.update(dto.getNickname());
+                } else {
+                    FileEntity fileEntity = fileService.saveFile(file);
+                    member.update(dto.getNickname(), fileEntity);
                 }
             }
         } catch (EntityNotFoundException e) {

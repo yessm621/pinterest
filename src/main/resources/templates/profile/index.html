@@ -8,12 +8,17 @@
 <main class="article">
   <div class="flex w-full flex-col items-center justify-center bg-white text-center mt-6">
     <div class="mb-2 flex items-center justify-center">
-      <th:block th:if="${profile.image != null and profile.image != ''}">
-        <img th:src="${profile.image}" alt="" class="w-32 h-32 rounded-full">
+      <th:block th:if="${profile.fileId == null}">
+        <th:block th:if="${profile.image != null and profile.image != ''}">
+          <img th:src="${profile.image}" alt="" class="w-32 h-32 object-cover rounded-full">
+        </th:block>
+        <th:block th:if="${profile.image == null or profile.image == ''}">
+          <div class="w-32 h-32 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-lg font-bold"
+               th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
+        </th:block>
       </th:block>
-      <th:block th:if="${profile.image == null or profile.image == ''}">
-        <div class="w-32 h-32 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-lg font-bold"
-             th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
+      <th:block th:if="${profile.fileId != null}">
+        <img th:src="|/image/${profile.fileId}|" alt="" class="w-32 h-32 object-cover rounded-full">
       </th:block>
     </div>
     <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>
