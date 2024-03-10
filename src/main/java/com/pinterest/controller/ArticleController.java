@@ -1,15 +1,9 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
-import com.pinterest.dto.ArticleDto;
-import com.pinterest.dto.ArticleLikeDto;
-import com.pinterest.dto.ArticleWithCommentDto;
-import com.pinterest.dto.BoardDto;
+import com.pinterest.dto.*;
 import com.pinterest.dto.request.ArticleRequest;
-import com.pinterest.service.ArticleLikeService;
-import com.pinterest.service.ArticleService;
-import com.pinterest.service.BoardService;
-import com.pinterest.service.PaginationService;
+import com.pinterest.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController {
 
+    private final MemberService memberService;
     private final BoardService boardService;
     private final ArticleService articleService;
     private final ArticleLikeService articleLikeService;
@@ -51,10 +46,12 @@ public class ArticleController {
         ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
         List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
         ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
+        ProfileDto profile = memberService.getMemberEmail(customUserDetails.getUsername());
         model.addAttribute("boards", boards);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         model.addAttribute("articleLike", articleLike);
+        model.addAttribute("profile", profile);
         return "articles/detail";
     }
 

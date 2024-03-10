@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class MemberDto {
 
     private Long id;
+    private Long fileId;
     private String email;
     private String password;
     private String nickname;
@@ -21,25 +22,26 @@ public class MemberDto {
     private LocalDateTime modifiedAt;
 
     public static MemberDto of(String email, String nickname, String image) {
-        return new MemberDto(null, email, null, nickname, image, null, null);
+        return new MemberDto(null, null, email, null, nickname, image, null, null);
     }
 
     public static MemberDto of(String email, String password) {
-        return new MemberDto(null, email, password, null, null, null, null);
+        return new MemberDto(null, null, email, password, null, null, null, null);
     }
 
     public static MemberDto of(String email) {
-        return new MemberDto(null, email, null, null, null, null, null);
+        return new MemberDto(null, null, email, null, null, null, null, null);
     }
 
     public static MemberDto of(Long id, String email, String password, String nickname, String image, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new MemberDto(id, email, password, nickname, image, createdAt, modifiedAt);
+        return new MemberDto(id, null, email, password, nickname, image, createdAt, modifiedAt);
     }
 
     // entity -> dto
     public static MemberDto from(Member entity) {
         return new MemberDto(
                 entity.getId(),
+                entity.getFile() == null ? null : entity.getFile().getId(),
                 entity.getEmail(),
                 entity.getPassword(),
                 entity.getNickname(),
