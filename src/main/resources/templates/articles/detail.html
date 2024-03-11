@@ -68,22 +68,27 @@
       </div>
       <div class="flex items-baseline my-10">
         <div class="space-x-1 text-sm font-medium leading-none">
-          <div class="flex items-center space-x-3">
-            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-                <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
+          <a th:href="@{/members/{memberId}(memberId=${article.getMemberDto().id})}">
+            <div class="flex items-center space-x-3">
+              <th:block th:if="${article.getMemberDto().fileId == null}">
+                <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
+                  <img th:src="${article.getMemberDto().image}" alt="" class="w-10 h-10 object-cover rounded-full">
+                </th:block>
+                <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
+                  <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                       th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
+                </th:block>
               </th:block>
-              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-                <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                     th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
+              <th:block th:if="${article.getMemberDto().fileId != null}">
+                <img th:src="|/image/${article.getMemberDto().fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
               </th:block>
-            </span>
-            <div>
-              <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
-              <!--TODO:: 구독 표시-->
-              <div class="text-xs text-gray-500">구독 0명</div>
+              <div>
+                <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
+                <!--TODO:: 구독 표시-->
+                <div class="text-xs text-gray-500">구독 0명</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="ml-auto my-auto text-sm font-medium leading-none text-red-600">
           <a href="#"
@@ -104,8 +109,7 @@
         </th:block>
         <th:block th:if="${comments != null}">
           <div class="flex items-start space-x-3 mb-2" th:each="comment: ${comments}">
-            <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
+            <!--<span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
                 <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
               </th:block>
@@ -113,7 +117,19 @@
                 <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
                      th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
               </th:block>
-            </span>
+            </span>-->
+            <th:block th:if="${comment.getMemberDto().fileId == null}">
+              <th:block th:if="${comment.getMemberDto().image != null and comment.getMemberDto().image != ''}">
+                <img th:src="${comment.getMemberDto().image}" alt="" class="w-10 h-10 object-cover rounded-full">
+              </th:block>
+              <th:block th:if="${comment.getMemberDto().image == null or comment.getMemberDto().image == ''}">
+                <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                     th:text="${#strings.substring(comment.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
+              </th:block>
+            </th:block>
+            <th:block th:if="${comment.getMemberDto().fileId != null}">
+              <img th:src="|/image/${comment.getMemberDto().fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
+            </th:block>
             <div class="flex-1">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold" th:text="${comment.getMemberDto().nickname != null ? comment.getMemberDto().nickname : comment.getMemberDto().email}">닉네임</span>
@@ -125,16 +141,18 @@
           </div>
         </th:block>
         <div class="flex items-start space-x-3 mt-4">
-          <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-            <!--TODO:: 로그인한 사용자의 프로필을 가져올 것-->
-            <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-              <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
+          <th:block th:if="${profile.fileId == null}">
+            <th:block th:if="${profile.image != null and profile.image != ''}">
+              <img th:src="${profile.image}" alt="" class="w-10 h-10 object-cover rounded-full">
             </th:block>
-            <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-              <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                   th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
+            <th:block th:if="${profile.image == null or profile.image == ''}">
+              <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
+                   th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
             </th:block>
-          </span>
+          </th:block>
+          <th:block th:if="${profile.fileId != null}">
+            <img th:src="|/image/${profile.fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
+          </th:block>
           <div class="flex-1">
             <form th:action="@{/comments/new}" method="post">
               <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">

@@ -33,6 +33,10 @@ public class Member extends BaseEntity {
     @Column(length = 2000)
     private String image;
 
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private FileEntity file;
+
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole = MemberRole.USER;
 
@@ -53,6 +57,17 @@ public class Member extends BaseEntity {
         this.nickname = nickname;
         this.image = image;
         this.provider = provider;
+        return this;
+    }
+
+    public Member update(String nickname, FileEntity file) {
+        this.nickname = nickname;
+        this.file = file;
+        return this;
+    }
+
+    public Member update(String nickname) {
+        this.nickname = nickname;
         return this;
     }
 

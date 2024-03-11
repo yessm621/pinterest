@@ -32,7 +32,7 @@ public class ArticleWithCommentDto {
     public static ArticleWithCommentDto from(Article entity) {
         return new ArticleWithCommentDto(
                 entity.getId(),
-                entity.getFile().getId(),
+                entity.getFile() == null ? null : entity.getFile().getId(),
                 MemberDto.from(entity.getMember()),
                 entity.getComments().stream()
                         .map(CommentDto::from)

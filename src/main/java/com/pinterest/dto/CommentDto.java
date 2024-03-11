@@ -19,14 +19,13 @@ public class CommentDto {
     private MemberDto memberDto;
     private String content;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
 
     public static CommentDto of(Long articleId, MemberDto memberDto, String content) {
-        return new CommentDto(null, articleId, memberDto, content, null, null);
+        return new CommentDto(null, articleId, memberDto, content, null);
     }
 
-    public static CommentDto of(Long id, Long articleId, MemberDto memberDto, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new CommentDto(id, articleId, memberDto, content, createdAt, modifiedAt);
+    public static CommentDto of(Long id, Long articleId, MemberDto memberDto, String content, LocalDateTime createdAt) {
+        return new CommentDto(id, articleId, memberDto, content, createdAt);
     }
 
     // entity -> dto
@@ -36,8 +35,7 @@ public class CommentDto {
                 entity.getArticle().getId(),
                 MemberDto.from(entity.getMember()),
                 entity.getContent(),
-                entity.getCreatedAt(),
-                entity.getModifiedAt()
+                entity.getCreatedAt()
         );
     }
 
