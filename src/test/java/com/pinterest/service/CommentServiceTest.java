@@ -113,7 +113,6 @@ class CommentServiceTest {
                 1L,
                 createMemberDto(),
                 content,
-                LocalDateTime.now(),
                 LocalDateTime.now()
         );
     }

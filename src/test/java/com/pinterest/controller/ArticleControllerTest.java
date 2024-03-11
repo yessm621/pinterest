@@ -3,10 +3,7 @@ package com.pinterest.controller;
 import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.*;
 import com.pinterest.dto.request.ArticleRequest;
-import com.pinterest.service.ArticleLikeService;
-import com.pinterest.service.ArticleService;
-import com.pinterest.service.BoardService;
-import com.pinterest.service.PaginationService;
+import com.pinterest.service.*;
 import com.pinterest.util.FormDataEncoder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +37,9 @@ class ArticleControllerTest {
 
     private final MockMvc mvc;
     private final FormDataEncoder formDataEncoder;
+
+    @MockBean
+    MemberService memberService;
 
     @MockBean
     BoardService boardService;
@@ -141,6 +141,7 @@ class ArticleControllerTest {
         given(articleService.getArticleWithComment(articleId)).willReturn(createArticleWithCommentDto());
         given(boardService.getBoards(anyString())).willReturn(List.of(createBoardDto("title")));
         given(articleLikeService.getArticleLike(anyLong(), anyString())).willReturn(createArticleLikeDto());
+        given(memberService.getMemberEmail(anyString())).willReturn(createProfileDto());
 
         // When & Then
         mvc.perform(get("/articles/" + articleId))
@@ -155,6 +156,7 @@ class ArticleControllerTest {
         then(articleService).should().getArticleWithComment(articleId);
         then(boardService).should().getBoards(anyString());
         then(articleLikeService).should().getArticleLike(anyLong(), anyString());
+        then(memberService).should().getMemberEmail(anyString());
     }
 
     @Test
@@ -261,7 +263,6 @@ class ArticleControllerTest {
                 1L,
                 createMemberDto(),
                 "content",
-                LocalDateTime.now(),
                 LocalDateTime.now()
         );
     }
@@ -293,6 +294,16 @@ class ArticleControllerTest {
                 createMemberDto(),
                 1L,
                 1L
+        );
+    }
+
+    private ProfileDto createProfileDto() {
+        return ProfileDto.of(
+                1L,
+                1L,
+                "yessm621@gmail.com",
+                "yessm",
+                "image"
         );
     }
 }

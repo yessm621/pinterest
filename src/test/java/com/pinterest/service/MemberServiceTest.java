@@ -1,7 +1,9 @@
 package com.pinterest.service;
 
+import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.ProfileDto;
 import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,13 +11,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -29,6 +34,9 @@ class MemberServiceTest {
     @Mock
     MemberRepository memberRepository;
 
+    @Mock
+    FileService fileService;
+
     @Test
     @DisplayName("프로필을 조회하면 프로필을 반환한다.")
     void givenMemberId_whenSearchingMember_thenReturnsMember() {
@@ -38,7 +46,7 @@ class MemberServiceTest {
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         // When
-        MemberDto dto = sut.getMember(memberId);
+        ProfileDto dto = sut.getMember(memberId);
 
         // Then
         assertThat(dto).hasFieldOrPropertyWithValue("nickname", dto.getNickname());
@@ -63,10 +71,12 @@ class MemberServiceTest {
         // Given
         Member member = createMember();
         MemberDto dto = createMemberDto();
+        MockMultipartFile file = new MockMultipartFile("fileName", "test.png", "image/*", "test file".getBytes(StandardCharsets.UTF_8));
         given(memberRepository.getReferenceById(dto.getId())).willReturn(member);
+        given(fileService.saveFile(file)).willReturn(any(FileEntity.class));
 
         // When
-        sut.updateMember(dto.getId(), dto);
+        sut.updateMember(dto.getId(), dto, file);
 
         // Then
         assertThat(member).hasFieldOrPropertyWithValue("nickname", dto.getNickname());
@@ -79,10 +89,11 @@ class MemberServiceTest {
     void givenNoneExistenceMemberInfo_whenUpdatingMember_thenLogsWarningAndDoesNothing() {
         // Given
         MemberDto dto = createMemberDto();
+        MockMultipartFile file = new MockMultipartFile("fileName", "test.png", "image/*", "test file".getBytes(StandardCharsets.UTF_8));
         given(memberRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateMember(dto.getId(), dto);
+        sut.updateMember(dto.getId(), dto, file);
 
         // Then
         then(memberRepository).should().getReferenceById(dto.getId());
@@ -106,6 +117,16 @@ class MemberServiceTest {
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()
+        );
+    }
+
+    private ProfileDto createProfileDto() {
+        return ProfileDto.of(
+                1L,
+                1L,
+                "yessm621@gmail.com",
+                "yessm",
+                "image"
         );
     }
 }

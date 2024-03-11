@@ -1,10 +1,12 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.WithMockCustomUser;
+import com.pinterest.domain.FileEntity;
 import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.FileDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.MemberRequest;
-import com.pinterest.dto.response.MemberResponse;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.MemberService;
 import com.pinterest.util.FormDataEncoder;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -62,7 +65,7 @@ class MemberControllerTest {
     @DisplayName("[View] GET 프로필 페이지 - 정상 호출")
     void givenNoting_whenRequestingProfileView_thenReturnProfileView() throws Exception {
         // Given
-        given(memberService.getMember(anyLong())).willReturn(createMemberDto());
+        given(memberService.getMember(anyLong())).willReturn(createProfileDto());
         given(articleService.getArticles(anyString())).willReturn(List.of(createArticleDto()));
 
         // When & Then
@@ -79,36 +82,35 @@ class MemberControllerTest {
     @WithMockCustomUser
     @DisplayName("[View] GET 프로필 수정 페이지 - 정상 호출, 인증된 사용자")
     void givenNothing_whenRequestUpdateProfileView_thenReturnUpdatedProfilePage() throws Exception {
-        Long memberId = 1L;
-        MemberDto dto = createMemberDto();
-        given(memberService.getMember(memberId)).willReturn(dto);
+        Long profileId = 1L;
+        ProfileDto dto = createProfileDto();
+        given(memberService.getMember(profileId)).willReturn(dto);
 
-        mvc.perform(get("/members/" + memberId + "/form"))
+        mvc.perform(get("/members/" + profileId + "/form"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("profile/updateForm"))
-                .andExpect(model().attribute("profile", MemberResponse.from(dto)));
-        then(memberService).should().getMember(memberId);
+                .andExpect(model().attribute("profile", dto));
+        then(memberService).should().getMember(profileId);
     }
 
     @Test
     @WithMockCustomUser
     @DisplayName("[View] POST 프로필 수정 - 정상 호출")
     void givenUpdatedMemberInfo_whenRequestUpdateMember_thenUpdatesMember() throws Exception {
-        Long memberId = 1L;
+        Long profileId = 1L;
         MemberRequest memberRequest = MemberRequest.of("nickname", "image");
-        willDoNothing().given(memberService).updateMember(eq(memberId), any(MemberDto.class));
+        willDoNothing().given(memberService).updateMember(anyLong(), any(MemberDto.class), any(MockMultipartFile.class));
 
         mvc.perform(
-                        post("/members/" + memberId + "/form")
+                        post("/members/" + profileId + "/form")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(memberRequest))
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/members/" + memberId))
-                .andExpect(redirectedUrl("/members/" + memberId));
-        then(memberService).should().updateMember(eq(memberId), any(MemberDto.class));
+                .andExpect(view().name("redirect:/members/" + profileId))
+                .andExpect(redirectedUrl("/members/" + profileId));
     }
 
     private MemberDto createMemberDto() {
@@ -131,6 +133,32 @@ class MemberControllerTest {
                 "title",
                 "content",
                 "hashtag"
+        );
+    }
+
+    private ProfileDto createProfileDto() {
+        return ProfileDto.of(
+                1L,
+                1L,
+                "yessm621@gmail.com",
+                "yessm",
+                "image"
+        );
+    }
+
+    private FileDto createFileDto() {
+        return new FileDto(
+                "fileName",
+                "savedName",
+                "savedPath"
+        );
+    }
+
+    private FileEntity createFile() {
+        return FileEntity.of(
+                "fileName",
+                "savedName",
+                "savedPath"
         );
     }
 }
