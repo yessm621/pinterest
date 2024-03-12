@@ -31,10 +31,19 @@ public class ArticleLikeService {
     private final ArticleLikeQueryRepository articleLikeQueryRepository;
 
     /**
-     * 사용자가 저장한 핀 리스트를 조회
+     * 보드 페이지에서 사용자가 저장한 핀 리스트를 조회
      */
     public List<ArticleDto> getArticleLikes(Long boardId, String email) {
         return articleLikeQueryRepository.getArticleLikes(boardId, email).stream()
+                .map(ArticleDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 마이페이지에서 사용자가 저장한 핀 리스트를 조회
+     */
+    public List<ArticleDto> getArticleLikes(String email) {
+        return articleLikeQueryRepository.getArticleLikes(email).stream()
                 .map(ArticleDto::from)
                 .collect(Collectors.toList());
     }

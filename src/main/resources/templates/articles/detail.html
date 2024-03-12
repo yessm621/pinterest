@@ -68,7 +68,7 @@
       </div>
       <div class="flex items-baseline my-10">
         <div class="space-x-1 text-sm font-medium leading-none">
-          <a th:href="@{/members/{memberId}(memberId=${article.getMemberDto().id})}">
+          <a th:href="@{/members/{email}(email=${article.getMemberDto().email})}">
             <div class="flex items-center space-x-3">
               <th:block th:if="${article.getMemberDto().fileId == null}">
                 <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
@@ -109,15 +109,6 @@
         </th:block>
         <th:block th:if="${comments != null}">
           <div class="flex items-start space-x-3 mb-2" th:each="comment: ${comments}">
-            <!--<span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-                <img th:src="${article.getMemberDto().image}" alt="" class="flex h-full w-full items-center justify-center rounded-full bg-muted">
-              </th:block>
-              <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-                <div class="h-10 w-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                     th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
-              </th:block>
-            </span>-->
             <th:block th:if="${comment.getMemberDto().fileId == null}">
               <th:block th:if="${comment.getMemberDto().image != null and comment.getMemberDto().image != ''}">
                 <img th:src="${comment.getMemberDto().image}" alt="" class="w-10 h-10 object-cover rounded-full">
