@@ -21,6 +21,14 @@ public class ArticleLikeQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    public List<Article> getArticleLikes(String email) {
+        return queryFactory
+                .select(articleLike.article)
+                .from(articleLike)
+                .where(articleLike.member.email.eq(email))
+                .fetch();
+    }
+
     public List<Article> getArticleLikes(Long boardId, String email) {
         return queryFactory
                 .select(articleLike.article)

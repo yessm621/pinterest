@@ -5,6 +5,7 @@ import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.dto.request.MemberRequest;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final ArticleService articleService;
+    private final ArticleLikeService articleLikeService;
 
     @GetMapping("/login")
     public String login() {
@@ -40,22 +42,23 @@ public class MemberController {
         return "redirect:/members/login";
     }
 
-    @GetMapping("/profile")
-    public String profile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    @GetMapping({"/{email}", "/{email}/{type}"})
+    public String profile(@PathVariable String email,
+                          @PathVariable(required = false) String type,
+                          @AuthenticationPrincipal CustomUserDetails customUserDetails,
                           Model model) {
-        ProfileDto profile = memberService.getMemberEmail(customUserDetails.getUsername());
-        List<ArticleDto> articles = articleService.getArticles(customUserDetails.getUsername());
-        model.addAttribute("profile", profile);
-        model.addAttribute("articles", articles);
-        return "profile/index";
-    }
+        if (type == null) type = "saved";
 
-    @GetMapping("/{memberId}")
-    public String profile(@PathVariable Long memberId, Model model) {
-        ProfileDto profile = memberService.getMember(memberId);
-        List<ArticleDto> articles = articleService.getArticles(memberId);
+        ProfileDto profile = memberService.getMemberEmail(email);
+        List<ArticleDto> articles;
+        if (type.equals("created")) {
+            articles = articleService.getArticles(email);
+        } else {
+            articles = articleLikeService.getArticleLikes(email);
+        }
         model.addAttribute("profile", profile);
         model.addAttribute("articles", articles);
+        model.addAttribute("type", type);
         return "profile/index";
     }
 
@@ -72,6 +75,6 @@ public class MemberController {
                                 @RequestParam(value = "file", required = false) MultipartFile file,
                                 MemberRequest memberRequest) {
         memberService.updateMember(profileId, memberRequest.toDto(customUserDetails.getUsername()), file);
-        return "redirect:/members/" + profileId;
+        return "redirect:/members/" + customUserDetails.getUsername();
     }
 }
