@@ -7,6 +7,7 @@ import com.pinterest.dto.FileDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.MemberRequest;
+import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.MemberService;
 import com.pinterest.util.FormDataEncoder;
@@ -45,6 +46,9 @@ class MemberControllerTest {
     @MockBean
     ArticleService articleService;
 
+    @MockBean
+    ArticleLikeService articleLikeService;
+
     public MemberControllerTest(@Autowired MockMvc mvc, @Autowired FormDataEncoder formDataEncoder) {
         this.mvc = mvc;
         this.formDataEncoder = formDataEncoder;
@@ -53,8 +57,8 @@ class MemberControllerTest {
     @Test
     @DisplayName("[View] GET 프로필 페이지 - 인증 없을 땐 로그인 페이지로 이동")
     void givenNothing_whenRequestProfileView_thenRedirectsToLoginPage() throws Exception {
-        Long memberId = 1L;
-        mvc.perform(get("/members/" + memberId))
+        String email = "test@gmail.com";
+        mvc.perform(get("/members/" + email))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(memberService).shouldHaveNoInteractions();
@@ -65,7 +69,7 @@ class MemberControllerTest {
     @DisplayName("[View] GET 프로필 페이지 - 정상 호출")
     void givenNoting_whenRequestingProfileView_thenReturnProfileView() throws Exception {
         // Given
-        given(memberService.getMember(anyLong())).willReturn(createProfileDto());
+        given(memberService.getMemberEmail(anyString())).willReturn(createProfileDto());
         given(articleService.getArticles(anyString())).willReturn(List.of(createArticleDto()));
 
         // When & Then
@@ -74,8 +78,9 @@ class MemberControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("profile/index"))
                 .andExpect(model().attributeExists("profile"))
-                .andExpect(model().attributeExists("articles"));
-        then(memberService).should().getMember(anyLong());
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("type"));
+        then(memberService).should().getMemberEmail(anyString());
     }
 
     @Test
@@ -99,6 +104,7 @@ class MemberControllerTest {
     @DisplayName("[View] POST 프로필 수정 - 정상 호출")
     void givenUpdatedMemberInfo_whenRequestUpdateMember_thenUpdatesMember() throws Exception {
         Long profileId = 1L;
+        String email = "test@gmail.com";
         MemberRequest memberRequest = MemberRequest.of("nickname", "image");
         willDoNothing().given(memberService).updateMember(anyLong(), any(MemberDto.class), any(MockMultipartFile.class));
 
@@ -109,8 +115,8 @@ class MemberControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/members/" + profileId))
-                .andExpect(redirectedUrl("/members/" + profileId));
+                .andExpect(view().name("redirect:/members/" + email))
+                .andExpect(redirectedUrl("/members/" + email));
     }
 
     private MemberDto createMemberDto() {
