@@ -20,7 +20,7 @@ public class FollowService {
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
     private final FollowQueryRepository followQueryRepository;
-    
+
     public FollowDto getFollow(String fromMemberEmail, Long toMemberId) {
         Follow follow = followQueryRepository.getFollow(fromMemberEmail, toMemberId);
         if (follow != null) {
@@ -29,10 +29,16 @@ public class FollowService {
         return null;
     }
 
-    public Long countFollow(Long toMemberId) {
+    public Long countToMember(Long toMemberId) {
         Member toMember = memberRepository.findById(toMemberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
         return followRepository.countByToMember(toMember);
+    }
+
+    public Long countFromMember(Long fromMemberId) {
+        Member fromMember = memberRepository.findById(fromMemberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+        return followRepository.countByFromMember(fromMember);
     }
 
     @Transactional

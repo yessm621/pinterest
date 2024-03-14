@@ -2,11 +2,13 @@ package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.FollowDto;
 import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.JoinRequest;
 import com.pinterest.dto.request.MemberRequest;
 import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
+import com.pinterest.service.FollowService;
 import com.pinterest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ArticleService articleService;
     private final ArticleLikeService articleLikeService;
+    private final FollowService followService;
 
     @GetMapping("/login")
     public String login() {
@@ -56,9 +59,19 @@ public class MemberController {
         } else {
             articles = articleLikeService.getArticleLikes(email);
         }
+
+        FollowDto follow = null;
+        if (!email.equals(customUserDetails.getUsername())) {
+            follow = followService.getFollow(customUserDetails.getUsername(), profile.getId());
+        }
+        Long countToMember = followService.countToMember(profile.getId());
+        Long countFromMember = followService.countFromMember(profile.getId());
         model.addAttribute("profile", profile);
         model.addAttribute("articles", articles);
         model.addAttribute("type", type);
+        model.addAttribute("follow", follow);
+        model.addAttribute("countToMember", countToMember);
+        model.addAttribute("countFromMember", countFromMember);
         return "profile/index";
     }
 

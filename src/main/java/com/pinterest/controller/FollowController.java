@@ -1,6 +1,7 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
+import com.pinterest.dto.request.FollowProfileRequest;
 import com.pinterest.dto.request.FollowRequest;
 import com.pinterest.service.FollowService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,20 @@ public class FollowController {
                                FollowRequest request) {
         followService.cancel(followId);
         return "redirect:/articles/" + request.getArticleId();
+    }
+
+    @PostMapping("/profile/create")
+    public String createFollowProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                      FollowProfileRequest request) {
+        followService.createFollow(customUserDetails.getUsername(), request.getToMemberId());
+        return "redirect:/members/" + request.getEmail();
+    }
+
+    @PostMapping("/profile/cancel/{followId}")
+    public String cancelFollowProfile(@PathVariable Long followId,
+                               @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                               FollowProfileRequest request) {
+        followService.cancel(followId);
+        return "redirect:/members/" + request.getEmail();
     }
 }

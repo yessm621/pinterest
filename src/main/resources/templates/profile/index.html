@@ -23,8 +23,13 @@
     </div>
     <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>
     <p class="mt-1 text-sm text-gray-500" th:text="${profile.email}">이메일</p>
-    <!--TODO:: 구독자 수 표시하기-->
-    <p class="mt-1 text-base text-gray-900">구독 0명</p>
+    <div class="flex">
+      <th:block th:if="${profile.email} != ${#authentication.name}">
+        <p class="mt-1 text-sm font-semibold text-gray-900" th:text="'팔로워 ' + ${#numbers.formatInteger(countToMember, 0, 'COMMA')} + '명'">팔로워 0명</p>
+        <span class="mx-1">·</span>
+      </th:block>
+      <p class="mt-1 text-sm font-semibold text-gray-900" th:text="'팔로잉 ' + ${#numbers.formatInteger(countFromMember, 0, 'COMMA')} + '명'">팔로잉 0명</p>
+    </div>
     <div class="mt-2 flex space-x-2">
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
         <a th:href="@{/members/{memberId}/form(memberId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
@@ -32,9 +37,24 @@
         </a>
       </th:block>
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} != ${#authentication.name}">
-        <a href="#" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
-          구독
-        </a>
+        <th:block th:if="${follow == null}">
+          <form th:action="@{/follows/profile/create}" method="post">
+            <input type="hidden" name="toMemberId" th:value="${profile.id}">
+            <input type="hidden" name="email" th:value="${profile.email}">
+            <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
+              팔로우
+            </button>
+          </form>
+        </th:block>
+        <th:block th:if="${follow != null}">
+          <form th:action="@{/follows/profile/cancel/{followId}(followId=${follow.id})}" method="post">
+            <input type="hidden" name="email" th:value="${profile.email}">
+            <button type="submit"
+                    class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+              팔로잉
+            </button>
+          </form>
+        </th:block>
       </th:block>
     </div>
 
@@ -56,7 +76,6 @@
             <th:block th:if="${type.equals('created')}">
               <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
             </th:block>
-
           </li>
         </ul>
       </div>

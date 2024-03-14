@@ -49,14 +49,14 @@ public class ArticleController {
         ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
         ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
         FollowDto follow = followService.getFollow(customUserDetails.getUsername(), article.getMemberDto().getId());
-        Long follower = followService.countFollow(article.getMemberDto().getId());
+        Long countToMember = followService.countToMember(article.getMemberDto().getId());
         model.addAttribute("profile", profile);
         model.addAttribute("boards", boards);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         model.addAttribute("articleLike", articleLike);
         model.addAttribute("follow", follow);
-        model.addAttribute("follower", follower);
+        model.addAttribute("countToMember", countToMember);
         return "articles/detail";
     }
 

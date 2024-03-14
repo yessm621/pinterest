@@ -84,7 +84,7 @@
               </th:block>
               <div>
                 <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
-                <div class="text-xs text-gray-500" th:text="'팔로우 ' + ${#numbers.formatInteger(follower, 0, 'COMMA')} + '명'">팔로우 0명</div>
+                <div class="text-xs text-gray-500" th:text="'팔로우 ' + ${#numbers.formatInteger(countToMember, 0, 'COMMA')} + '명'">팔로우 0명</div>
               </div>
             </div>
           </a>
