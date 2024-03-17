@@ -30,9 +30,6 @@ public class Board extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @OneToMany(mappedBy = "board")
-    private List<Subscribe> subscribes = new ArrayList<>();
-
     protected Board() {
     }
 

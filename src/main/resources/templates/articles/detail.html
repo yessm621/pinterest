@@ -84,17 +84,31 @@
               </th:block>
               <div>
                 <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
-                <!--TODO:: 구독 표시-->
-                <div class="text-xs text-gray-500">구독 0명</div>
+                <div class="text-xs text-gray-500" th:text="'팔로우 ' + ${#numbers.formatInteger(countToMember, 0, 'COMMA')} + '명'">팔로우 0명</div>
               </div>
             </div>
           </a>
         </div>
         <div class="ml-auto my-auto text-sm font-medium leading-none text-red-600">
-          <a href="#"
-             class="inline-flex items-center justify-center rounded-full bg-gray-200 px-3.5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-            구독
-          </a>
+          <th:block th:if="${follow == null}">
+            <form th:action="@{/follows/create}" method="post">
+              <input type="hidden" name="toMemberId" th:value="${article.getMemberDto().id}">
+              <input type="hidden" name="articleId" th:value="${article.id}">
+              <button type="submit"
+                 class="inline-flex items-center justify-center rounded-full bg-gray-200 px-3.5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                팔로우
+              </button>
+            </form>
+          </th:block>
+          <th:block th:if="${follow != null}">
+            <form th:action="@{/follows/cancel/{followId}(followId=${follow.id})}" method="post">
+              <input type="hidden" name="articleId" th:value="${article.id}">
+              <button type="submit"
+                      class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                팔로잉
+              </button>
+            </form>
+          </th:block>
         </div>
       </div>
 

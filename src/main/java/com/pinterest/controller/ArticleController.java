@@ -25,6 +25,7 @@ public class ArticleController {
     private final BoardService boardService;
     private final ArticleService articleService;
     private final ArticleLikeService articleLikeService;
+    private final FollowService followService;
     private final PaginationService paginationService;
 
     @GetMapping
@@ -43,15 +44,19 @@ public class ArticleController {
     public String articlesDetail(@PathVariable Long articleId,
                                  @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                  Model model) {
-        ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
-        List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
-        ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
         ProfileDto profile = memberService.getMemberEmail(customUserDetails.getUsername());
+        List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
+        ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
+        ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
+        FollowDto follow = followService.getFollow(customUserDetails.getUsername(), article.getMemberDto().getId());
+        Long countToMember = followService.countToMember(article.getMemberDto().getId());
+        model.addAttribute("profile", profile);
         model.addAttribute("boards", boards);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         model.addAttribute("articleLike", articleLike);
-        model.addAttribute("profile", profile);
+        model.addAttribute("follow", follow);
+        model.addAttribute("countToMember", countToMember);
         return "articles/detail";
     }
 

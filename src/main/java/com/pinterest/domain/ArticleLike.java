@@ -1,11 +1,13 @@
 package com.pinterest.domain;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@ToString(exclude = {"member", "board", "article"})
 public class ArticleLike {
 
     @Id

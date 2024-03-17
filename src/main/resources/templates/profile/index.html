@@ -2,9 +2,17 @@
 <html th:replace="~{base/base :: base(~{::main})}" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>마이페이지 | Pinterest</title>
+  <style>
+      .modal {
+          transition: opacity 0.25s ease;
+      }
+      body.modal-active {
+          overflow-x: hidden;
+          overflow-y: visible !important;
+      }
+  </style>
 </head>
-<body>
-
+<body class="bg-gray-200 flex items-center justify-center h-screen">
 <main class="article">
   <div class="flex w-full flex-col items-center justify-center bg-white text-center my-6">
     <div class="mb-2 flex items-center justify-center">
@@ -23,8 +31,17 @@
     </div>
     <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>
     <p class="mt-1 text-sm text-gray-500" th:text="${profile.email}">이메일</p>
-    <!--TODO:: 구독자 수 표시하기-->
-    <p class="mt-1 text-base text-gray-900">구독 0명</p>
+    <div class="flex">
+      <th:block th:if="${profile.email} != ${#authentication.name}">
+        <a class="modal-open" onclick="follow('follower')">
+          <p class="mt-1 text-sm font-semibold text-gray-900" th:text="'팔로워 ' + ${#numbers.formatInteger(countToMember, 0, 'COMMA')} + '명'">팔로워 0명</p>
+        </a>
+        <span class="mx-1">·</span>
+      </th:block>
+      <a class="modal-open" onclick="follow('following')">
+        <p class="mt-1 text-sm font-semibold text-gray-900" th:text="'팔로잉 ' + ${#numbers.formatInteger(countFromMember, 0, 'COMMA')} + '명'">팔로잉 0명</p>
+      </a>
+    </div>
     <div class="mt-2 flex space-x-2">
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
         <a th:href="@{/members/{memberId}/form(memberId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
@@ -32,12 +49,26 @@
         </a>
       </th:block>
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} != ${#authentication.name}">
-        <a href="#" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
-          구독
-        </a>
+        <th:block th:if="${follow == null}">
+          <form th:action="@{/follows/profile/create}" method="post">
+            <input type="hidden" name="toMemberId" th:value="${profile.id}">
+            <input type="hidden" name="email" th:value="${profile.email}">
+            <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
+              팔로우
+            </button>
+          </form>
+        </th:block>
+        <th:block th:if="${follow != null}">
+          <form th:action="@{/follows/profile/cancel/{followId}(followId=${follow.id})}" method="post">
+            <input type="hidden" name="email" th:value="${profile.email}">
+            <button type="submit"
+                    class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+              팔로잉
+            </button>
+          </form>
+        </th:block>
       </th:block>
     </div>
-
     <div class="mt-6 flex space-x-4">
       <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
         <ul class="flex flex-wrap -mb-px">
@@ -56,7 +87,6 @@
             <th:block th:if="${type.equals('created')}">
               <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
             </th:block>
-
           </li>
         </ul>
       </div>
@@ -95,8 +125,99 @@
       </div>
     </th:block>
   </div>
+
+  <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div class="modal-container bg-white w-11/12 md:max-w-lg mx-auto rounded shadow-lg z-50 overflow-y-auto relative transform overflow-hidden shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+      <div class="bg-white rounded-lg overflow-hidden w-full max-w-lg p-4">
+        <h2 id="followTitle" class="text-lg font-semibold leading-6 text-gray-900 text-center py-2">팔로잉</h2>
+        <ul id="followList"></ul>
+      </div>
+    </div>
+  </div>
+  <script th:inline="javascript">
+      var openmodal = document.querySelectorAll('.modal-open')
+      for (var i = 0; i < openmodal.length; i++) {
+          openmodal[i].addEventListener('click', function(event){
+              event.preventDefault()
+              toggleModal()
+          })
+      }
+
+      const overlay = document.querySelector('.modal-overlay')
+      overlay.addEventListener('click', toggleModal)
+
+      var closemodal = document.querySelectorAll('.modal-close')
+      for (var i = 0; i < closemodal.length; i++) {
+          closemodal[i].addEventListener('click', toggleModal)
+      }
+
+      document.onkeydown = function(evt) {
+          evt = evt || window.event
+          var isEscape = false
+          if ("key" in evt) {
+              isEscape = (evt.key === "Escape" || evt.key === "Esc")
+          } else {
+              isEscape = (evt.keyCode === 27)
+          }
+          if (isEscape && document.body.classList.contains('modal-active')) {
+              toggleModal()
+          }
+      };
+
+      function toggleModal() {
+          const body = document.querySelector('body')
+          const modal = document.querySelector('.modal')
+          modal.classList.toggle('opacity-0')
+          modal.classList.toggle('pointer-events-none')
+          body.classList.toggle('modal-active')
+      }
+
+      function follow(type) {
+          var email = [[${profile.email}]];
+          let url = "";
+          if (type == "follower") {
+              url = "http://localhost:8080/follows/followerList";
+          } else {
+              url = "http://localhost:8080/follows/followingList";
+          }
+
+          $.ajax({
+              type: "GET",
+              url: url,
+              data: { email : email },
+              dataType: "json",
+              contentType:"application/json;charset=UTF-8",
+              success: function (data) {
+                  if (type == "follower") {
+                      document.querySelector('#followTitle').textContent = '팔로워';
+                  } else {
+                      document.querySelector('#followTitle').textContent = '팔로잉';
+                  }
+
+                  document.querySelector('#followList').innerHTML = '';
+                  if (data.length > 0) {
+                      followList(data);
+                  }
+              }
+          });
+      }
+
+      function followList(data) {
+          data.forEach((v, i) => {
+              const temp = document.createElement("li")
+              temp.innerHTML = `<li class="flex items-center px-4 pt-4 space-x-4">
+                                  <span class="flex items-center space-x-3">
+                                    <img class="w-10 h-10 object-cover rounded-full" src="/image/${data[i].fileId}">
+                                  </span>
+                                  <span class="flex-1 font-medium">${data[i].nickname}</span>
+                                  <a href="#" class="rounded-full bg-gray-400 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">언팔로우</a>
+                                </li>`;
+              document.querySelector('#followList').append(temp);
+          });
+      }
+  </script>
   <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
 </main>
-
 </body>
 </html>
