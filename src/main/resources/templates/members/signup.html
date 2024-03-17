@@ -4,7 +4,6 @@
   <title>회원가입 | Pinterest</title>
 </head>
 <body>
-
 <main>
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -12,7 +11,6 @@
         Pinterest에 오신것을 환영합니다.
       </h2>
     </div>
-
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form class="space-y-6" th:action="@{/members/signup}" method="post">
         <div>
@@ -37,17 +35,14 @@
           </button>
         </div>
       </form>
-
       <p class="mt-4 text-center text-sm text-gray-500">
         또는
       </p>
-
       <div class="flex w-full justify-center mt-4">
         <a th:href="@{/oauth2/authorization/google}">
           <img th:src="@{/images/web_light_rd_SU.svg}">
         </a>
       </div>
-
       <p class="mt-10 text-center text-sm text-gray-500">
         이미 회원이신가요?
         <a th:href="@{/members/login}" class="font-semibold leading-6 text-red-600 hover:text-red-500">로그인</a>
@@ -55,6 +50,5 @@
     </div>
   </div>
 </main>
-
 </body>
 </html>

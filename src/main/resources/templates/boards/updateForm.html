@@ -4,7 +4,6 @@
   <title>보드 만들기 | Pinterest</title>
 </head>
 <body>
-
 <main>
   <form th:action="@{/boards/{boardId}/form(boardId=${board.id})}" method="post">
     <div class="max-w-2xl mx-auto p-10 bg-white">
@@ -12,8 +11,7 @@
         <div class="flex-grow space-y-4">
           <div class="flex items-center justify-between">
             <h1 class="text-xl font-semibold">보드 수정하기</h1>
-            <button type="submit"
-                    class="rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+            <button type="submit" class="rounded-full bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
               수정
             </button>
           </div>
@@ -27,6 +25,5 @@
     </div>
   </form>
 </main>
-
 </body>
 </html>
