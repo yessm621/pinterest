@@ -26,8 +26,8 @@
       </button>
     </div>
     <div class="hidden lg:flex lg:gap-x-12">
-      <a th:href="@{/articles}" class="text-sm font-semibold leading-6 text-gray-900">핀</a>
       <th:block sec:authorize="isAuthenticated()">
+        <a th:href="@{/articles}" class="text-sm font-semibold leading-6 text-gray-900">핀</a>
         <a th:href="@{/boards}" class="text-sm font-semibold leading-6 text-gray-900">보드</a>
       </th:block>
     </div>

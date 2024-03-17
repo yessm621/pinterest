@@ -4,10 +4,8 @@
   <title>Articles | Pinterest</title>
 </head>
 <body>
-
 <main class="article">
   <div class="relative isolate px-6 lg:px-8">
-
     <th:block th:if="${!articles.isEmpty()}">
       <div class="max-w-2xl mx-auto mb-10">
         <form th:action="@{/articles}" method="get">
@@ -23,18 +21,7 @@
           </div>
         </form>
       </div>
-      <div class="container">
-        <th:block th:each="article: ${articles}">
-          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-            <div>
-              <img th:src="|/image/${article.fileId}|" alt="">
-            </div>
-            <h6 class="mt-2" th:text="${article.title}">
-              핀 이름
-            </h6>
-          </a>
-        </th:block>
-      </div>
+      <div th:replace="~{base/snippets/article :: articleFragment(${articles})}"></div>
       <div th:object="${articles}" style="margin: 1rem 0;" class="row aos-init aos-animate py-2" data-aos="fade-up">
         <div class="col-lg-12 d-flex justify-content-center">
           <ul id="pagination">
@@ -54,7 +41,6 @@
         </div>
       </div>
     </th:block>
-
     <th:block th:if="${articles.isEmpty()}">
       <div class="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
         <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#e03d48] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
@@ -79,6 +65,5 @@
     <script type="text/javascript" th:src="@{/js/magic-grid.js}"></script>
   </div>
 </main>
-
 </body>
 </html>

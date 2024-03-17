@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="articleFragment(articles)">
+  <div class="container">
+    <th:block th:each="article: ${articles}">
+      <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
+        <div>
+          <img th:src="|/image/${article.fileId}|" alt="">
+        </div>
+        <h6 class="mt-2" th:text="${article.title}">
+          핀 이름
+        </h6>
+      </a>
+    </th:block>
+  </div>
+</th:block>
+</body>
+</html>

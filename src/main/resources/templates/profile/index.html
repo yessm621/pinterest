@@ -111,21 +111,9 @@
       </div>
     </th:block>
     <th:block th:if="${!articles.isEmpty()}">
-      <div class="container">
-        <th:block th:each="article: ${articles}">
-          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-            <div>
-              <img th:src="|/image/${article.fileId}|" alt="">
-            </div>
-            <h6 class="mt-2" th:text="${article.title}">
-              핀 이름
-            </h6>
-          </a>
-        </th:block>
-      </div>
+      <div th:replace="~{base/snippets/article :: articleFragment(${articles})}"></div>
     </th:block>
   </div>
-
   <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
     <div class="modal-container bg-white w-11/12 md:max-w-lg mx-auto rounded shadow-lg z-50 overflow-y-auto relative transform overflow-hidden shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
@@ -135,6 +123,7 @@
       </div>
     </div>
   </div>
+
   <script th:inline="javascript">
       var openmodal = document.querySelectorAll('.modal-open')
       for (var i = 0; i < openmodal.length; i++) {
@@ -206,11 +195,26 @@
       function followList(data) {
           data.forEach((v, i) => {
               const temp = document.createElement("li")
+              var nickname = '';
+              var image = '';
+              if (data[i].nickname == null) {
+                  nickname = data[i].email;
+              } else {
+                  nickname = data[i].nickname;
+              }
+              if (data[i].fileId == null) {
+                  image = `<div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"">`
+                      + data[i].email.slice(0, 1)
+                      + `</div>`;
+              } else {
+                  image = `<img className="w-10 h-10 object-cover rounded-full" src="/image/${data[i].fileId}">`;
+              }
+
               temp.innerHTML = `<li class="flex items-center px-4 pt-4 space-x-4">
-                                  <span class="flex items-center space-x-3">
-                                    <img class="w-10 h-10 object-cover rounded-full" src="/image/${data[i].fileId}">
+                                  <span class="flex items-center space-x-3 w-10 h-10">
+                                    ${image}
                                   </span>
-                                  <span class="flex-1 font-medium">${data[i].nickname}</span>
+                                  <span class="flex-1 font-medium">${nickname}</span>
                                   <a href="#" class="rounded-full bg-gray-400 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">언팔로우</a>
                                 </li>`;
               document.querySelector('#followList').append(temp);
