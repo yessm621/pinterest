@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.Follow;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.FollowDto;
+import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.FollowRepository;
 import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.query.FollowQueryRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +58,23 @@ public class FollowService {
         Follow follow = followRepository.findById(followId)
                 .orElseThrow(() -> new EntityNotFoundException("팔로우 정보가 없습니다."));
         followRepository.delete(follow);
+    }
+
+    public List<MemberDto> getFollowers(String email) {
+        Member toMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+        return followQueryRepository.getFollowers(toMember.getId())
+                .stream()
+                .map(MemberDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<MemberDto> getFollowings(String email) {
+        Member fromMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+        return followQueryRepository.getFollowings(fromMember.getId())
+                .stream()
+                .map(MemberDto::from)
+                .collect(Collectors.toList());
     }
 }
