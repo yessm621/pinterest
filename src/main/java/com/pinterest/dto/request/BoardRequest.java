@@ -2,23 +2,26 @@ package com.pinterest.dto.request;
 
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class BoardRequest {
 
-    private String title;
+    private String boardTitle;
+    private String type;
 
-    public static BoardRequest of(String title) {
-        return new BoardRequest(title);
+    private BoardRequest(String boardTitle) {
+        this.boardTitle = boardTitle;
+    }
+
+    public static BoardRequest of(String boardTitle) {
+        return new BoardRequest(boardTitle);
     }
 
     public BoardDto toDto(MemberDto memberDto) {
         return BoardDto.of(
                 memberDto,
-                title
+                boardTitle
         );
     }
 }

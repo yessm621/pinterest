@@ -43,7 +43,7 @@ public class ArticleLikeService {
      * 마이페이지에서 사용자가 저장한 핀 리스트를 조회
      */
     public List<ArticleDto> getArticleLikes(String email) {
-        return articleLikeQueryRepository.getArticleLikes(email).stream()
+        return articleLikeQueryRepository.getArticleLikes(null, email).stream()
                 .map(ArticleDto::from)
                 .collect(Collectors.toList());
     }

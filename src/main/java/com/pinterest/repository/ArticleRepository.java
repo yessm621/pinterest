@@ -12,6 +12,4 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     void deleteByIdAndMember_Email(Long articleId, String email);
 
     List<Article> findByMember_Email(String email);
-
-    List<Article> findByMember_Id(Long memberId);
 }

@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +20,8 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final ArticleRepository articleRepository;
-
     private final CommentRepository commentRepository;
-
     private final MemberRepository memberRepository;
-
-    public List<CommentDto> searchComment(Long articleId) {
-        return commentRepository.findByArticle_Id(articleId)
-                .stream()
-                .map(CommentDto::from)
-                .collect(Collectors.toList());
-    }
 
     @Transactional
     public void saveComment(CommentDto dto) {
@@ -44,10 +33,5 @@ public class CommentService {
         } catch (EntityNotFoundException e) {
             log.warn("댓글 저장 실패. 댓글의 게시글을 찾을 수 없습니다.");
         }
-    }
-
-    @Transactional
-    public void deleteComment(Long commentId, String email) {
-        commentRepository.deleteByIdAndMember_Email(commentId, email);
     }
 }

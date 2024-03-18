@@ -2,7 +2,6 @@ package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.MemberDto;
-import com.pinterest.dto.request.FollowProfileRequest;
 import com.pinterest.dto.request.FollowRequest;
 import com.pinterest.service.FollowService;
 import lombok.RequiredArgsConstructor;
@@ -23,30 +22,23 @@ public class FollowController {
     public String createFollow(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                FollowRequest request) {
         followService.createFollow(customUserDetails.getUsername(), request.getToMemberId());
-        return "redirect:/articles/" + request.getArticleId();
+        if (request.getType().equals("articles")) {
+            return "redirect:/articles/" + request.getArticleId();
+        } else {
+            return "redirect:/profiles/" + request.getEmail();
+        }
     }
 
     @PostMapping("/cancel/{followId}")
     public String cancelFollow(@PathVariable Long followId,
                                @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                FollowRequest request) {
-        followService.cancel(followId);
-        return "redirect:/articles/" + request.getArticleId();
-    }
-
-    @PostMapping("/profile/create")
-    public String createFollowProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                      FollowProfileRequest request) {
-        followService.createFollow(customUserDetails.getUsername(), request.getToMemberId());
-        return "redirect:/profiles/" + request.getEmail();
-    }
-
-    @PostMapping("/profile/cancel/{followId}")
-    public String cancelFollowProfile(@PathVariable Long followId,
-                                      @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                      FollowProfileRequest request) {
-        followService.cancel(followId);
-        return "redirect:/profiles/" + request.getEmail();
+        followService.cancel(followId, customUserDetails.getUsername());
+        if (request.getType().equals("articles")) {
+            return "redirect:/articles/" + request.getArticleId();
+        } else {
+            return "redirect:/profiles/" + request.getEmail();
+        }
     }
 
     @GetMapping("/followerList")

@@ -1,6 +1,5 @@
 package com.pinterest.service;
 
-import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
@@ -39,19 +38,8 @@ public class ArticleService {
                 .map(ArticleDto::from);
     }
 
-    public ArticleDto getArticle(Long articleId) {
-        return articleRepository.findById(articleId).map(ArticleDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
-    }
-
     public List<ArticleDto> getArticles(String email) {
         return articleRepository.findByMember_Email(email).stream()
-                .map(ArticleDto::from)
-                .collect(Collectors.toList());
-    }
-
-    public List<ArticleDto> getArticles(Long memberId) {
-        return articleRepository.findByMember_Id(memberId).stream()
                 .map(ArticleDto::from)
                 .collect(Collectors.toList());
     }
@@ -71,32 +59,6 @@ public class ArticleService {
 
         Board board = boardRepository.getReferenceById(dto.getBoardId());
         articleRepository.save(dto.toEntity(member, board, fileEntity));
-    }
-
-    @Transactional
-    public void updateArticle(Long articleId, ArticleDto dto) {
-        try {
-            Article article = articleRepository.getReferenceById(articleId);
-            Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
-                    .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
-
-            if (article.getMember().getEmail().equals(member.getEmail())) {
-                if (dto.getTitle() != null) {
-                    article.setTitle(dto.getTitle());
-                }
-                if (dto.getContent() != null) {
-                    article.setContent(dto.getContent());
-                }
-                /*if (dto.getImage() != null) {
-                    article.setImage(dto.getImage());
-                }*/
-                if (dto.getHashtag() != null) {
-                    article.setHashtag(dto.getHashtag());
-                }
-            }
-        } catch (EntityNotFoundException e) {
-            log.warn("게시글 업데이트 실패. 게시글을 찾을 수 없습니다.");
-        }
     }
 
     @Transactional

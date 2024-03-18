@@ -50,17 +50,19 @@
       </th:block>
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} != ${#authentication.name}">
         <th:block th:if="${follow == null}">
-          <form th:action="@{/follows/profile/create}" method="post">
+          <form th:action="@{/follows/create}" method="post">
             <input type="hidden" name="toMemberId" th:value="${profile.id}">
             <input type="hidden" name="email" th:value="${profile.email}">
+            <input type="hidden" name="type" value="profiles">
             <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
               팔로우
             </button>
           </form>
         </th:block>
         <th:block th:if="${follow != null}">
-          <form th:action="@{/follows/profile/cancel/{followId}(followId=${follow.id})}" method="post">
+          <form th:action="@{/follows/cancel/{followId}(followId=${follow.id})}" method="post">
             <input type="hidden" name="email" th:value="${profile.email}">
+            <input type="hidden" name="type" value="profiles">
             <button type="submit"
                     class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
               팔로잉

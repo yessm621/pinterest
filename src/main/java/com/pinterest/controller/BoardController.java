@@ -3,7 +3,6 @@ package com.pinterest.controller;
 import com.pinterest.config.CustomUserDetails;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
-import com.pinterest.dto.request.BoardArticleRequest;
 import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
 import com.pinterest.service.ArticleLikeService;
@@ -63,19 +62,13 @@ public class BoardController {
 
     @PostMapping("/create")
     public String boardCreate(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                              BoardRequest boardRequest) {
-        boardService.saveBoard(boardRequest.toDto(customUserDetails.toDto()));
-        return "redirect:/boards";
-    }
-
-    /**
-     * 핀 생성 페이지에서 보드 생성
-     */
-    @PostMapping("/form")
-    public String boardForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                            BoardArticleRequest boardArticleRequest) {
-        boardService.saveBoard(boardArticleRequest.toDto(customUserDetails.toDto()));
-        return "redirect:/articles/form";
+                              BoardRequest request) {
+        boardService.saveBoard(request.toDto(customUserDetails.toDto()));
+        if (request.getType().equals("boards")) {
+            return "redirect:/boards";
+        } else {
+            return "redirect:/articles/form";
+        }
     }
 
     @GetMapping("/{boardId}/form")
@@ -89,8 +82,8 @@ public class BoardController {
     @PostMapping("/{boardId}/form")
     public String boardUpdateForm(@PathVariable Long boardId,
                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                  BoardRequest boardRequest) {
-        boardService.updateBoard(boardId, boardRequest.toDto(customUserDetails.toDto()));
+                                  BoardRequest request) {
+        boardService.updateBoard(boardId, request.toDto(customUserDetails.toDto()));
         return "redirect:/boards";
     }
 
