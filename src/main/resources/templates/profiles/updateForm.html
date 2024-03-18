@@ -11,7 +11,7 @@
       개인 정보는 비공개로 유지하세요.
       여기에 작성한 정보는 회원님의 프로필을 볼 수 있는 모든 사람에게 표시됩니다.
     </p>
-    <form th:action="@{/members/{memberId}/form(memberId=${profile.id})}" method="post" enctype="multipart/form-data"
+    <form th:action="@{/profiles/{profileId}/form(profileId=${profile.id})}" method="post" enctype="multipart/form-data"
           th:object="${profile}">
       <div class="mb-4">
         <label class="block text-sm font-medium mb-1">사진</label>

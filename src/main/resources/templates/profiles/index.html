@@ -44,7 +44,7 @@
     </div>
     <div class="mt-2 flex space-x-2">
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
-        <a th:href="@{/members/{memberId}/form(memberId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
+        <a th:href="@{/profiles/{profileId}/form(profileId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
           프로필 수정
         </a>
       </th:block>
@@ -74,18 +74,18 @@
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <th:block th:if="${type.equals('saved')}">
-              <a th:href="@{/members/{email}/created(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">생성됨</a>
+              <a th:href="@{/profiles/{email}/created(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">생성됨</a>
             </th:block>
             <th:block th:if="${type.equals('created')}">
-              <a th:href="@{/members/{email}/created(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">생성됨</a>
+              <a th:href="@{/profiles/{email}/created(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">생성됨</a>
             </th:block>
           </li>
           <li class="me-2">
             <th:block th:if="${type.equals('saved')}">
-              <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">저장됨</a>
+              <a th:href="@{/profiles/{email}/saved(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">저장됨</a>
             </th:block>
             <th:block th:if="${type.equals('created')}">
-              <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
+              <a th:href="@{/profiles/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
             </th:block>
           </li>
         </ul>

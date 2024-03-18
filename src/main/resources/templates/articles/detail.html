@@ -67,7 +67,7 @@
       </div>
       <div class="flex items-baseline my-10">
         <div class="space-x-1 text-sm font-medium leading-none">
-          <a th:href="@{/members/{email}(email=${article.getMemberDto().email})}">
+          <a th:href="@{/profiles/{email}(email=${article.getMemberDto().email})}">
             <div class="flex items-center space-x-3">
               <div th:replace="~{base/snippets/profile :: profileFragment(${article.getMemberDto()})}"></div>
               <div>

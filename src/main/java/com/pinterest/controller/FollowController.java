@@ -38,7 +38,7 @@ public class FollowController {
     public String createFollowProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                       FollowProfileRequest request) {
         followService.createFollow(customUserDetails.getUsername(), request.getToMemberId());
-        return "redirect:/members/" + request.getEmail();
+        return "redirect:/profiles/" + request.getEmail();
     }
 
     @PostMapping("/profile/cancel/{followId}")
@@ -46,7 +46,7 @@ public class FollowController {
                                       @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                       FollowProfileRequest request) {
         followService.cancel(followId);
-        return "redirect:/members/" + request.getEmail();
+        return "redirect:/profiles/" + request.getEmail();
     }
 
     @GetMapping("/followerList")
