@@ -5,6 +5,7 @@ import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
+import com.pinterest.dto.ArticleWithFileDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
@@ -33,14 +34,14 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final FileService fileService;
 
-    public Page<ArticleDto> searchArticles(String searchKeyword, Pageable pageable) {
+    public Page<ArticleWithFileDto> searchArticles(String searchKeyword, Pageable pageable) {
         return articleQueryRepository.searchArticles(searchKeyword, pageable)
-                .map(ArticleDto::from);
+                .map(ArticleWithFileDto::from);
     }
 
-    public List<ArticleDto> getArticles(String email) {
+    public List<ArticleWithFileDto> getArticles(String email) {
         return articleRepository.findByMember_Email(email).stream()
-                .map(ArticleDto::from)
+                .map(ArticleWithFileDto::from)
                 .collect(Collectors.toList());
     }
 

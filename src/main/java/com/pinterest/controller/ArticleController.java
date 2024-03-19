@@ -32,7 +32,7 @@ public class ArticleController {
     public String articles(@RequestParam(required = false) String searchKeyword,
                            @PageableDefault(size = 30) Pageable pageable,
                            Model model) {
-        Page<ArticleDto> articles = articleService.searchArticles(searchKeyword, pageable);
+        Page<ArticleWithFileDto> articles = articleService.searchArticles(searchKeyword, pageable);
         List<Integer> pagination = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         model.addAttribute("articles", articles);
         model.addAttribute("pagination", pagination);

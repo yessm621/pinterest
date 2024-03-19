@@ -1,7 +1,7 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
-import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.ArticleWithFileDto;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.request.BoardRequest;
 import com.pinterest.dto.response.BoardResponse;
@@ -48,7 +48,7 @@ public class BoardController {
     public String boardDetail(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                               Model model) {
         BoardDto board = boardService.getBoard(boardId);
-        List<ArticleDto> articles = articleLikeService.getArticleLikes(boardId, customUserDetails.getUsername());
+        List<ArticleWithFileDto> articles = articleLikeService.getArticleLikes(boardId, customUserDetails.getUsername());
         model.addAttribute("board", board);
         model.addAttribute("articles", articles);
 

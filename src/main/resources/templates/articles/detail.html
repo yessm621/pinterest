@@ -7,7 +7,7 @@
 <main>
   <div class="max-w-5xl mx-auto h-auto overflow-hidden my-8 px-6 py-10 bg-white rounded-lg shadow-md grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
     <div class="flex sm:col-span-3 items-center">
-      <img th:src="|/image/${article.fileId}|" alt="" class="w-68 h-auto object-contain rounded-lg m-auto">
+      <img th:src="|/attach/${article.savedName}|" alt="" class="w-68 h-auto object-contain rounded-lg m-auto">
     </div>
     <div class="sm:col-span-3 flex-auto pl-6 m-4">
       <th:block th:if="${article.getMemberDto().getEmail()} == ${#authentication.name}">

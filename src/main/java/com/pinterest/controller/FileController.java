@@ -1,7 +1,6 @@
 package com.pinterest.controller;
 
-import com.pinterest.dto.FileDto;
-import com.pinterest.repository.FileRepository;
+import com.pinterest.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -10,18 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 
 @Controller
 @RequiredArgsConstructor
 public class FileController {
 
-    private final FileRepository fileRepository;
+    private final FileService fileService;
 
-    @GetMapping("/image/{fileId}")
+    @GetMapping("/attach/{filename}")
     @ResponseBody
-    public Resource downloadImage(@PathVariable("fileId") Long id) throws IOException {
-        FileDto file = fileRepository.findById(id).map(FileDto::from).orElse(null);
-        return new UrlResource("file:" + file.getSavedPath());
+    public Resource getImage(@PathVariable String filename) throws MalformedURLException {
+        return new UrlResource("file:" + fileService.getFullPath(filename));
     }
 }

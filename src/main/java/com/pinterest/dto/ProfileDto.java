@@ -12,12 +12,13 @@ public class ProfileDto {
 
     private Long id;
     private Long fileId;
+    private String savedName;
     private String email;
     private String nickname;
     private String image;
 
     public static ProfileDto of(Long id, Long fileId, String email, String nickname, String image) {
-        return new ProfileDto(id, fileId, email, nickname, image);
+        return new ProfileDto(id, fileId, null, email, nickname, image);
     }
 
     // entity -> dto
@@ -25,6 +26,7 @@ public class ProfileDto {
         return new ProfileDto(
                 entity.getId(),
                 entity.getFile() == null ? null : entity.getFile().getId(),
+                entity.getFile() == null ? null : entity.getFile().getSavedName(),
                 entity.getEmail(),
                 entity.getNickname(),
                 entity.getImage()

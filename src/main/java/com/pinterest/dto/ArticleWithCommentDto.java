@@ -16,6 +16,7 @@ public class ArticleWithCommentDto {
 
     private Long id;
     private Long fileId;
+    private String savedName;
     private MemberDto memberDto;
     private ArrayList<CommentDto> commentDtoList;
     private String title;
@@ -24,8 +25,8 @@ public class ArticleWithCommentDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static ArticleWithCommentDto of(Long id, Long fileId, MemberDto memberDto, ArrayList<CommentDto> commentDtoList, String title, String content, String hashtag, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new ArticleWithCommentDto(id, fileId, memberDto, commentDtoList, title, content, hashtag, createdAt, modifiedAt);
+    public static ArticleWithCommentDto of(Long id, Long fileId, String savedName, MemberDto memberDto, ArrayList<CommentDto> commentDtoList, String title, String content, String hashtag, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new ArticleWithCommentDto(id, fileId, savedName, memberDto, commentDtoList, title, content, hashtag, createdAt, modifiedAt);
     }
 
     // entity -> dto
@@ -33,6 +34,7 @@ public class ArticleWithCommentDto {
         return new ArticleWithCommentDto(
                 entity.getId(),
                 entity.getFile() == null ? null : entity.getFile().getId(),
+                entity.getFile() == null ? null : entity.getFile().getSavedName(),
                 MemberDto.from(entity.getMember()),
                 entity.getComments().stream()
                         .map(CommentDto::from)

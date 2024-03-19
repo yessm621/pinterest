@@ -28,6 +28,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/members/login"),
                                 new AntPathRequestMatcher("/articles"),
                                 new AntPathRequestMatcher("/image/**"),
+                                new AntPathRequestMatcher("/attach/**"),
                                 new AntPathRequestMatcher("/"))
                         .permitAll()
                         .anyRequest().authenticated()
