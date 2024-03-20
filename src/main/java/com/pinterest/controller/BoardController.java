@@ -1,10 +1,10 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
-import com.pinterest.dto.ArticleWithFileDto;
+import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
-import com.pinterest.dto.request.BoardRequest;
-import com.pinterest.dto.response.BoardResponse;
+import com.pinterest.dto.request.BoardCreateRequest;
+import com.pinterest.dto.request.BoardUpdateRequest;
 import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -48,7 +48,7 @@ public class BoardController {
     public String boardDetail(@PathVariable Long boardId, @AuthenticationPrincipal CustomUserDetails customUserDetails,
                               Model model) {
         BoardDto board = boardService.getBoard(boardId);
-        List<ArticleWithFileDto> articles = articleLikeService.getArticleLikes(boardId, customUserDetails.getUsername());
+        List<ArticleDto> articles = articleLikeService.getArticleLikes(boardId, customUserDetails.getUsername());
         model.addAttribute("board", board);
         model.addAttribute("articles", articles);
 
@@ -62,7 +62,7 @@ public class BoardController {
 
     @PostMapping("/create")
     public String boardCreate(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                              BoardRequest request) {
+                              BoardCreateRequest request) {
         boardService.saveBoard(request.toDto(customUserDetails.toDto()));
         if (request.getType().equals("boards")) {
             return "redirect:/boards";
@@ -74,7 +74,7 @@ public class BoardController {
     @GetMapping("/{boardId}/form")
     public String boardUpdateForm(@PathVariable Long boardId,
                                   Model model) {
-        BoardResponse board = BoardResponse.from(boardService.getBoard(boardId));
+        BoardDto board = boardService.getBoard(boardId);
         model.addAttribute("board", board);
         return "boards/updateForm";
     }
@@ -82,7 +82,7 @@ public class BoardController {
     @PostMapping("/{boardId}/form")
     public String boardUpdateForm(@PathVariable Long boardId,
                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                  BoardRequest request) {
+                                  BoardUpdateRequest request) {
         boardService.updateBoard(boardId, request.toDto(customUserDetails.toDto()));
         return "redirect:/boards";
     }

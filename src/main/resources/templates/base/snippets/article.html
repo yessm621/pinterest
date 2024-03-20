@@ -6,7 +6,7 @@
     <th:block th:each="article: ${articles}">
       <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
         <div>
-          <img th:src="|/attach/${article.savedName}|" alt="">
+          <img th:src="|/attach/${article.image}|" alt="">
         </div>
         <h6 class="mt-2" th:text="${article.title}">
           핀 이름

@@ -5,17 +5,16 @@ import com.pinterest.dto.MemberDto;
 import lombok.Data;
 
 @Data
-public class BoardRequest {
+public class BoardUpdateRequest {
 
     private String boardTitle;
-    private String type;
 
-    private BoardRequest(String boardTitle) {
+    private BoardUpdateRequest(String boardTitle) {
         this.boardTitle = boardTitle;
     }
 
-    public static BoardRequest of(String boardTitle) {
-        return new BoardRequest(boardTitle);
+    public static BoardUpdateRequest of(String boardTitle) {
+        return new BoardUpdateRequest(boardTitle);
     }
 
     public BoardDto toDto(MemberDto memberDto) {

@@ -51,8 +51,8 @@
               <select id="boardId" name="boardId"
                       class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option selected>보드 선택하기</option>
-                <th:block th:each="board: ${boards}">
-                  <option th:value="${board.getId()}" th:text="${board.getTitle()}">
+                <th:block th:each="board: ${myBoardList}">
+                  <option th:value="${board.id}" th:text="${board.title}">
                     옵션
                   </option>
                 </th:block>

@@ -3,11 +3,9 @@ package com.pinterest.controller;
 import com.pinterest.config.WithMockCustomUser;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.BoardDto;
-import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
-import com.pinterest.dto.request.BoardArticleRequest;
-import com.pinterest.dto.request.BoardRequest;
-import com.pinterest.dto.response.BoardResponse;
+import com.pinterest.dto.request.BoardCreateRequest;
+import com.pinterest.dto.request.BoardUpdateRequest;
 import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.BoardService;
 import com.pinterest.service.PaginationService;
@@ -24,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -74,6 +71,18 @@ class BoardControllerTest {
 
         then(boardService).should().searchBoards(anyString(), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
+    }
+
+    @Test
+    @DisplayName("[View] GET 리스트 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    void givenNothing_whenRequestingBoardsView_thenRedirectsToLoginPage() throws Exception {
+        // Given
+
+        // When & Then
+        mvc.perform(get("/boards"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+        then(boardService).shouldHaveNoInteractions();
     }
 
     @Test
@@ -127,7 +136,7 @@ class BoardControllerTest {
     @DisplayName("[View] POST 보드 페이지 -> 보드 생성 페이지에서 보드를 생성")
     void givenBoardRequest_whenRequestCreateBoard_thenReturnsBoard() throws Exception {
         // Given
-        BoardRequest request = BoardRequest.of("title");
+        BoardCreateRequest request = BoardCreateRequest.of("title", "boards");
         willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
 
         // When & Then
@@ -145,27 +154,28 @@ class BoardControllerTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("[View] POST 핀 생성 페이지에서 보드 생성")
-    void givenNewBoardInfo_whenRequesting_thenSavesNewBoard() throws Exception {
+    @DisplayName("[View] POST 보드 수정 - 정상 호출")
+    void givenUpdatedBoardInfo_whenRequesting_thenUpdatesNewBoard() throws Exception {
         // Given
-        BoardArticleRequest request = BoardArticleRequest.of("title");
-        willDoNothing().given(boardService).saveBoard(any(BoardDto.class));
+        Long boardId = 1L;
+        BoardUpdateRequest request = BoardUpdateRequest.of("title");
+        willDoNothing().given(boardService).updateBoard(eq(boardId), any(BoardDto.class));
 
         // When & Then
         mvc.perform(
-                        post("/boards/form")
+                        post("/boards/" + boardId + "/form")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(request))
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/articles/form"))
-                .andExpect(redirectedUrl("/articles/form"));
-        then(boardService).should().saveBoard(any(BoardDto.class));
+                .andExpect(view().name("redirect:/boards"))
+                .andExpect(redirectedUrl("/boards"));
+        then(boardService).should().updateBoard(eq(boardId), any(BoardDto.class));
     }
 
     @Test
-    @DisplayName("[View] GET 보드 수정 페이지 - 인증 없을 땐 로그인 페이지로 이동")
+    @DisplayName("[View] GET 보드 수정 - 인증 없을 땐 로그인 페이지로 이동")
     void givenNothing_whenRequesting_thenRedirectsToLoginPage() throws Exception {
         // Given
         Long boardId = 1L;
@@ -175,46 +185,6 @@ class BoardControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(boardService).shouldHaveNoInteractions();
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET 보드 수정 페이지 - 정상 호출, 인증된 사용자")
-    void givenNothing_whenRequesting_thenReturnsUpdatedBoardPage() throws Exception {
-        // Given
-        Long boardId = 1L;
-        BoardDto dto = createBoardDto();
-        given(boardService.getBoard(boardId)).willReturn(dto);
-
-        // When & Then
-        mvc.perform(get("/boards/" + boardId + "/form"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("boards/updateForm"))
-                .andExpect(model().attribute("board", BoardResponse.from(dto)));
-        then(boardService).should().getBoard(boardId);
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] POST 보드 수정 - 정상 호출")
-    void givenUpdatedBoardInfo_whenRequesting_thenUpdatesNewBoard() throws Exception {
-        // Given
-        Long boardId = 1L;
-        BoardRequest boardRequest = BoardRequest.of("title");
-        willDoNothing().given(boardService).updateBoard(eq(boardId), any(BoardDto.class));
-
-        // When & Then
-        mvc.perform(
-                        post("/boards/" + boardId + "/form")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(boardRequest))
-                                .with(csrf())
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/boards"))
-                .andExpect(redirectedUrl("/boards"));
-        then(boardService).should().updateBoard(eq(boardId), any(BoardDto.class));
     }
 
     @Test
@@ -245,17 +215,6 @@ class BoardControllerTest {
         );
     }
 
-    private BoardWithArticleDto createBoardWithArticleDto() {
-        return BoardWithArticleDto.of(
-                1L,
-                createMemberDto(),
-                new ArrayList<>(),
-                "보드 타이틀",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-    }
-
     private MemberDto createMemberDto() {
         return MemberDto.of(
                 1L,
@@ -270,7 +229,6 @@ class BoardControllerTest {
 
     private ArticleDto createArticleDto() {
         return ArticleDto.of(
-                1L,
                 1L,
                 createMemberDto(),
                 "title",

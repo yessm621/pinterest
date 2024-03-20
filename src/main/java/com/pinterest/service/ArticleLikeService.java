@@ -4,8 +4,8 @@ import com.pinterest.domain.Article;
 import com.pinterest.domain.ArticleLike;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
+import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleLikeDto;
-import com.pinterest.dto.ArticleWithFileDto;
 import com.pinterest.repository.ArticleLikeRepository;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
@@ -33,18 +33,18 @@ public class ArticleLikeService {
     /**
      * 보드 페이지에서 사용자가 저장한 핀 리스트를 조회
      */
-    public List<ArticleWithFileDto> getArticleLikes(Long boardId, String email) {
+    public List<ArticleDto> getArticleLikes(Long boardId, String email) {
         return articleLikeQueryRepository.getArticleLikes(boardId, email).stream()
-                .map(ArticleWithFileDto::from)
+                .map(ArticleDto::from)
                 .collect(Collectors.toList());
     }
 
     /**
      * 마이페이지에서 사용자가 저장한 핀 리스트를 조회
      */
-    public List<ArticleWithFileDto> getArticleLikes(String email) {
+    public List<ArticleDto> getArticleLikes(String email) {
         return articleLikeQueryRepository.getArticleLikes(null, email).stream()
-                .map(ArticleWithFileDto::from)
+                .map(ArticleDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -53,10 +53,7 @@ public class ArticleLikeService {
      */
     public ArticleLikeDto getArticleLike(Long articleId, String email) {
         ArticleLike articleLike = articleLikeQueryRepository.getArticleLike(articleId, email);
-        if (articleLike != null) {
-            return ArticleLikeDto.from(articleLike);
-        }
-        return null;
+        return articleLike != null ? ArticleLikeDto.from(articleLike) : null;
     }
 
     /**

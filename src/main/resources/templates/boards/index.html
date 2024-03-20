@@ -17,8 +17,8 @@
               <dt class="text-sm font-medium leading-6 text-gray-900 sm:col-span-2">
                 <a th:href="@{/boards/{boardId}(boardId=${board.id})}">
                   <h6 class="text-base font-semibold leading-7 text-gray-900" th:text="${board.title}">보드 이름</h6>
-                  <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500" th:datetime="${board.createdAt}"
-                     th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">보드 생성 날짜</p>
+                  <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500" th:datetime="${board.modifiedAt}"
+                     th:text="${#temporals.format(board.modifiedAt, 'yyyy-MM-dd HH:mm')}">보드 생성 날짜</p>
                 </a>
               </dt>
               <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-1 sm:mt-0">

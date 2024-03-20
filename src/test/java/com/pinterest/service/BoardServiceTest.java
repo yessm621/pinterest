@@ -3,7 +3,6 @@ package com.pinterest.service;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.BoardDto;
-import com.pinterest.dto.BoardWithArticleDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +60,21 @@ class BoardServiceTest {
     }
 
     @Test
+    @DisplayName("이메일로 보드 리스트를 조회한다.")
+    void givenEmail_whenSearchingBoards_thenReturnsBoards() {
+        // Given
+        String email = "test@gmail.com";
+        Board board = createBoard();
+        given(boardRepository.findByMember_Email(email)).willReturn(List.of(board));
+
+        // When
+        List<BoardDto> dto = sut.getBoards(email);
+
+        // Then
+        then(boardRepository).should().findByMember_Email(email);
+    }
+
+    @Test
     @DisplayName("보드를 조회하면, 보드를 반환한다.")
     void givenBoardId_whenSearchingBoard_thenReturnsBoard() {
         // Given
@@ -68,7 +83,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.of(board));
 
         // When
-        BoardWithArticleDto dto = sut.getBoardWithArticles(boardId);
+        BoardDto dto = sut.getBoard(boardId);
 
         // Then
         assertThat(dto).hasFieldOrPropertyWithValue("title", board.getTitle());
@@ -83,7 +98,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getBoardWithArticles(boardId));
+        assertThrows(EntityNotFoundException.class, () -> sut.getBoard(boardId));
         then(boardRepository).should().findById(boardId);
     }
 
@@ -172,7 +187,6 @@ class BoardServiceTest {
                 1L,
                 createMemberDto(),
                 title,
-                LocalDateTime.now(),
                 LocalDateTime.now()
         );
     }
