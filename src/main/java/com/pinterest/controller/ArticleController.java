@@ -32,7 +32,7 @@ public class ArticleController {
     public String articles(@RequestParam(required = false) String searchKeyword,
                            @PageableDefault(size = 30) Pageable pageable,
                            Model model) {
-        Page<ArticleWithFileDto> articles = articleService.searchArticles(searchKeyword, pageable);
+        Page<ArticleDto> articles = articleService.searchArticles(searchKeyword, pageable);
         List<Integer> pagination = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         model.addAttribute("articles", articles);
         model.addAttribute("pagination", pagination);
@@ -44,14 +44,14 @@ public class ArticleController {
     public String articlesDetail(@PathVariable Long articleId,
                                  @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                  Model model) {
-        ProfileDto profile = memberService.getMemberEmail(customUserDetails.getUsername());
-        List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
+        ProfileDto loginMember = memberService.getMemberEmail(customUserDetails.getUsername());
+        List<BoardDto> myBoardList = boardService.getBoards(customUserDetails.getUsername());
         ArticleWithCommentDto article = articleService.getArticleWithComment(articleId);
         ArticleLikeDto articleLike = articleLikeService.getArticleLike(articleId, customUserDetails.getUsername());
         FollowDto follow = followService.getFollow(customUserDetails.getUsername(), article.getMemberDto().getId());
         Long countToMember = followService.countToMember(article.getMemberDto().getId());
-        model.addAttribute("profile", profile);
-        model.addAttribute("boards", boards);
+        model.addAttribute("loginMember", loginMember);
+        model.addAttribute("myBoardList", myBoardList);
         model.addAttribute("article", article);
         model.addAttribute("comments", article.getCommentDtoList());
         model.addAttribute("articleLike", articleLike);
@@ -63,8 +63,8 @@ public class ArticleController {
     @GetMapping("/form")
     public String articleForm(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                               Model model) {
-        List<BoardDto> boards = boardService.getBoards(customUserDetails.getUsername());
-        model.addAttribute("boards", boards);
+        List<BoardDto> myBoardList = boardService.getBoards(customUserDetails.getUsername());
+        model.addAttribute("myBoardList", myBoardList);
         return "articles/form";
     }
 

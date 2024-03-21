@@ -1,7 +1,7 @@
 package com.pinterest.controller;
 
 import com.pinterest.config.CustomUserDetails;
-import com.pinterest.dto.ArticleWithFileDto;
+import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.FollowDto;
 import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.MemberRequest;
@@ -34,7 +34,7 @@ public class ProfilesController {
         if (type == null) type = "saved";
 
         ProfileDto profile = memberService.getMemberEmail(email);
-        List<ArticleWithFileDto> articles;
+        List<ArticleDto> articles;
         if (type.equals("saved")) {
             articles = articleLikeService.getArticleLikes(email);
         } else {

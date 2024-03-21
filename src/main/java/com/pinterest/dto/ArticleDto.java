@@ -24,6 +24,10 @@ public class ArticleDto {
     private String image;
     private LocalDateTime modifiedAt;
 
+    public static ArticleDto of(Long boardId, MemberDto memberDto, String title, String content, String hashtag) {
+        return new ArticleDto(null, boardId, memberDto, title, content, hashtag, null, null);
+    }
+
     // entity -> dto
     public static ArticleDto from(Article entity) {
         return new ArticleDto(
@@ -36,10 +40,6 @@ public class ArticleDto {
                 entity.getFile().getSavedName(),
                 entity.getModifiedAt()
         );
-    }
-
-    public static ArticleDto of(Long boardId, MemberDto memberDto, String title, String content, String hashtag) {
-        return new ArticleDto(null, boardId, memberDto, title, content, hashtag, null, null);
     }
 
     // dto -> entity
