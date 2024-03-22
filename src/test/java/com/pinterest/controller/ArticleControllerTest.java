@@ -51,6 +51,9 @@ class ArticleControllerTest {
     ArticleLikeService articleLikeService;
 
     @MockBean
+    FollowService followService;
+
+    @MockBean
     PaginationService paginationService;
 
     public ArticleControllerTest(@Autowired MockMvc mvc, @Autowired FormDataEncoder formDataEncoder) {
@@ -138,9 +141,12 @@ class ArticleControllerTest {
     void givenNothing_whenRequestingArticleView_thenReturnArticleView() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.getArticleWithComment(articleId)).willReturn(createArticleWithCommentDto());
+        String email = "test@gmail.com";
+        given(memberService.getMemberEmail(email)).willReturn(createProfileDto());
         given(boardService.getBoards(anyString())).willReturn(List.of(createBoardDto("title")));
+        given(articleService.getArticleWithComment(articleId)).willReturn(createArticleWithCommentDto());
         given(articleLikeService.getArticleLike(anyLong(), anyString())).willReturn(createArticleLikeDto());
+        given(followService.getFollow(anyString(), anyLong())).willReturn(createFollowDto());
         given(memberService.getMemberEmail(anyString())).willReturn(createProfileDto());
 
         // When & Then
@@ -148,14 +154,19 @@ class ArticleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("articles/detail"))
-                .andExpect(model().attributeExists("boards"))
+                .andExpect(model().attributeExists("loginMember"))
+                .andExpect(model().attributeExists("myBoardList"))
                 .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("comments"))
-                .andExpect(model().attributeExists("articleLike"));
+                .andExpect(model().attributeExists("articleLike"))
+                .andExpect(model().attributeExists("follow"))
+                .andExpect(model().attributeExists("countToMember"));
 
-        then(articleService).should().getArticleWithComment(articleId);
+        then(memberService).should().getMemberEmail(email);
         then(boardService).should().getBoards(anyString());
+        then(articleService).should().getArticleWithComment(articleId);
         then(articleLikeService).should().getArticleLike(anyLong(), anyString());
+        then(followService).should().getFollow(anyString(), anyLong());
         then(memberService).should().getMemberEmail(anyString());
     }
 
@@ -235,7 +246,6 @@ class ArticleControllerTest {
     private ArticleDto createArticleDto() {
         return ArticleDto.of(
                 1L,
-                1L,
                 createMemberDto(),
                 "title",
                 "content",
@@ -247,6 +257,7 @@ class ArticleControllerTest {
         return ArticleWithCommentDto.of(
                 1L,
                 1L,
+                "",
                 createMemberDto(),
                 new ArrayList<>(Arrays.asList(createCommentDto())),
                 "article 내용입니다.",
@@ -284,7 +295,6 @@ class ArticleControllerTest {
                 1L,
                 createMemberDto(),
                 title,
-                LocalDateTime.now(),
                 LocalDateTime.now()
         );
     }
@@ -300,10 +310,26 @@ class ArticleControllerTest {
     private ProfileDto createProfileDto() {
         return ProfileDto.of(
                 1L,
-                1L,
-                "yessm621@gmail.com",
-                "yessm",
+                createFileDto().getSavedName(),
+                "test@gmail.com",
+                "test",
                 "image"
+        );
+    }
+
+    private FollowDto createFollowDto() {
+        return FollowDto.of(
+                1L,
+                createMemberDto(),
+                createMemberDto()
+        );
+    }
+
+    private FileDto createFileDto() {
+        return new FileDto(
+                "fileName",
+                "savedName",
+                "savedPath"
         );
     }
 }

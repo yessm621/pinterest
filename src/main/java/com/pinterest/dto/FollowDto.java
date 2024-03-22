@@ -13,6 +13,10 @@ public class FollowDto {
     private MemberDto fromMemberDto;
     private MemberDto toMemberDto;
 
+    public static FollowDto of(Long id, MemberDto fromMember, MemberDto toMember) {
+        return new FollowDto(id, fromMember, toMember);
+    }
+
     public static FollowDto from(Follow entity) {
         return new FollowDto(
                 entity.getId(),
