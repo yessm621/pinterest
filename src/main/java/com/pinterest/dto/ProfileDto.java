@@ -16,8 +16,8 @@ public class ProfileDto {
     private String nickname;
     private String image;
 
-    public static ProfileDto of(Long id, String email, String nickname, String image) {
-        return new ProfileDto(id, null, email, nickname, image);
+    public static ProfileDto of(Long id, String savedName, String email, String nickname, String image) {
+        return new ProfileDto(id, savedName, email, nickname, image);
     }
 
     // entity -> dto

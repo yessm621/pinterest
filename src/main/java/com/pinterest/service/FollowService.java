@@ -26,10 +26,7 @@ public class FollowService {
 
     public FollowDto getFollow(String fromMemberEmail, Long toMemberId) {
         Follow follow = followQueryRepository.getFollow(fromMemberEmail, toMemberId);
-        if (follow != null) {
-            return FollowDto.from(follow);
-        }
-        return null;
+        return follow != null ? FollowDto.from(follow) : null;
     }
 
     public Long countToMember(Long toMemberId) {
