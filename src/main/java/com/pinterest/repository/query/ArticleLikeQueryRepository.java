@@ -2,6 +2,7 @@ package com.pinterest.repository.query;
 
 import com.pinterest.domain.Article;
 import com.pinterest.domain.ArticleLike;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -21,26 +22,30 @@ public class ArticleLikeQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public List<Article> getArticleLikes(String email) {
-        return queryFactory
-                .select(articleLike.article)
-                .from(articleLike)
-                .where(articleLike.member.email.eq(email))
-                .fetch();
-    }
-
     public List<Article> getArticleLikes(Long boardId, String email) {
         return queryFactory
                 .select(articleLike.article)
                 .from(articleLike)
-                .where(articleLike.board.id.eq(boardId), articleLike.member.email.eq(email))
+                .where(boardIdEq(boardId), emailEq(email))
                 .fetch();
     }
 
     public ArticleLike getArticleLike(Long articleId, String email) {
         return queryFactory
                 .selectFrom(articleLike)
-                .where(articleLike.article.id.eq(articleId), articleLike.member.email.eq(email))
+                .where(articleIdEq(articleId), emailEq(email))
                 .fetchOne();
+    }
+
+    private BooleanExpression boardIdEq(Long boardIdCond) {
+        return boardIdCond != null ? articleLike.board.id.eq(boardIdCond) : null;
+    }
+
+    private BooleanExpression articleIdEq(Long articleIdCond) {
+        return articleIdCond != null ? articleLike.article.id.eq(articleIdCond) : null;
+    }
+
+    private BooleanExpression emailEq(String emailCond) {
+        return emailCond != null ? articleLike.member.email.eq(emailCond) : null;
     }
 }

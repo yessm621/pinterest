@@ -26,10 +26,7 @@ public class FollowService {
 
     public FollowDto getFollow(String fromMemberEmail, Long toMemberId) {
         Follow follow = followQueryRepository.getFollow(fromMemberEmail, toMemberId);
-        if (follow != null) {
-            return FollowDto.from(follow);
-        }
-        return null;
+        return follow != null ? FollowDto.from(follow) : null;
     }
 
     public Long countToMember(Long toMemberId) {
@@ -54,10 +51,14 @@ public class FollowService {
     }
 
     @Transactional
-    public void cancel(Long followId) {
+    public void cancel(Long followId, String loginEmail) {
         Follow follow = followRepository.findById(followId)
                 .orElseThrow(() -> new EntityNotFoundException("팔로우 정보가 없습니다."));
-        followRepository.delete(follow);
+        if (follow.getFromMember().getEmail().equals(loginEmail)) {
+            followRepository.delete(follow);
+        } else {
+            throw new EntityNotFoundException("권한이 없습니다.");
+        }
     }
 
     public List<MemberDto> getFollowers(String email) {

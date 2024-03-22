@@ -21,6 +21,10 @@ public class FileService {
     private String fileRootDir;
     private final FileRepository fileRepository;
 
+    public String getFullPath(String fileName) {
+        return fileRootDir + fileName;
+    }
+
     @Transactional
     public FileEntity saveFile(MultipartFile file) {
         if (file.isEmpty()) {

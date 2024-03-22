@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class MemberDto {
 
     private Long id;
-    private Long fileId;
+    private String savedName;
     private String email;
     private String password;
     private String nickname;
@@ -41,7 +41,7 @@ public class MemberDto {
     public static MemberDto from(Member entity) {
         return new MemberDto(
                 entity.getId(),
-                entity.getFile() == null ? null : entity.getFile().getId(),
+                entity.getFile() == null ? null : entity.getFile().getSavedName(),
                 entity.getEmail(),
                 entity.getPassword(),
                 entity.getNickname(),

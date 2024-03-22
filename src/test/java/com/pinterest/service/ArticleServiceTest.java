@@ -6,7 +6,6 @@ import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
-import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
@@ -25,6 +24,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,6 +88,20 @@ class ArticleServiceTest {
 
     @Test
     @DisplayName("게시글을 조회하면, 게시글을 반환한다.")
+    void givenEmail_whenSearchingArticle_thenReturnsArticle() {
+        // Given
+        Article article = createArticle();
+        given(articleRepository.findByMember_Email(anyString())).willReturn(List.of(article));
+
+        // When
+        List<ArticleDto> articles = sut.getArticles(anyString());
+
+        // Then
+        then(articleRepository).should().findByMember_Email(anyString());
+    }
+
+    @Test
+    @DisplayName("게시글을 조회하면, 게시글을 반환한다.")
     void givenArticleId_whenSearchingArticle_thenReturnsArticle() {
         // Given
         Long articleId = 1L;
@@ -140,42 +154,6 @@ class ArticleServiceTest {
     }
 
     @Test
-    @DisplayName("게시글의 수정 정보를 입력하면, 게시글을 수정한다.")
-    void givenModifiedArticleInfo_whenUpdatingArticle_thenUpdatesArticle() {
-        // Given
-        Article article = createArticle();
-        ArticleDto dto = createArticleDto("new title", "new content", "new hashtag");
-        given(articleRepository.getReferenceById(dto.getId())).willReturn(article);
-        given(memberRepository.findByEmail(dto.getMemberDto().getEmail()))
-                .willReturn(Optional.of(dto.getMemberDto().toEntity()));
-
-        // When
-        sut.updateArticle(dto.getId(), dto);
-
-        // Then
-        assertThat(article)
-                .hasFieldOrPropertyWithValue("title", dto.getTitle())
-                .hasFieldOrPropertyWithValue("content", dto.getContent())
-                .hasFieldOrPropertyWithValue("hashtag", dto.getHashtag());
-        then(articleRepository).should().getReferenceById(dto.getId());
-        then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
-    }
-
-    @Test
-    @DisplayName("없는 게시글의 수정 정보를 입력하면, 경고 로그를 찍고 아무 것도 하지 않는다.")
-    void givenNoneExistentArticleInfo_whenUpdatingArticle_thenLogsWarningAndDoesNothing() {
-        // Given
-        ArticleDto dto = createArticleDto("new title", "new content", "new hashtag");
-        given(articleRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
-
-        // When
-        sut.updateArticle(dto.getId(), dto);
-
-        // Then
-        then(articleRepository).should().getReferenceById(dto.getId());
-    }
-
-    @Test
     @DisplayName("게시글의 ID를 입력하면, 게시글을 삭제한다.")
     void givenArticleId_whenDeletingArticle_thenDeletesArticle() {
         // Given
@@ -225,27 +203,13 @@ class ArticleServiceTest {
         );
     }
 
-    private BoardDto createBoardDto(String title) {
-        return BoardDto.of(
-                1L,
-                createMemberDto(),
-                title,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-    }
-
     private ArticleDto createArticleDto(String title, String content, String hashtag) {
         return ArticleDto.of(
                 1L,
-                1L,
-                null,
                 createMemberDto(),
                 title,
                 content,
-                hashtag,
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                hashtag
         );
     }
 

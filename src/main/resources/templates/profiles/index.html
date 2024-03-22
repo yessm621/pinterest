@@ -16,7 +16,7 @@
 <main class="article">
   <div class="flex w-full flex-col items-center justify-center bg-white text-center my-6">
     <div class="mb-2 flex items-center justify-center">
-      <th:block th:if="${profile.fileId == null}">
+      <th:block th:if="${profile.savedName == null}">
         <th:block th:if="${profile.image != null and profile.image != ''}">
           <img th:src="${profile.image}" alt="" class="w-32 h-32 object-cover rounded-full">
         </th:block>
@@ -25,8 +25,8 @@
                th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
         </th:block>
       </th:block>
-      <th:block th:if="${profile.fileId != null}">
-        <img th:src="|/image/${profile.fileId}|" alt="" class="w-32 h-32 object-cover rounded-full">
+      <th:block th:if="${profile.savedName != null}">
+        <img th:src="|/attach/${profile.savedName}|" alt="" class="w-32 h-32 object-cover rounded-full">
       </th:block>
     </div>
     <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>
@@ -44,23 +44,25 @@
     </div>
     <div class="mt-2 flex space-x-2">
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} == ${#authentication.name}">
-        <a th:href="@{/members/{memberId}/form(memberId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
+        <a th:href="@{/profiles/{profileId}/form(profileId=${profile.id})}" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700">
           프로필 수정
         </a>
       </th:block>
       <th:block th:if="${#authorization.expression('isAuthenticated()')} and ${profile.email} != ${#authentication.name}">
         <th:block th:if="${follow == null}">
-          <form th:action="@{/follows/profile/create}" method="post">
+          <form th:action="@{/follows/create}" method="post">
             <input type="hidden" name="toMemberId" th:value="${profile.id}">
             <input type="hidden" name="email" th:value="${profile.email}">
+            <input type="hidden" name="type" value="profiles">
             <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white">
               팔로우
             </button>
           </form>
         </th:block>
         <th:block th:if="${follow != null}">
-          <form th:action="@{/follows/profile/cancel/{followId}(followId=${follow.id})}" method="post">
+          <form th:action="@{/follows/cancel/{followId}(followId=${follow.id})}" method="post">
             <input type="hidden" name="email" th:value="${profile.email}">
+            <input type="hidden" name="type" value="profiles">
             <button type="submit"
                     class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
               팔로잉
@@ -74,18 +76,18 @@
         <ul class="flex flex-wrap -mb-px">
           <li class="me-2">
             <th:block th:if="${type.equals('saved')}">
-              <a th:href="@{/members/{email}/created(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">생성됨</a>
+              <a th:href="@{/profiles/{email}/created(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">생성됨</a>
             </th:block>
             <th:block th:if="${type.equals('created')}">
-              <a th:href="@{/members/{email}/created(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">생성됨</a>
+              <a th:href="@{/profiles/{email}/created(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">생성됨</a>
             </th:block>
           </li>
           <li class="me-2">
             <th:block th:if="${type.equals('saved')}">
-              <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">저장됨</a>
+              <a th:href="@{/profiles/{email}/saved(email=${profile.email})}" class="inline-block p-4 text-red-600 border-b-2 border-red-600 rounded-t-lg dark:text-red-500 dark:border-red-500">저장됨</a>
             </th:block>
             <th:block th:if="${type.equals('created')}">
-              <a th:href="@{/members/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
+              <a th:href="@{/profiles/{email}/saved(email=${profile.email})}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg border-gray-300 dark:hover:text-gray-300">저장됨</a>
             </th:block>
           </li>
         </ul>
@@ -111,21 +113,9 @@
       </div>
     </th:block>
     <th:block th:if="${!articles.isEmpty()}">
-      <div class="container">
-        <th:block th:each="article: ${articles}">
-          <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-            <div>
-              <img th:src="|/image/${article.fileId}|" alt="">
-            </div>
-            <h6 class="mt-2" th:text="${article.title}">
-              핀 이름
-            </h6>
-          </a>
-        </th:block>
-      </div>
+      <div th:replace="~{base/snippets/article :: articleFragment(${articles})}"></div>
     </th:block>
   </div>
-
   <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
     <div class="modal-container bg-white w-11/12 md:max-w-lg mx-auto rounded shadow-lg z-50 overflow-y-auto relative transform overflow-hidden shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
@@ -135,6 +125,7 @@
       </div>
     </div>
   </div>
+
   <script th:inline="javascript">
       var openmodal = document.querySelectorAll('.modal-open')
       for (var i = 0; i < openmodal.length; i++) {
@@ -206,12 +197,26 @@
       function followList(data) {
           data.forEach((v, i) => {
               const temp = document.createElement("li")
+              var nickname = '';
+              var image = '';
+              if (data[i].nickname == null) {
+                  nickname = data[i].email;
+              } else {
+                  nickname = data[i].nickname;
+              }
+              if (data[i].savedName == null) {
+                  image = `<div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"">`
+                      + data[i].email.slice(0, 1)
+                      + `</div>`;
+              } else {
+                  image = `<img className="w-10 h-10 object-cover rounded-full" src="/attach/${data[i].savedName}">`;
+              }
+
               temp.innerHTML = `<li class="flex items-center px-4 pt-4 space-x-4">
-                                  <span class="flex items-center space-x-3">
-                                    <img class="w-10 h-10 object-cover rounded-full" src="/image/${data[i].fileId}">
+                                  <span class="flex items-center space-x-3 w-10 h-10 rounded-full">
+                                    ${image}
                                   </span>
-                                  <span class="flex-1 font-medium">${data[i].nickname}</span>
-                                  <a href="#" class="rounded-full bg-gray-400 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">언팔로우</a>
+                                  <span class="flex-1 font-medium">${nickname}</span>
                                 </li>`;
               document.querySelector('#followList').append(temp);
           });

@@ -2,6 +2,7 @@ package com.pinterest.repository.query;
 
 import com.pinterest.domain.Follow;
 import com.pinterest.domain.Member;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public class FollowQueryRepository {
     public Follow getFollow(String fromMemberEmail, Long toMemberId) {
         return queryFactory
                 .selectFrom(follow)
-                .where(follow.fromMember.email.eq(fromMemberEmail), follow.toMember.id.eq(toMemberId))
+                .where(emailEq(fromMemberEmail), toMemberIdEq(toMemberId))
                 .fetchOne();
     }
 
@@ -32,7 +33,7 @@ public class FollowQueryRepository {
         return queryFactory
                 .select(follow.fromMember)
                 .from(follow)
-                .where(follow.toMember.id.eq(toMemberId))
+                .where(toMemberIdEq(toMemberId))
                 .fetch();
     }
 
@@ -40,7 +41,19 @@ public class FollowQueryRepository {
         return queryFactory
                 .select(follow.toMember)
                 .from(follow)
-                .where(follow.fromMember.id.eq(fromMemberId))
+                .where(fromMemberIdEq(fromMemberId))
                 .fetch();
+    }
+
+    private BooleanExpression emailEq(String emailCond) {
+        return emailCond != null ? follow.fromMember.email.eq(emailCond) : null;
+    }
+
+    private BooleanExpression toMemberIdEq(Long toMemberIdCond) {
+        return toMemberIdCond != null ? follow.toMember.id.eq(toMemberIdCond) : null;
+    }
+
+    private BooleanExpression fromMemberIdEq(Long fromMemberIdCond) {
+        return fromMemberIdCond != null ? follow.fromMember.id.eq(fromMemberIdCond) : null;
     }
 }

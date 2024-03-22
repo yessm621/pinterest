@@ -16,15 +16,14 @@ public class BoardDto {
     private Long id;
     private MemberDto memberDto;
     private String title;
-    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public static BoardDto of(MemberDto memberDto, String title) {
-        return new BoardDto(null, memberDto, title, null, null);
+        return new BoardDto(null, memberDto, title, null);
     }
 
-    public static BoardDto of(Long id, MemberDto memberDto, String title, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        return new BoardDto(id, memberDto, title, createdAt, modifiedAt);
+    public static BoardDto of(Long id, MemberDto memberDto, String title, LocalDateTime modifiedAt) {
+        return new BoardDto(id, memberDto, title, modifiedAt);
     }
 
     // entity -> dto
@@ -33,7 +32,6 @@ public class BoardDto {
                 entity.getId(),
                 MemberDto.from(entity.getMember()),
                 entity.getTitle(),
-                entity.getCreatedAt(),
                 entity.getModifiedAt()
         );
     }

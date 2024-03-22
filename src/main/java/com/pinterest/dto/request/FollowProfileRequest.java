@@ -7,4 +7,5 @@ public class FollowProfileRequest {
 
     private Long toMemberId;
     private String email;
+    private String type;
 }

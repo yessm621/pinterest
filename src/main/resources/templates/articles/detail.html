@@ -4,11 +4,10 @@
   <title>| Pinterest</title>
 </head>
 <body>
-
 <main>
   <div class="max-w-5xl mx-auto h-auto overflow-hidden my-8 px-6 py-10 bg-white rounded-lg shadow-md grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
     <div class="flex sm:col-span-3 items-center">
-      <img th:src="|/image/${article.fileId}|" alt="" class="w-68 h-auto object-contain rounded-lg m-auto">
+      <img th:src="|/attach/${article.savedName}|" alt="" class="w-68 h-auto object-contain rounded-lg m-auto">
     </div>
     <div class="sm:col-span-3 flex-auto pl-6 m-4">
       <th:block th:if="${article.getMemberDto().getEmail()} == ${#authentication.name}">
@@ -28,7 +27,7 @@
                 <input type="hidden" name="articleId" th:value="${article.id}">
                 <select id="boardId" name="boardId" autocomplete="country-name"
                         class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                  <th:block th:each="board: ${boards}">
+                  <th:block th:each="board: ${myBoardList}">
                     <option th:value="${board.id}" th:text="${board.title}">
                       옵션
                     </option>
@@ -68,20 +67,9 @@
       </div>
       <div class="flex items-baseline my-10">
         <div class="space-x-1 text-sm font-medium leading-none">
-          <a th:href="@{/members/{email}(email=${article.getMemberDto().email})}">
+          <a th:href="@{/profiles/{email}(email=${article.getMemberDto().email})}">
             <div class="flex items-center space-x-3">
-              <th:block th:if="${article.getMemberDto().fileId == null}">
-                <th:block th:if="${article.getMemberDto().image != null and article.getMemberDto().image != ''}">
-                  <img th:src="${article.getMemberDto().image}" alt="" class="w-10 h-10 object-cover rounded-full">
-                </th:block>
-                <th:block th:if="${article.getMemberDto().image == null or article.getMemberDto().image == ''}">
-                  <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                       th:text="${#strings.substring(article.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
-                </th:block>
-              </th:block>
-              <th:block th:if="${article.getMemberDto().fileId != null}">
-                <img th:src="|/image/${article.getMemberDto().fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
-              </th:block>
+              <div th:replace="~{base/snippets/profile :: profileFragment(${article.getMemberDto()})}"></div>
               <div>
                 <div class="text-sm font-semibold" th:text="${article.getMemberDto().nickname != null ? article.getMemberDto().nickname : article.getMemberDto().email}">작성자</div>
                 <div class="text-xs text-gray-500" th:text="'팔로우 ' + ${#numbers.formatInteger(countToMember, 0, 'COMMA')} + '명'">팔로우 0명</div>
@@ -94,6 +82,7 @@
             <form th:action="@{/follows/create}" method="post">
               <input type="hidden" name="toMemberId" th:value="${article.getMemberDto().id}">
               <input type="hidden" name="articleId" th:value="${article.id}">
+              <input type="hidden" name="type" value="articles">
               <button type="submit"
                  class="inline-flex items-center justify-center rounded-full bg-gray-200 px-3.5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
                 팔로우
@@ -103,6 +92,7 @@
           <th:block th:if="${follow != null}">
             <form th:action="@{/follows/cancel/{followId}(followId=${follow.id})}" method="post">
               <input type="hidden" name="articleId" th:value="${article.id}">
+              <input type="hidden" name="type" value="articles">
               <button type="submit"
                       class="inline-flex items-center justify-center rounded-full bg-black px-3.5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
                 팔로잉
@@ -111,7 +101,6 @@
           </th:block>
         </div>
       </div>
-
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold">댓글</h2>
       </div>
@@ -123,18 +112,7 @@
         </th:block>
         <th:block th:if="${comments != null}">
           <div class="flex items-start space-x-3 mb-2" th:each="comment: ${comments}">
-            <th:block th:if="${comment.getMemberDto().fileId == null}">
-              <th:block th:if="${comment.getMemberDto().image != null and comment.getMemberDto().image != ''}">
-                <img th:src="${comment.getMemberDto().image}" alt="" class="w-10 h-10 object-cover rounded-full">
-              </th:block>
-              <th:block th:if="${comment.getMemberDto().image == null or comment.getMemberDto().image == ''}">
-                <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                     th:text="${#strings.substring(comment.getMemberDto().email, 0, 1)}">프로필 이니셜</div>
-              </th:block>
-            </th:block>
-            <th:block th:if="${comment.getMemberDto().fileId != null}">
-              <img th:src="|/image/${comment.getMemberDto().fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
-            </th:block>
+            <div th:replace="~{base/snippets/profile :: profileFragment(${comment.getMemberDto()})}"></div>
             <div class="flex-1">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold" th:text="${comment.getMemberDto().nickname != null ? comment.getMemberDto().nickname : comment.getMemberDto().email}">닉네임</span>
@@ -146,20 +124,9 @@
           </div>
         </th:block>
         <div class="flex items-start space-x-3 mt-4">
-          <th:block th:if="${profile.fileId == null}">
-            <th:block th:if="${profile.image != null and profile.image != ''}">
-              <img th:src="${profile.image}" alt="" class="w-10 h-10 object-cover rounded-full">
-            </th:block>
-            <th:block th:if="${profile.image == null or profile.image == ''}">
-              <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
-                   th:text="${#strings.substring(profile.email, 0, 1)}">프로필 이니셜</div>
-            </th:block>
-          </th:block>
-          <th:block th:if="${profile.fileId != null}">
-            <img th:src="|/image/${profile.fileId}|" alt="" class="w-10 h-10 object-cover rounded-full">
-          </th:block>
+          <div th:replace="~{base/snippets/profile :: profileFragment(${loginMember})}"></div>
           <div class="flex-1">
-            <form th:action="@{/comments/new}" method="post">
+            <form th:action="@{/comments/create}" method="post">
               <input type="hidden" class="article-id" th:name="articleId" th:value="${article.id}">
               <div class="flex items-center space-x-4">
                 <div class="flex-grow">
@@ -186,6 +153,5 @@
     </div>
   </div>
 </main>
-
 </body>
 </html>

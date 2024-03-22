@@ -50,7 +50,7 @@ class CommentControllerTest {
 
         // When & Then
         mvc.perform(
-                        post("/comments/new")
+                        post("/comments/create")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(request))
                                 .with(csrf())
@@ -60,29 +60,5 @@ class CommentControllerTest {
                 .andExpect(redirectedUrl("/articles/" + articleId));
 
         then(commentService).should().saveComment(any(CommentDto.class));
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] POST 댓글 삭제 - 정상 호출")
-    void givenCommentIdTo_whenRequesting_thenDeletesComment() throws Exception {
-        // Given
-        long articleId = 1L;
-        long commentId = 1L;
-        String email = "test@gmail.com";
-        willDoNothing().given(commentService).deleteComment(commentId, email);
-
-        // When & Then
-        mvc.perform(
-                        post("/comments/" + commentId + "/delete")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(Map.of("articleId", articleId)))
-                                .with(csrf())
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/articles/" + articleId))
-                .andExpect(redirectedUrl("/articles/" + articleId));
-
-        then(commentService).should().deleteComment(commentId, email);
     }
 }

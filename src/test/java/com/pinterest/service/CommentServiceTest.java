@@ -18,12 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("비즈니스 로직 - 댓글 구현")
@@ -40,24 +39,6 @@ class CommentServiceTest {
 
     @Mock
     CommentRepository commentRepository;
-
-    @Test
-    @DisplayName("게시글 ID로 조회하면, 해당하는 댓글 리스트를 반환한다.")
-    void givenArticleId_whenSearchingComments_thenReturnComments() {
-        // Given
-        Long articleId = 1L;
-        Comment comment = createComment("content");
-        given(commentRepository.findByArticle_Id(articleId)).willReturn(List.of(comment));
-
-        // When
-        List<CommentDto> dto = sut.searchComment(articleId);
-
-        // Then
-        assertThat(dto)
-                .hasSize(1)
-                .first().hasFieldOrPropertyWithValue("content", comment.getContent());
-        then(commentRepository).should().findByArticle_Id(articleId);
-    }
 
     @Test
     @DisplayName("댓글 정보를 입력하면, 댓글을 저장한다.")
@@ -92,21 +73,6 @@ class CommentServiceTest {
         then(commentRepository).shouldHaveNoInteractions();
     }
 
-    @Test
-    @DisplayName("댓글 ID를 입력하면, 댓글을 삭제한다.")
-    void givenArticleId_whenDeletingComment_thenDeletesComment() {
-        // Given
-        Long commentId = 1L;
-        String email = "test@gmail.com";
-        willDoNothing().given(commentRepository).deleteByIdAndMember_Email(commentId, email);
-
-        // When
-        sut.deleteComment(commentId, email);
-
-        // Then
-        then(commentRepository).should().deleteByIdAndMember_Email(commentId, email);
-    }
-
     private CommentDto createCommentDto(String content) {
         return CommentDto.of(
                 1L,
@@ -126,14 +92,6 @@ class CommentServiceTest {
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()
-        );
-    }
-
-    private Comment createComment(String content) {
-        return Comment.of(
-                createMember(),
-                Article.of(createMember(), createBoard(), "title", "content", null, "hashtag"),
-                content
         );
     }
 

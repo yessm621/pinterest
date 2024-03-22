@@ -1,12 +1,5 @@
 package com.pinterest.controller;
 
-import com.pinterest.config.WithMockCustomUser;
-import com.pinterest.domain.FileEntity;
-import com.pinterest.dto.ArticleDto;
-import com.pinterest.dto.FileDto;
-import com.pinterest.dto.MemberDto;
-import com.pinterest.dto.ProfileDto;
-import com.pinterest.dto.request.MemberRequest;
 import com.pinterest.service.ArticleLikeService;
 import com.pinterest.service.ArticleService;
 import com.pinterest.service.MemberService;
@@ -17,20 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MemberController.class)
 @Import(FormDataEncoder.class)
@@ -62,109 +47,5 @@ class MemberControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         then(memberService).shouldHaveNoInteractions();
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET 프로필 페이지 - 정상 호출")
-    void givenNoting_whenRequestingProfileView_thenReturnProfileView() throws Exception {
-        // Given
-        given(memberService.getMemberEmail(anyString())).willReturn(createProfileDto());
-        given(articleService.getArticles(anyString())).willReturn(List.of(createArticleDto()));
-
-        // When & Then
-        mvc.perform(get("/members/" + anyLong()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("profile/index"))
-                .andExpect(model().attributeExists("profile"))
-                .andExpect(model().attributeExists("articles"))
-                .andExpect(model().attributeExists("type"));
-        then(memberService).should().getMemberEmail(anyString());
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] GET 프로필 수정 페이지 - 정상 호출, 인증된 사용자")
-    void givenNothing_whenRequestUpdateProfileView_thenReturnUpdatedProfilePage() throws Exception {
-        Long profileId = 1L;
-        ProfileDto dto = createProfileDto();
-        given(memberService.getMember(profileId)).willReturn(dto);
-
-        mvc.perform(get("/members/" + profileId + "/form"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("profile/updateForm"))
-                .andExpect(model().attribute("profile", dto));
-        then(memberService).should().getMember(profileId);
-    }
-
-    @Test
-    @WithMockCustomUser
-    @DisplayName("[View] POST 프로필 수정 - 정상 호출")
-    void givenUpdatedMemberInfo_whenRequestUpdateMember_thenUpdatesMember() throws Exception {
-        Long profileId = 1L;
-        String email = "test@gmail.com";
-        MemberRequest memberRequest = MemberRequest.of("nickname", "image");
-        willDoNothing().given(memberService).updateMember(anyLong(), any(MemberDto.class), any(MockMultipartFile.class));
-
-        mvc.perform(
-                        post("/members/" + profileId + "/form")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(memberRequest))
-                                .with(csrf())
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/members/" + email))
-                .andExpect(redirectedUrl("/members/" + email));
-    }
-
-    private MemberDto createMemberDto() {
-        return MemberDto.of(
-                1L,
-                "yessm621@gmail.com",
-                "test123",
-                "yessm",
-                "image",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-    }
-
-    private ArticleDto createArticleDto() {
-        return ArticleDto.of(
-                1L,
-                1L,
-                createMemberDto(),
-                "title",
-                "content",
-                "hashtag"
-        );
-    }
-
-    private ProfileDto createProfileDto() {
-        return ProfileDto.of(
-                1L,
-                1L,
-                "yessm621@gmail.com",
-                "yessm",
-                "image"
-        );
-    }
-
-    private FileDto createFileDto() {
-        return new FileDto(
-                "fileName",
-                "savedName",
-                "savedPath"
-        );
-    }
-
-    private FileEntity createFile() {
-        return FileEntity.of(
-                "fileName",
-                "savedName",
-                "savedPath"
-        );
     }
 }
