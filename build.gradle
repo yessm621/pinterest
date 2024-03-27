@@ -34,6 +34,8 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
     testImplementation 'org.projectlombok:lombok:1.18.26'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
