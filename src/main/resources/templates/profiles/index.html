@@ -18,7 +18,12 @@
     <div class="mb-2 flex items-center justify-center">
       <th:block th:if="${profile.savedName == null}">
         <th:block th:if="${profile.image != null and profile.image != ''}">
-          <img th:src="${profile.image}" alt="" class="w-32 h-32 object-cover rounded-full">
+          <div th:if="${#strings.contains(profile.image, 'https')}">
+            <img th:src="${profile.image}" alt="" class="w-32 h-32 object-cover rounded-full">
+          </div>
+          <div th:if="!${#strings.contains(profile.image, 'https')}">
+            <img th:src="|/attach/${profile.image}|" alt="" class="w-32 h-32 object-cover rounded-full">
+          </div>
         </th:block>
         <th:block th:if="${profile.image == null or profile.image == ''}">
           <div class="w-32 h-32 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-lg font-bold"
@@ -26,7 +31,12 @@
         </th:block>
       </th:block>
       <th:block th:if="${profile.savedName != null}">
-        <img th:src="|/attach/${profile.savedName}|" alt="" class="w-32 h-32 object-cover rounded-full">
+        <div th:if="${#strings.contains(profile.savedName, 'https')}">
+          <img th:src="${profile.savedName}" alt="" class="w-32 h-32 object-cover rounded-full">
+        </div>
+        <div th:if="!${#strings.contains(profile.savedName, 'https')}">
+          <img th:src="|/attach/${profile.savedName}|" alt="" class="w-32 h-32 object-cover rounded-full">
+        </div>
       </th:block>
     </div>
     <h1 class="text-3xl font-bold" th:text="${profile.nickname}">프로필 이름</h1>

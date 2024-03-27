@@ -5,7 +5,10 @@
   <div class="container">
     <th:block th:each="article: ${articles}">
       <a th:href="@{/articles/{articleId}(articleId=${article.id})}">
-        <div>
+        <div th:if="${#strings.contains(article.image, 'https')}">
+          <img th:src="${article.image}" alt="">
+        </div>
+        <div th:if="!${#strings.contains(article.image, 'https')}">
           <img th:src="|/attach/${article.image}|" alt="">
         </div>
         <h6 class="mt-2" th:text="${article.title}">

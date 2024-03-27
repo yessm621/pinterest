@@ -55,7 +55,7 @@ public class ArticleService {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
 
-        FileEntity fileEntity = fileService.saveFile(file);
+        FileEntity fileEntity = fileService.upload(file);
 
         Board board = boardRepository.getReferenceById(dto.getBoardId());
         articleRepository.save(dto.toEntity(member, board, fileEntity));

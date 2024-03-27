@@ -7,13 +7,13 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.pinterest.domain.FileEntity;
-import com.pinterest.dto.FileDto;
 import com.pinterest.error.PinterestException;
 import com.pinterest.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,10 +29,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Component
+@Service
+@Profile("prod")
 @RequiredArgsConstructor
 @Slf4j
-public class S3ImageService {
+public class S3ImageService implements FileService {
 
     private final FileRepository fileRepository;
     private final AmazonS3 amazonS3;
@@ -40,14 +41,18 @@ public class S3ImageService {
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
-    public String upload(MultipartFile image) {
+    public String getFullPath(String fileName) {
+        return fileName;
+    }
+
+    public FileEntity upload(MultipartFile image) {
         if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
             throw new PinterestException("S3 에러, 파일이 없습니다.");
         }
         return this.uploadImage(image);
     }
 
-    private String uploadImage(MultipartFile image) {
+    private FileEntity uploadImage(MultipartFile image) {
         this.validateImageFileExtension(image.getOriginalFilename());
         try {
             return this.uploadImageToS3(image);
@@ -70,7 +75,7 @@ public class S3ImageService {
         }
     }
 
-    private String uploadImageToS3(MultipartFile image) throws IOException {
+    private FileEntity uploadImageToS3(MultipartFile image) throws IOException {
         String originalFilename = image.getOriginalFilename(); //원본 파일 명
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
 
@@ -91,7 +96,6 @@ public class S3ImageService {
             amazonS3.putObject(putObjectRequest); // put image to S3
 
             savedName = amazonS3.getUrl(bucketName, s3FileName).toString();
-
         } catch (Exception e) {
             throw new PinterestException("S3 파일 에러가 발생하였습니다.");
         } finally {
@@ -99,15 +103,13 @@ public class S3ImageService {
             is.close();
         }
 
-        save(originalFilename, savedName);
-
-        return savedName;
+        return save(originalFilename, savedName);
     }
 
     @Transactional
-    public void save(String originalFilename, String savedName) {
+    public FileEntity save(String originalFilename, String savedName) {
         FileEntity entity = FileEntity.of(originalFilename, savedName, "");
-        fileRepository.save(entity);
+        return fileRepository.save(entity);
     }
 
     public void deleteImageFromS3(String imageAddress) {
