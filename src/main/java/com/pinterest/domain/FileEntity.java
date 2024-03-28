@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "file")
 @Getter
 @ToString
-public class FileEntity {
+public class FileEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
