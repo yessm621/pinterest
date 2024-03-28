@@ -14,5 +14,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     void deleteByIdAndMember_Email(Long boardId, String email);
 
-    Optional<Board> findByTitle(String title);
+    Optional<Board> findByMemberIdAndTitle(Long memberId, String title);
 }

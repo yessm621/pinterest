@@ -79,7 +79,7 @@ public class BoardService {
     }
 
     private void boardTitleDuplicated(BoardDto dto) {
-        Optional<Board> board = boardRepository.findByTitle(dto.getTitle());
+        Optional<Board> board = boardRepository.findByMemberIdAndTitle(dto.getMemberDto().getId(), dto.getTitle());
         if (board.isPresent()) {
             throw new EntityExistsException("이미 존재하는 보드 이름 입니다.");
         }
