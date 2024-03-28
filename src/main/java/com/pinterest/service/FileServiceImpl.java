@@ -16,8 +16,7 @@ import java.net.URLDecoder;
 import java.util.UUID;
 
 @Service
-@Profile("prod")
-//@Profile("local")
+@Profile("local")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FileServiceImpl implements FileService {

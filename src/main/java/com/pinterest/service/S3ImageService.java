@@ -30,8 +30,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
-@Profile("local")
-//@Profile("prod")
+@Profile("prod")
 @RequiredArgsConstructor
 @Slf4j
 public class S3ImageService implements FileService {
