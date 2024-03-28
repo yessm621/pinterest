@@ -30,7 +30,7 @@ public class ProfileService {
                 if (file.isEmpty()) {
                     member.update(dto.getNickname());
                 } else {
-                    FileEntity fileEntity = fileService.saveFile(file);
+                    FileEntity fileEntity = fileService.upload(file);
                     member.update(dto.getNickname(), fileEntity);
                 }
             }

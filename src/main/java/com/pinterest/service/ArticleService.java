@@ -1,5 +1,6 @@
 package com.pinterest.service;
 
+import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
@@ -55,7 +56,7 @@ public class ArticleService {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
 
-        FileEntity fileEntity = fileService.saveFile(file);
+        FileEntity fileEntity = fileService.upload(file);
 
         Board board = boardRepository.getReferenceById(dto.getBoardId());
         articleRepository.save(dto.toEntity(member, board, fileEntity));
@@ -63,6 +64,9 @@ public class ArticleService {
 
     @Transactional
     public void deleteArticle(Long articleId, String email) {
-        articleRepository.deleteByIdAndMember_Email(articleId, email);
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
+        fileService.deleteImage(article.getFile().getSavedName());
+        articleRepository.delete(article);
     }
 }

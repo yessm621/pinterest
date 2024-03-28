@@ -4,7 +4,12 @@
 <th:block th:fragment="profileFragment(profile)">
   <th:block th:if="${profile.savedName == null}">
     <th:block th:if="${profile.image != null and profile.image != ''}">
-      <img th:src="${profile.image}" alt="" class="w-10 h-10 object-cover rounded-full">
+      <div th:if="${#strings.contains(profile.image, 'https')}">
+        <img th:src="${profile.image}" alt="" class="w-10 h-10 object-cover rounded-full">
+      </div>
+      <div th:if="!${#strings.contains(profile.image, 'https')}">
+        <img th:src="|/attach/${profile.image}|" alt="" class="w-10 h-10 object-cover rounded-full">
+      </div>
     </th:block>
     <th:block th:if="${profile.image == null or profile.image == ''}">
       <div class="w-10 h-10 rounded-full inline-flex items-center justify-center bg-gray-200 text-gray-900 text-sm font-bold"
@@ -12,7 +17,12 @@
     </th:block>
   </th:block>
   <th:block th:if="${profile.savedName != null}">
-    <img th:src="|/attach/${profile.savedName}|" alt="" class="w-10 h-10 object-cover rounded-full">
+    <div th:if="${#strings.contains(profile.savedName, 'https')}">
+      <img th:src="${profile.savedName}" alt="" class="w-10 h-10 object-cover rounded-full">
+    </div>
+    <div th:if="!${#strings.contains(profile.savedName, 'https')}">
+      <img th:src="|/attach/${profile.savedName}|" alt="" class="w-10 h-10 object-cover rounded-full">
+    </div>
   </th:block>
 </th:block>
 </body>

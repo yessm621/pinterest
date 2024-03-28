@@ -233,7 +233,8 @@ class BoardControllerTest {
                 createMemberDto(),
                 "title",
                 "content",
-                "hashtag"
+                "hashtag",
+                "image"
         );
     }
 }

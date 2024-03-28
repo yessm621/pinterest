@@ -1,12 +1,14 @@
 package com.pinterest.domain;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "file")
 @Getter
+@ToString
 public class FileEntity {
 
     @Id
@@ -14,8 +16,11 @@ public class FileEntity {
     @Column(name = "file_id")
     private Long id;
 
+    @Column(length = 2000)
     private String fileName;
+    @Column(length = 2000)
     private String savedName;
+    @Column(length = 2000)
     private String savedPath;
 
     protected FileEntity() {

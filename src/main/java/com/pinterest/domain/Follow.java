@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@ToString(exclude = "member")
+@ToString(exclude = {"fromMember", "toMember"})
 public class Follow {
 
     @Id

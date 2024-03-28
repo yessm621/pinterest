@@ -139,7 +139,8 @@ class ProfilesControllerTest {
                 createMemberDto(),
                 "title",
                 "content",
-                "hashtag"
+                "hashtag",
+                "image"
         );
     }
 

@@ -39,7 +39,7 @@ public class Article extends BaseEntity {
     @Column(nullable = false, length = 2000)
     private String content;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "file_id")
     private FileEntity file;
 

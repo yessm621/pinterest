@@ -141,7 +141,7 @@ class ArticleServiceTest {
         given(boardRepository.getReferenceById(dto.getBoardId())).willReturn(createBoard());
         given(memberRepository.findByEmail(dto.getMemberDto().getEmail())).willReturn(Optional.of(createMember()));
         given(articleRepository.save(any(Article.class))).willReturn(createArticle());
-        given(fileService.saveFile(file)).willReturn(createFile());
+        given(fileService.upload(file)).willReturn(createFile());
 
         // When
         sut.saveArticle(file, dto);
@@ -150,7 +150,7 @@ class ArticleServiceTest {
         then(boardRepository).should().getReferenceById(dto.getBoardId());
         then(memberRepository).should().findByEmail(dto.getMemberDto().getEmail());
         then(articleRepository).should().save(any(Article.class));
-        then(fileService).should().saveFile(file);
+        then(fileService).should().upload(file);
     }
 
     @Test
