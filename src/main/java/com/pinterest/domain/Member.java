@@ -33,7 +33,7 @@ public class Member extends BaseEntity {
     @Column(length = 2000)
     private String image;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private FileEntity file;
 
