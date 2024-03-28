@@ -16,6 +16,7 @@ public class FileEntity {
     @Column(name = "file_id")
     private Long id;
 
+    @Column(length = 2000)
     private String fileName;
     @Column(length = 2000)
     private String savedName;

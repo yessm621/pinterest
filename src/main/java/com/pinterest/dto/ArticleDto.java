@@ -28,6 +28,10 @@ public class ArticleDto {
         return new ArticleDto(null, boardId, memberDto, title, content, hashtag, null, null);
     }
 
+    public static ArticleDto of(Long boardId, MemberDto memberDto, String title, String content, String hashtag, String image) {
+        return new ArticleDto(null, boardId, memberDto, title, content, hashtag, image, null);
+    }
+
     // entity -> dto
     public static ArticleDto from(Article entity) {
         return new ArticleDto(

@@ -42,7 +42,7 @@ class ProfileServiceTest {
         MemberDto dto = createMemberDto();
         MockMultipartFile file = new MockMultipartFile("fileName", "test.png", "image/*", "test file".getBytes(StandardCharsets.UTF_8));
         given(memberRepository.getReferenceById(dto.getId())).willReturn(member);
-        given(fileService.saveFile(file)).willReturn(any(FileEntity.class));
+        given(fileService.upload(file)).willReturn(any(FileEntity.class));
 
         // When
         sut.updateMember(dto.getId(), dto, file);
