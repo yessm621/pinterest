@@ -1,5 +1,6 @@
 package com.pinterest.service;
 
+import com.pinterest.domain.Article;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
@@ -63,6 +64,9 @@ public class ArticleService {
 
     @Transactional
     public void deleteArticle(Long articleId, String email) {
-        articleRepository.deleteByIdAndMember_Email(articleId, email);
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
+        fileService.deleteImage(article.getFile().getSavedName());
+        articleRepository.delete(article);
     }
 }

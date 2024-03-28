@@ -11,10 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.UUID;
 
 @Service
-@Profile("local")
+@Profile("prod")
+//@Profile("local")
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FileServiceImpl implements FileService {
@@ -49,5 +52,18 @@ public class FileServiceImpl implements FileService {
         FileEntity entity = FileEntity.of(fileName, savedName, savedPath);
 
         return fileRepository.save(entity);
+    }
+
+    @Override
+    public void deleteImage(String filename) {
+        String srcFileName = null;
+
+        try {
+            srcFileName = URLDecoder.decode(filename, "UTF-8");
+            File file = new File(fileRootDir + File.separator + srcFileName);
+            file.delete();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,4 +8,6 @@ public interface FileService {
     FileEntity upload(MultipartFile image);
 
     String getFullPath(String filename);
+
+    void deleteImage(String filename);
 }

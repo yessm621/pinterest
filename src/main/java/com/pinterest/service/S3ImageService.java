@@ -30,7 +30,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
-@Profile("prod")
+@Profile("local")
+//@Profile("prod")
 @RequiredArgsConstructor
 @Slf4j
 public class S3ImageService implements FileService {
@@ -112,7 +113,7 @@ public class S3ImageService implements FileService {
         return fileRepository.save(entity);
     }
 
-    public void deleteImageFromS3(String imageAddress) {
+    public void deleteImage(String imageAddress) {
         String key = getKeyFromImageAddress(imageAddress);
         try {
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
