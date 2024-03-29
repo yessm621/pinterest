@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.BoardDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.query.BoardQueryRepository;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,13 +42,13 @@ public class BoardService {
     public BoardDto getBoard(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(BoardDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
+                .orElseThrow(() -> new PinterestException("보드가 없습니다."));
     }
 
     @Transactional
     public void saveBoard(BoardDto dto) {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+                .orElseThrow(() -> new PinterestException("회원 정보가 없습니다."));
         boardTitleDuplicated(dto);
         if (dto.getTitle() != null && !dto.getTitle().equals("")) {
             boardRepository.save(dto.toEntity(member));
@@ -61,14 +60,14 @@ public class BoardService {
         try {
             Board board = boardRepository.getReferenceById(boardId);
             Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
-                    .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+                    .orElseThrow(() -> new PinterestException("회원 정보가 없습니다."));
             boardTitleDuplicated(dto);
             if (board.getMember().getEmail().equals(member.getEmail())) {
                 if (dto.getTitle() != null) {
                     board.setTitle(dto.getTitle());
                 }
             }
-        } catch (EntityNotFoundException e) {
+        } catch (PinterestException e) {
             log.warn("보드 업데이트 실패. 보드를 찾을 수 없습니다.");
         }
     }
@@ -81,7 +80,7 @@ public class BoardService {
     private void boardTitleDuplicated(BoardDto dto) {
         Optional<Board> board = boardRepository.findByMemberIdAndTitle(dto.getMemberDto().getId(), dto.getTitle());
         if (board.isPresent()) {
-            throw new EntityExistsException("이미 존재하는 보드 이름 입니다.");
+            throw new PinterestException("이미 존재하는 보드 이름 입니다.");
         }
     }
 }

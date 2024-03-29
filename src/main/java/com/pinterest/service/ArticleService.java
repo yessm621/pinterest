@@ -6,6 +6,7 @@ import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,13 +48,13 @@ public class ArticleService {
     public ArticleWithCommentDto getArticleWithComment(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
+                .orElseThrow(() -> new PinterestException("핀이 없습니다."));
     }
 
     @Transactional
     public void saveArticle(MultipartFile file, ArticleDto dto) {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("회원 정보가 없습니다."));
+                .orElseThrow(() -> new PinterestException("회원 정보가 없습니다."));
 
         FileEntity fileEntity = fileService.upload(file);
 
@@ -65,7 +65,7 @@ public class ArticleService {
     @Transactional
     public void deleteArticle(Long articleId, String email) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
+                .orElseThrow(() -> new PinterestException("핀이 없습니다."));
         fileService.deleteImage(article.getFile().getSavedName());
         articleRepository.delete(article);
     }

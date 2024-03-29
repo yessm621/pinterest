@@ -6,6 +6,7 @@ import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleLikeDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleLikeRepository;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,11 +62,11 @@ public class ArticleLikeService {
     @Transactional
     public void saveArticleLike(ArticleLikeDto dto) {
         Member member = memberRepository.findByEmail(dto.getMemberDto().getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("회원이 없습니다."));
+                .orElseThrow(() -> new PinterestException("회원이 없습니다."));
         Board board = boardRepository.findById(dto.getBoardId())
-                .orElseThrow(() -> new EntityNotFoundException("보드가 없습니다."));
+                .orElseThrow(() -> new PinterestException("보드가 없습니다."));
         Article article = articleRepository.findById(dto.getArticleId())
-                .orElseThrow(() -> new EntityNotFoundException("핀이 없습니다."));
+                .orElseThrow(() -> new PinterestException("핀이 없습니다."));
 
         articleLikeRepository.save(dto.toEntity(member, board, article));
     }
@@ -77,7 +77,7 @@ public class ArticleLikeService {
     @Transactional
     public void deleteArticleLike(Long articleLikeId) {
         ArticleLike articleLike = articleLikeRepository.findById(articleLikeId)
-                .orElseThrow(() -> new EntityNotFoundException("핀을 찾을 수 없습니다."));
+                .orElseThrow(() -> new PinterestException("핀을 찾을 수 없습니다."));
         articleLikeRepository.delete(articleLike);
     }
 }

@@ -5,6 +5,7 @@ import com.pinterest.domain.Member;
 import com.pinterest.domain.MemberRole;
 import com.pinterest.dto.ProfileDto;
 import com.pinterest.dto.request.JoinRequest;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -49,12 +49,12 @@ public class MemberService implements UserDetailsService {
     public ProfileDto getMemberEmail(String email) {
         return memberRepository.findByEmail(email)
                 .map(ProfileDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("프로필이 없습니다."));
+                .orElseThrow(() -> new PinterestException("프로필이 없습니다."));
     }
 
     public ProfileDto getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .map(ProfileDto::from)
-                .orElseThrow(() -> new EntityNotFoundException("프로필이 없습니다."));
+                .orElseThrow(() -> new PinterestException("프로필이 없습니다."));
     }
 }
