@@ -178,9 +178,9 @@
           var email = [[${profile.email}]];
           let url = "";
           if (type == "follower") {
-              url = "http://localhost:8080/follows/followerList";
+              url = "/follows/followerList";
           } else {
-              url = "http://localhost:8080/follows/followingList";
+              url = "/follows/followingList";
           }
 
           $.ajax({
