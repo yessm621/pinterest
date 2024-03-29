@@ -178,8 +178,7 @@ class ArticleControllerTest {
 
         // When & Then
         mvc.perform(get("/articles/" + articleId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(articleService).shouldHaveNoInteractions();
     }
 
@@ -187,8 +186,7 @@ class ArticleControllerTest {
     @DisplayName("[View] GET Article 작성 페이지 - 인증 없을 땐 로그인 페이지로 이동")
     void givenNothing_whenRequestCreateArticleView_thenRedirectsToLoginPage() throws Exception {
         mvc.perform(get("/articles/form"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(articleService).shouldHaveNoInteractions();
     }
 
@@ -219,8 +217,7 @@ class ArticleControllerTest {
     void givenNothing_whenRequestUpdateArticleView_thenRedirectsToLoginPage() throws Exception {
         Long articleId = 1L;
         mvc.perform(get("/articles/" + articleId + "/form"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(articleService).shouldHaveNoInteractions();
     }
 

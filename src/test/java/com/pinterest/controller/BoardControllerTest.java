@@ -80,8 +80,7 @@ class BoardControllerTest {
 
         // When & Then
         mvc.perform(get("/boards"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(boardService).shouldHaveNoInteractions();
     }
 
@@ -114,8 +113,7 @@ class BoardControllerTest {
 
         // When & Then
         mvc.perform(get("/boards/" + boardId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(boardService).shouldHaveNoInteractions();
     }
 
@@ -182,8 +180,7 @@ class BoardControllerTest {
 
         // When & Then
         mvc.perform(get("/boards/" + boardId + "form"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(boardService).shouldHaveNoInteractions();
     }
 

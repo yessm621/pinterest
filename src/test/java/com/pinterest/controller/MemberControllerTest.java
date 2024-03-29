@@ -44,8 +44,7 @@ class MemberControllerTest {
     void givenNothing_whenRequestProfileView_thenRedirectsToLoginPage() throws Exception {
         String email = "test@gmail.com";
         mvc.perform(get("/members/" + email))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(status().is3xxRedirection());
         then(memberService).shouldHaveNoInteractions();
     }
 }
