@@ -4,6 +4,7 @@ import com.pinterest.domain.*;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleLikeDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleLikeRepository;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
@@ -16,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -106,7 +106,7 @@ class ArticleLikeServiceTest {
     void givenArticleLikeDto_whenSavingArticleLikeNoneExistMember_thenThrowsException() {
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
+        assertThrows(PinterestException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
         then(memberRepository).should().findByEmail(anyString());
     }
 
@@ -116,7 +116,7 @@ class ArticleLikeServiceTest {
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(createMember()));
         given(boardRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
+        assertThrows(PinterestException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
         then(memberRepository).should().findByEmail(anyString());
         then(boardRepository).should().findById(anyLong());
     }
@@ -128,7 +128,7 @@ class ArticleLikeServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(createBoard()));
         given(articleRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
+        assertThrows(PinterestException.class, () -> sut.saveArticleLike(createArticleLikeDto()));
         then(memberRepository).should().findByEmail(anyString());
         then(boardRepository).should().findById(anyLong());
         then(articleRepository).should().findById(anyLong());
@@ -149,7 +149,7 @@ class ArticleLikeServiceTest {
     void givenArticleLikeId_whenDeletingArticleLikeNoneExistArticle_thenThrowsException() {
         given(articleLikeRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> sut.deleteArticleLike(anyLong()));
+        assertThrows(PinterestException.class, () -> sut.deleteArticleLike(anyLong()));
         then(articleLikeRepository).should().findById(anyLong());
     }
 

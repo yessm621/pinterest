@@ -6,6 +6,7 @@ import com.pinterest.domain.Comment;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.CommentDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.CommentRepository;
 import com.pinterest.repository.MemberRepository;
@@ -16,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -63,7 +63,7 @@ class CommentServiceTest {
     void givenNoneExistentArticle_whenSavingComment_thenLogsWarningAndDoesNothing() {
         // Given
         CommentDto dto = createCommentDto("comment");
-        given(articleRepository.getReferenceById(dto.getArticleId())).willThrow(EntityNotFoundException.class);
+        given(articleRepository.getReferenceById(dto.getArticleId())).willThrow(PinterestException.class);
 
         // When
         sut.saveComment(dto);

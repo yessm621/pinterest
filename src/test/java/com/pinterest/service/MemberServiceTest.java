@@ -2,6 +2,7 @@ package com.pinterest.service;
 
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ProfileDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ class MemberServiceTest {
         given(memberRepository.findById(memberId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getMember(memberId));
+        assertThrows(PinterestException.class, () -> sut.getMember(memberId));
         then(memberRepository).should().findById(memberId);
     }
 

@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
@@ -59,7 +59,7 @@ class ProfileServiceTest {
         // Given
         MemberDto dto = createMemberDto();
         MockMultipartFile file = new MockMultipartFile("fileName", "test.png", "image/*", "test file".getBytes(StandardCharsets.UTF_8));
-        given(memberRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
+        given(memberRepository.getReferenceById(dto.getId())).willThrow(PinterestException.class);
 
         // When
         sut.updateMember(dto.getId(), dto, file);

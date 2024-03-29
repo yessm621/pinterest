@@ -3,6 +3,7 @@ package com.pinterest.service;
 import com.pinterest.domain.Follow;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.FollowDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.FollowRepository;
 import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.query.FollowQueryRepository;
@@ -13,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,7 +88,7 @@ class FollowServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.countToMember(anyLong()));
+        assertThrows(PinterestException.class, () -> sut.countToMember(anyLong()));
         then(memberRepository).should().findById(anyLong());
     }
 
@@ -156,7 +156,7 @@ class FollowServiceTest {
         given(followRepository.findById(followId)).willReturn(Optional.of(follow));
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.cancel(followId, loginEmail));
+        assertThrows(PinterestException.class, () -> sut.cancel(followId, loginEmail));
         then(followRepository).should().findById(anyLong());
     }
 

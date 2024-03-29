@@ -4,6 +4,7 @@ import com.pinterest.domain.Board;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.BoardDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
 import com.pinterest.repository.query.BoardQueryRepository;
@@ -16,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +98,7 @@ class BoardServiceTest {
         given(boardRepository.findById(boardId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getBoard(boardId));
+        assertThrows(PinterestException.class, () -> sut.getBoard(boardId));
         then(boardRepository).should().findById(boardId);
     }
 
@@ -142,7 +142,7 @@ class BoardServiceTest {
     void givenNoneExistentBoardInfo_whenUpdatingBoard_thenLogsWarningAndDoesNothing() throws Exception {
         // Given
         BoardDto dto = createBoardDto("new title");
-        given(boardRepository.getReferenceById(dto.getId())).willThrow(EntityNotFoundException.class);
+        given(boardRepository.getReferenceById(dto.getId())).willThrow(PinterestException.class);
 
         // When
         sut.updateBoard(dto.getId(), dto);

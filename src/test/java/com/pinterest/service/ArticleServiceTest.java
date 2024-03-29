@@ -7,6 +7,7 @@ import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.MemberDto;
+import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleRepository;
 import com.pinterest.repository.BoardRepository;
 import com.pinterest.repository.MemberRepository;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -127,7 +127,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> sut.getArticleWithComment(articleId));
+        assertThrows(PinterestException.class, () -> sut.getArticleWithComment(articleId));
         then(articleRepository).should().findById(articleId);
     }
 
@@ -159,13 +159,18 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         String email = "test@gmail.com";
-        willDoNothing().given(articleRepository).deleteByIdAndMember_Email(articleId, email);
+        Article article = createArticle();
+        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
+        willDoNothing().given(fileService).deleteImage(anyString());
+        willDoNothing().given(articleRepository).delete(article);
 
         // When
         sut.deleteArticle(articleId, email);
 
         // Then
-        then(articleRepository).should().deleteByIdAndMember_Email(articleId, email);
+        then(articleRepository).should().findById(articleId);
+        then(fileService).should().deleteImage(anyString());
+        then(articleRepository).should().delete(article);
     }
 
     private Article createArticle() {
@@ -196,9 +201,9 @@ class ArticleServiceTest {
 
     private Member createMember() {
         return Member.of(
-                "yessm621@gmail.com",
+                "test@gmail.com",
                 "test123",
-                "yessm",
+                "test",
                 "image"
         );
     }
@@ -216,9 +221,9 @@ class ArticleServiceTest {
     private MemberDto createMemberDto() {
         return MemberDto.of(
                 1L,
-                "yessm621@gmail.com",
+                "test@gmail.com",
                 "test123",
-                "yessm",
+                "test",
                 "image",
                 LocalDateTime.now(),
                 LocalDateTime.now()

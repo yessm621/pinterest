@@ -66,7 +66,9 @@ public class ArticleService {
     public void deleteArticle(Long articleId, String email) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new PinterestException("핀이 없습니다."));
-        fileService.deleteImage(article.getFile().getSavedName());
-        articleRepository.delete(article);
+        if (article.getMember().getEmail().equals(email)) {
+            fileService.deleteImage(article.getFile().getSavedName());
+            articleRepository.delete(article);
+        }
     }
 }
