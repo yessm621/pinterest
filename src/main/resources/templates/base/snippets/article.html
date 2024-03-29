@@ -11,7 +11,7 @@
         <div th:if="!${#strings.contains(article.image, 'https')}">
           <img th:src="|/attach/${article.image}|" alt="">
         </div>
-        <h6 class="mt-2" th:text="${article.title}">
+        <h6 class="mt-2" th:text="${#strings.abbreviate(article.title, 20)}">
           핀 이름
         </h6>
       </a>
