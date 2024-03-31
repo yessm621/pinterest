@@ -23,6 +23,10 @@
 
 ![1](https://github.com/yessm621/yessm621.github.io/assets/79130276/7197668c-e615-413a-a871-2c46ba25e054)
 
+## ERD
+
+![img_2.png](img_2.png)
+
 ## **⭐** 주요 기능
 
 - 메인 페이지 / 핀 페이지
