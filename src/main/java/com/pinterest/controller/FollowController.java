@@ -18,6 +18,7 @@ public class FollowController {
 
     private final FollowService followService;
 
+    // TODO:: 팔로우 시 Kafka 를 사용해서 알림을 보내주는 기능
     @PostMapping("/create")
     public String createFollow(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                FollowRequest request) {
