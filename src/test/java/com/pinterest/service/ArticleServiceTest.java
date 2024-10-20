@@ -5,6 +5,7 @@ import com.pinterest.domain.Board;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.ArticleInfoDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.dto.MemberDto;
 import com.pinterest.error.PinterestException;
@@ -62,7 +63,7 @@ class ArticleServiceTest {
         given(articleQueryRepository.searchArticles(null, pageable)).willReturn(Page.empty());
 
         // When
-        Page<ArticleDto> articles = sut.searchArticles(null, pageable);
+        Page<ArticleInfoDto> articles = sut.searchArticles(null, pageable);
 
         // Then
         assertThat(articles).isNotNull();
@@ -79,7 +80,7 @@ class ArticleServiceTest {
         given(articleQueryRepository.searchArticles(searchKeyword, pageable)).willReturn(Page.empty());
 
         // When
-        Page<ArticleDto> articles = sut.searchArticles(searchKeyword, pageable);
+        Page<ArticleInfoDto> articles = sut.searchArticles(searchKeyword, pageable);
 
         // Then
         assertThat(articles).isEmpty();

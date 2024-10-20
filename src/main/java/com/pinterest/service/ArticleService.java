@@ -5,6 +5,7 @@ import com.pinterest.domain.Board;
 import com.pinterest.domain.FileEntity;
 import com.pinterest.domain.Member;
 import com.pinterest.dto.ArticleDto;
+import com.pinterest.dto.ArticleInfoDto;
 import com.pinterest.dto.ArticleWithCommentDto;
 import com.pinterest.error.PinterestException;
 import com.pinterest.repository.ArticleRepository;
@@ -34,9 +35,9 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final FileService fileService;
 
-    public Page<ArticleDto> searchArticles(String searchKeyword, Pageable pageable) {
+    public Page<ArticleInfoDto> searchArticles(String searchKeyword, Pageable pageable) {
         return articleQueryRepository.searchArticles(searchKeyword, pageable)
-                .map(ArticleDto::from);
+                .map(ArticleInfoDto::from);
     }
 
     public List<ArticleDto> getArticles(String email) {
